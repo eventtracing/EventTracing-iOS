@@ -1,0 +1,1104 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2D9736956B9CBA78945B795A /* Pods_EventTracing_iOS_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A1EB6C719602F65BC54CE508 /* Pods_EventTracing_iOS_Example.framework */; };
+		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
+		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
+		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
+		6003F598195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F596195388D20070C39A /* InfoPlist.strings */; };
+		6003F59A195388D20070C39A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F599195388D20070C39A /* main.m */; };
+		6003F59E195388D20070C39A /* NEAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F59D195388D20070C39A /* NEAppDelegate.m */; };
+		6003F5A9195388D20070C39A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5A8195388D20070C39A /* Images.xcassets */; };
+		6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F5AF195388D20070C39A /* XCTest.framework */; };
+		6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
+		6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
+		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
+		621BD5A72948765B0075CDA8 /* EventTracingTestLogComing.m in Sources */ = {isa = PBXBuildFile; fileRef = 621BD4A72948765B0075CDA8 /* EventTracingTestLogComing.m */; };
+		621BE2B729487A780075CDA8 /* EventTracingTestUsefullFuncs.m in Sources */ = {isa = PBXBuildFile; fileRef = 621BE2B5294878D00075CDA8 /* EventTracingTestUsefullFuncs.m */; };
+		621BE2DF29496C1A0075CDA8 /* ETParamsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 621BE2DE29496C1A0075CDA8 /* ETParamsTests.m */; };
+		621BE2E6294971C50075CDA8 /* KIFUITestActor+ET_Extra.m in Sources */ = {isa = PBXBuildFile; fileRef = 621BE2E4294971060075CDA8 /* KIFUITestActor+ET_Extra.m */; };
+		621BE2EB294986FF0075CDA8 /* ETHomeParamsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 621BE2EA294986FF0075CDA8 /* ETHomeParamsViewController.m */; };
+		621BE2EE2949A7100075CDA8 /* UIColor+ET.m in Sources */ = {isa = PBXBuildFile; fileRef = 621BE2ED2949A7100075CDA8 /* UIColor+ET.m */; };
+		621BE2F02949B6040075CDA8 /* ETVisibleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 621BE2EF2949B6040075CDA8 /* ETVisibleTests.m */; };
+		621BE2F42949B9040075CDA8 /* ETVisibleViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 621BE2F32949B9040075CDA8 /* ETVisibleViewController.m */; };
+		621BE3B6294B185B0075CDA8 /* ETAlertViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 621BE3B5294B185B0075CDA8 /* ETAlertViewController.m */; };
+		621BE3B8294B23CE0075CDA8 /* ETAlertTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 621BE3B7294B23CE0075CDA8 /* ETAlertTests.m */; };
+		621BE3BC294C0C200075CDA8 /* ETTipViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 621BE3BB294C0C200075CDA8 /* ETTipViewController.m */; };
+		621BE3E8294C26480075CDA8 /* ETBaseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 621BE3E7294C26480075CDA8 /* ETBaseViewController.m */; };
+		6244B084295AFA29009EBCDB /* ETWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6244B083295AFA29009EBCDB /* ETWebView.m */; };
+		6244B087295AFA54009EBCDB /* ETWebViewBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 6244B086295AFA54009EBCDB /* ETWebViewBridge.m */; };
+		6244B08B295AFB84009EBCDB /* ETWebViewBridgeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 6244B08A295AFB84009EBCDB /* ETWebViewBridgeManager.m */; };
+		6244B08E295B09D4009EBCDB /* NSError+ETWebViewBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 6244B08D295B09D4009EBCDB /* NSError+ETWebViewBridge.m */; };
+		6244B095295B0D41009EBCDB /* ETWebViewBridgeMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 6244B094295B0D41009EBCDB /* ETWebViewBridgeMessage.m */; };
+		6244B09E295B1441009EBCDB /* ETWebUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 6244B09D295B1441009EBCDB /* ETWebUtility.m */; };
+		6244B0A0295B1F7F009EBCDB /* h5.html in Resources */ = {isa = PBXBuildFile; fileRef = 6244B09F295B1F7F009EBCDB /* h5.html */; };
+		6244B0A3295B205E009EBCDB /* ETH5ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6244B0A2295B205E009EBCDB /* ETH5ViewController.m */; };
+		6244B0A6295B259A009EBCDB /* ETJSBEventTracing.m in Sources */ = {isa = PBXBuildFile; fileRef = 6244B0A5295B259A009EBCDB /* ETJSBEventTracing.m */; };
+		6244E7B8295BF4F9009EBCDB /* inject.js in Resources */ = {isa = PBXBuildFile; fileRef = 6244E7B7295BF4F9009EBCDB /* inject.js */; };
+		6244E7BB295C1B78009EBCDB /* ETJSBInternalBridgeAvaiable.m in Sources */ = {isa = PBXBuildFile; fileRef = 6244E7BA295C1B78009EBCDB /* ETJSBInternalBridgeAvaiable.m */; };
+		6244E7BD295C1F40009EBCDB /* ETH5Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6244E7BC295C1F40009EBCDB /* ETH5Tests.m */; };
+		6244E7BF295C2863009EBCDB /* smulate_click.js in Resources */ = {isa = PBXBuildFile; fileRef = 6244E7BE295C2863009EBCDB /* smulate_click.js */; };
+		6244FC8C2959816A009EBCDB /* ETDiffTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6244FC8B2959816A009EBCDB /* ETDiffTests.m */; };
+		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
+		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
+		9F0AD23A2965371600CF2852 /* ETQRCodeScanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F0AD2392965371600CF2852 /* ETQRCodeScanViewController.m */; };
+		9F0D6FA529433334004F3BA5 /* ETHomeTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D6FA429433334004F3BA5 /* ETHomeTableViewController.m */; };
+		9F0D6FA829433343004F3BA5 /* ETHomeCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D6FA729433343004F3BA5 /* ETHomeCollectionViewController.m */; };
+		9F0D6FAB2943406F004F3BA5 /* ETTestLogicMountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D6FAA2943406F004F3BA5 /* ETTestLogicMountViewController.m */; };
+		9F0D6FAE2943407E004F3BA5 /* ETTestLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D6FAD2943407E004F3BA5 /* ETTestLoginViewController.m */; };
+		9F0D71852946C46A004F3BA5 /* ETHomeCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D71842946C46A004F3BA5 /* ETHomeCollectionViewCell.m */; };
+		9F0D73072946FE8B004F3BA5 /* ETMainTestCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D73012946FE8B004F3BA5 /* ETMainTestCell.m */; };
+		9F0D73082946FE8B004F3BA5 /* ETMainTestInputCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D73042946FE8B004F3BA5 /* ETMainTestInputCell.m */; };
+		9F0D73092946FE8B004F3BA5 /* ETMainTestCellItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D73062946FE8B004F3BA5 /* ETMainTestCellItem.m */; };
+		9F0D7A3F29481E31004F3BA5 /* ETAutoImpressController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F0D7A3E29481E31004F3BA5 /* ETAutoImpressController.m */; };
+		9F5391B429432AE9008D1276 /* ETTabBarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F5391B329432AE9008D1276 /* ETTabBarViewController.m */; };
+		9F7606B6294829BF00EED05C /* UICollectionView+ETDemo.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F7606B2294829BF00EED05C /* UICollectionView+ETDemo.m */; };
+		9F7606B7294829BF00EED05C /* UITableView+ETDemo.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F7606B4294829BF00EED05C /* UITableView+ETDemo.m */; };
+		9F766C1B2949EC6600EED05C /* ETMountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F766C1A2949EC6600EED05C /* ETMountViewController.m */; };
+		9F766C1D294A00C300EED05C /* ETMountTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F766C1C294A00C300EED05C /* ETMountTests.m */; };
+		9F766C6C294ABC5700EED05C /* ETAutoImpressTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F766C6B294ABC5700EED05C /* ETAutoImpressTests.m */; };
+		9F9BA3C3294C201000CD17B6 /* NSMutableArray+ET_Extra.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F9BA3C1294C200900CD17B6 /* NSMutableArray+ET_Extra.m */; };
+		9F9BA3EC294C591900CD17B6 /* ETBridgeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F9BA3EB294C591900CD17B6 /* ETBridgeViewController.m */; };
+		9F9BA5682950074A00CD17B6 /* ETEventViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F9BA5662950074A00CD17B6 /* ETEventViewController.m */; };
+		9F9BA56A295017A600CD17B6 /* ETEventTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F9BA569295017A600CD17B6 /* ETEventTests.m */; };
+		9F9BA70C2950577900CD17B6 /* ETLogoutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F9BA70B2950577900CD17B6 /* ETLogoutViewController.m */; };
+		9FB4A9DB294B34710011453F /* ETReferViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FB4A9DA294B34710011453F /* ETReferViewController.m */; };
+		9FB4A9DD294B34830011453F /* ETReferTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FB4A9DC294B34830011453F /* ETReferTests.m */; };
+		B0E324217B81B5787268B2EC /* Pods_EventTracing_iOS_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDA443BD414F11B57C08DF0B /* Pods_EventTracing_iOS_Tests.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		6003F5B3195388D20070C39A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6003F582195388D10070C39A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6003F589195388D20070C39A;
+			remoteInfo = "EventTracing-iOS";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		4FB07C5B74CC80A77114B01F /* Pods-EventTracing-iOS_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EventTracing-iOS_Tests.debug.xcconfig"; path = "Target Support Files/Pods-EventTracing-iOS_Tests/Pods-EventTracing-iOS_Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		6003F58A195388D20070C39A /* EventTracing-iOS_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "EventTracing-iOS_Example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		6003F58F195388D20070C39A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		6003F591195388D20070C39A /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		6003F595195388D20070C39A /* EventTracing-iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "EventTracing-iOS-Info.plist"; sourceTree = "<group>"; };
+		6003F597195388D20070C39A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		6003F599195388D20070C39A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		6003F59B195388D20070C39A /* EventTracing-iOS-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EventTracing-iOS-Prefix.pch"; sourceTree = "<group>"; };
+		6003F59C195388D20070C39A /* NEAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NEAppDelegate.h; sourceTree = "<group>"; };
+		6003F59D195388D20070C39A /* NEAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NEAppDelegate.m; sourceTree = "<group>"; };
+		6003F5A8195388D20070C39A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		6003F5AE195388D20070C39A /* EventTracing-iOS_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "EventTracing-iOS_Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6003F5AF195388D20070C39A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		6003F5B7195388D20070C39A /* Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Tests-Info.plist"; sourceTree = "<group>"; };
+		6003F5B9195388D20070C39A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
+		621BD4A72948765B0075CDA8 /* EventTracingTestLogComing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventTracingTestLogComing.m; sourceTree = "<group>"; };
+		621BD5402948765B0075CDA8 /* EventTracingTestLogComing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventTracingTestLogComing.h; sourceTree = "<group>"; };
+		621BE2B4294878D00075CDA8 /* EventTracingTestUsefullFuncs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EventTracingTestUsefullFuncs.h; sourceTree = "<group>"; };
+		621BE2B5294878D00075CDA8 /* EventTracingTestUsefullFuncs.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EventTracingTestUsefullFuncs.m; sourceTree = "<group>"; };
+		621BE2DE29496C1A0075CDA8 /* ETParamsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETParamsTests.m; sourceTree = "<group>"; };
+		621BE2E3294971060075CDA8 /* KIFUITestActor+ET_Extra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "KIFUITestActor+ET_Extra.h"; sourceTree = "<group>"; };
+		621BE2E4294971060075CDA8 /* KIFUITestActor+ET_Extra.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "KIFUITestActor+ET_Extra.m"; sourceTree = "<group>"; };
+		621BE2E7294973AE0075CDA8 /* EventTracingDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EventTracingDefines.h; sourceTree = "<group>"; };
+		621BE2E9294986FF0075CDA8 /* ETHomeParamsViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETHomeParamsViewController.h; sourceTree = "<group>"; };
+		621BE2EA294986FF0075CDA8 /* ETHomeParamsViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETHomeParamsViewController.m; sourceTree = "<group>"; };
+		621BE2EC2949A7100075CDA8 /* UIColor+ET.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIColor+ET.h"; sourceTree = "<group>"; };
+		621BE2ED2949A7100075CDA8 /* UIColor+ET.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIColor+ET.m"; sourceTree = "<group>"; };
+		621BE2EF2949B6040075CDA8 /* ETVisibleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETVisibleTests.m; sourceTree = "<group>"; };
+		621BE2F22949B9040075CDA8 /* ETVisibleViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETVisibleViewController.h; sourceTree = "<group>"; };
+		621BE2F32949B9040075CDA8 /* ETVisibleViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETVisibleViewController.m; sourceTree = "<group>"; };
+		621BE3B4294B185B0075CDA8 /* ETAlertViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETAlertViewController.h; sourceTree = "<group>"; };
+		621BE3B5294B185B0075CDA8 /* ETAlertViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETAlertViewController.m; sourceTree = "<group>"; };
+		621BE3B7294B23CE0075CDA8 /* ETAlertTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETAlertTests.m; sourceTree = "<group>"; };
+		621BE3BA294C0C200075CDA8 /* ETTipViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETTipViewController.h; sourceTree = "<group>"; };
+		621BE3BB294C0C200075CDA8 /* ETTipViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETTipViewController.m; sourceTree = "<group>"; };
+		621BE3E6294C26480075CDA8 /* ETBaseViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETBaseViewController.h; sourceTree = "<group>"; };
+		621BE3E7294C26480075CDA8 /* ETBaseViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETBaseViewController.m; sourceTree = "<group>"; };
+		6244B082295AFA29009EBCDB /* ETWebView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETWebView.h; sourceTree = "<group>"; };
+		6244B083295AFA29009EBCDB /* ETWebView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETWebView.m; sourceTree = "<group>"; };
+		6244B085295AFA54009EBCDB /* ETWebViewBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETWebViewBridge.h; sourceTree = "<group>"; };
+		6244B086295AFA54009EBCDB /* ETWebViewBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETWebViewBridge.m; sourceTree = "<group>"; };
+		6244B089295AFB84009EBCDB /* ETWebViewBridgeManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETWebViewBridgeManager.h; sourceTree = "<group>"; };
+		6244B08A295AFB84009EBCDB /* ETWebViewBridgeManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETWebViewBridgeManager.m; sourceTree = "<group>"; };
+		6244B08C295B09D4009EBCDB /* NSError+ETWebViewBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSError+ETWebViewBridge.h"; sourceTree = "<group>"; };
+		6244B08D295B09D4009EBCDB /* NSError+ETWebViewBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSError+ETWebViewBridge.m"; sourceTree = "<group>"; };
+		6244B08F295B0A80009EBCDB /* ETWebViewBridgeModuleContext.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETWebViewBridgeModuleContext.h; sourceTree = "<group>"; };
+		6244B093295B0D41009EBCDB /* ETWebViewBridgeMessage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETWebViewBridgeMessage.h; sourceTree = "<group>"; };
+		6244B094295B0D41009EBCDB /* ETWebViewBridgeMessage.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETWebViewBridgeMessage.m; sourceTree = "<group>"; };
+		6244B09C295B1441009EBCDB /* ETWebUtility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETWebUtility.h; sourceTree = "<group>"; };
+		6244B09D295B1441009EBCDB /* ETWebUtility.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETWebUtility.m; sourceTree = "<group>"; };
+		6244B09F295B1F7F009EBCDB /* h5.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = h5.html; sourceTree = "<group>"; };
+		6244B0A1295B205E009EBCDB /* ETH5ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETH5ViewController.h; sourceTree = "<group>"; };
+		6244B0A2295B205E009EBCDB /* ETH5ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETH5ViewController.m; sourceTree = "<group>"; };
+		6244B0A5295B259A009EBCDB /* ETJSBEventTracing.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETJSBEventTracing.m; sourceTree = "<group>"; };
+		6244E7B7295BF4F9009EBCDB /* inject.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = inject.js; sourceTree = "<group>"; };
+		6244E7BA295C1B78009EBCDB /* ETJSBInternalBridgeAvaiable.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETJSBInternalBridgeAvaiable.m; sourceTree = "<group>"; };
+		6244E7BC295C1F40009EBCDB /* ETH5Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETH5Tests.m; sourceTree = "<group>"; };
+		6244E7BE295C2863009EBCDB /* smulate_click.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = smulate_click.js; sourceTree = "<group>"; };
+		6244FC8B2959816A009EBCDB /* ETDiffTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETDiffTests.m; sourceTree = "<group>"; };
+		627A54022966F85C0068BBF4 /* ETCommonDefines.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETCommonDefines.h; sourceTree = "<group>"; };
+		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		9F0AD2382965371600CF2852 /* ETQRCodeScanViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETQRCodeScanViewController.h; sourceTree = "<group>"; };
+		9F0AD2392965371600CF2852 /* ETQRCodeScanViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETQRCodeScanViewController.m; sourceTree = "<group>"; };
+		9F0D6FA329433334004F3BA5 /* ETHomeTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETHomeTableViewController.h; sourceTree = "<group>"; };
+		9F0D6FA429433334004F3BA5 /* ETHomeTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETHomeTableViewController.m; sourceTree = "<group>"; };
+		9F0D6FA629433343004F3BA5 /* ETHomeCollectionViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETHomeCollectionViewController.h; sourceTree = "<group>"; };
+		9F0D6FA729433343004F3BA5 /* ETHomeCollectionViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETHomeCollectionViewController.m; sourceTree = "<group>"; };
+		9F0D6FA92943406F004F3BA5 /* ETTestLogicMountViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETTestLogicMountViewController.h; sourceTree = "<group>"; };
+		9F0D6FAA2943406F004F3BA5 /* ETTestLogicMountViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETTestLogicMountViewController.m; sourceTree = "<group>"; };
+		9F0D6FAC2943407E004F3BA5 /* ETTestLoginViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETTestLoginViewController.h; sourceTree = "<group>"; };
+		9F0D6FAD2943407E004F3BA5 /* ETTestLoginViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETTestLoginViewController.m; sourceTree = "<group>"; };
+		9F0D71832946C46A004F3BA5 /* ETHomeCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ETHomeCollectionViewCell.h; sourceTree = "<group>"; };
+		9F0D71842946C46A004F3BA5 /* ETHomeCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ETHomeCollectionViewCell.m; sourceTree = "<group>"; };
+		9F0D73012946FE8B004F3BA5 /* ETMainTestCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ETMainTestCell.m; sourceTree = "<group>"; };
+		9F0D73022946FE8B004F3BA5 /* ETMainTestInputCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ETMainTestInputCell.h; sourceTree = "<group>"; };
+		9F0D73032946FE8B004F3BA5 /* ETMainTestCellItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ETMainTestCellItem.h; sourceTree = "<group>"; };
+		9F0D73042946FE8B004F3BA5 /* ETMainTestInputCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ETMainTestInputCell.m; sourceTree = "<group>"; };
+		9F0D73052946FE8B004F3BA5 /* ETMainTestCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ETMainTestCell.h; sourceTree = "<group>"; };
+		9F0D73062946FE8B004F3BA5 /* ETMainTestCellItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ETMainTestCellItem.m; sourceTree = "<group>"; };
+		9F0D7A3D29481E31004F3BA5 /* ETAutoImpressController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ETAutoImpressController.h; sourceTree = "<group>"; };
+		9F0D7A3E29481E31004F3BA5 /* ETAutoImpressController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ETAutoImpressController.m; sourceTree = "<group>"; };
+		9F5391B229432AE9008D1276 /* ETTabBarViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETTabBarViewController.h; sourceTree = "<group>"; };
+		9F5391B329432AE9008D1276 /* ETTabBarViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETTabBarViewController.m; sourceTree = "<group>"; };
+		9F7606B2294829BF00EED05C /* UICollectionView+ETDemo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UICollectionView+ETDemo.m"; sourceTree = "<group>"; };
+		9F7606B3294829BF00EED05C /* UITableView+ETDemo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UITableView+ETDemo.h"; sourceTree = "<group>"; };
+		9F7606B4294829BF00EED05C /* UITableView+ETDemo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UITableView+ETDemo.m"; sourceTree = "<group>"; };
+		9F7606B5294829BF00EED05C /* UICollectionView+ETDemo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UICollectionView+ETDemo.h"; sourceTree = "<group>"; };
+		9F766C192949EC6600EED05C /* ETMountViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETMountViewController.h; sourceTree = "<group>"; };
+		9F766C1A2949EC6600EED05C /* ETMountViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETMountViewController.m; sourceTree = "<group>"; };
+		9F766C1C294A00C300EED05C /* ETMountTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETMountTests.m; sourceTree = "<group>"; };
+		9F766C44294ABC3600EED05C /* ETAutoImpressTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETAutoImpressTests.m; sourceTree = "<group>"; };
+		9F766C6B294ABC5700EED05C /* ETAutoImpressTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ETAutoImpressTests.m; sourceTree = "<group>"; };
+		9F9BA3C0294C200900CD17B6 /* NSMutableArray+ET_Extra.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSMutableArray+ET_Extra.h"; sourceTree = "<group>"; };
+		9F9BA3C1294C200900CD17B6 /* NSMutableArray+ET_Extra.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSMutableArray+ET_Extra.m"; sourceTree = "<group>"; };
+		9F9BA3EA294C591900CD17B6 /* ETBridgeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETBridgeViewController.h; sourceTree = "<group>"; };
+		9F9BA3EB294C591900CD17B6 /* ETBridgeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETBridgeViewController.m; sourceTree = "<group>"; };
+		9F9BA5662950074A00CD17B6 /* ETEventViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ETEventViewController.m; sourceTree = "<group>"; };
+		9F9BA5672950074A00CD17B6 /* ETEventViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ETEventViewController.h; sourceTree = "<group>"; };
+		9F9BA569295017A600CD17B6 /* ETEventTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETEventTests.m; sourceTree = "<group>"; };
+		9F9BA70A2950577900CD17B6 /* ETLogoutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ETLogoutViewController.h; sourceTree = "<group>"; };
+		9F9BA70B2950577900CD17B6 /* ETLogoutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ETLogoutViewController.m; sourceTree = "<group>"; };
+		9FB4A9D9294B34710011453F /* ETReferViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ETReferViewController.h; sourceTree = "<group>"; };
+		9FB4A9DA294B34710011453F /* ETReferViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETReferViewController.m; sourceTree = "<group>"; };
+		9FB4A9DC294B34830011453F /* ETReferTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ETReferTests.m; sourceTree = "<group>"; };
+		A1EB6C719602F65BC54CE508 /* Pods_EventTracing_iOS_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EventTracing_iOS_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A33F9259560ADD9F8B6AFD9E /* Pods-EventTracing-iOS_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EventTracing-iOS_Example.debug.xcconfig"; path = "Target Support Files/Pods-EventTracing-iOS_Example/Pods-EventTracing-iOS_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		B04FB248A58200ACD75EF6C3 /* Pods-EventTracing-iOS_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EventTracing-iOS_Example.release.xcconfig"; path = "Target Support Files/Pods-EventTracing-iOS_Example/Pods-EventTracing-iOS_Example.release.xcconfig"; sourceTree = "<group>"; };
+		B466649140AA344C493872A8 /* EventTracing-iOS.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = "EventTracing-iOS.podspec"; path = "../EventTracing-iOS.podspec"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		BDA443BD414F11B57C08DF0B /* Pods_EventTracing_iOS_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EventTracing_iOS_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE2E708E3F78BE814BCFEDBF /* Pods-EventTracing-iOS_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EventTracing-iOS_Tests.release.xcconfig"; path = "Target Support Files/Pods-EventTracing-iOS_Tests/Pods-EventTracing-iOS_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		E4587E304B805B2A96DE9ABD /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		E8F05ADCCDBEAE32F65CB80B /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6003F587195388D20070C39A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
+				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
+				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
+				2D9736956B9CBA78945B795A /* Pods_EventTracing_iOS_Example.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6003F5AB195388D20070C39A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */,
+				6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */,
+				6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */,
+				B0E324217B81B5787268B2EC /* Pods_EventTracing_iOS_Tests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		068CFEF1DB77770CA2FC4F23 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				A33F9259560ADD9F8B6AFD9E /* Pods-EventTracing-iOS_Example.debug.xcconfig */,
+				B04FB248A58200ACD75EF6C3 /* Pods-EventTracing-iOS_Example.release.xcconfig */,
+				4FB07C5B74CC80A77114B01F /* Pods-EventTracing-iOS_Tests.debug.xcconfig */,
+				BE2E708E3F78BE814BCFEDBF /* Pods-EventTracing-iOS_Tests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		6003F581195388D10070C39A = {
+			isa = PBXGroup;
+			children = (
+				60FF7A9C1954A5C5007DD14C /* Podspec Metadata */,
+				6003F593195388D20070C39A /* Example for EventTracing-iOS */,
+				6003F5B5195388D20070C39A /* Tests */,
+				6003F58C195388D20070C39A /* Frameworks */,
+				6003F58B195388D20070C39A /* Products */,
+				068CFEF1DB77770CA2FC4F23 /* Pods */,
+			);
+			sourceTree = "<group>";
+		};
+		6003F58B195388D20070C39A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6003F58A195388D20070C39A /* EventTracing-iOS_Example.app */,
+				6003F5AE195388D20070C39A /* EventTracing-iOS_Tests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6003F58C195388D20070C39A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6003F58D195388D20070C39A /* Foundation.framework */,
+				6003F58F195388D20070C39A /* CoreGraphics.framework */,
+				6003F591195388D20070C39A /* UIKit.framework */,
+				6003F5AF195388D20070C39A /* XCTest.framework */,
+				A1EB6C719602F65BC54CE508 /* Pods_EventTracing_iOS_Example.framework */,
+				BDA443BD414F11B57C08DF0B /* Pods_EventTracing_iOS_Tests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6003F593195388D20070C39A /* Example for EventTracing-iOS */ = {
+			isa = PBXGroup;
+			children = (
+				6244B080295AFA01009EBCDB /* H5 */,
+				621BE2B829487D770075CDA8 /* TestUtils */,
+				9FE910852941C02900E6D109 /* Native */,
+				627A54022966F85C0068BBF4 /* ETCommonDefines.h */,
+				6003F59C195388D20070C39A /* NEAppDelegate.h */,
+				6003F59D195388D20070C39A /* NEAppDelegate.m */,
+				9F5391B229432AE9008D1276 /* ETTabBarViewController.h */,
+				9F5391B329432AE9008D1276 /* ETTabBarViewController.m */,
+				873B8AEA1B1F5CCA007FD442 /* Main.storyboard */,
+				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
+				6003F5A8195388D20070C39A /* Images.xcassets */,
+				6003F594195388D20070C39A /* Supporting Files */,
+			);
+			name = "Example for EventTracing-iOS";
+			path = "EventTracing-iOS";
+			sourceTree = "<group>";
+		};
+		6003F594195388D20070C39A /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				6003F595195388D20070C39A /* EventTracing-iOS-Info.plist */,
+				6003F596195388D20070C39A /* InfoPlist.strings */,
+				6003F599195388D20070C39A /* main.m */,
+				6003F59B195388D20070C39A /* EventTracing-iOS-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		6003F5B5195388D20070C39A /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				6244E7BC295C1F40009EBCDB /* ETH5Tests.m */,
+				621BE3B7294B23CE0075CDA8 /* ETAlertTests.m */,
+				6244FC8B2959816A009EBCDB /* ETDiffTests.m */,
+				9F766C6B294ABC5700EED05C /* ETAutoImpressTests.m */,
+				9F9BA569295017A600CD17B6 /* ETEventTests.m */,
+				9F766C1C294A00C300EED05C /* ETMountTests.m */,
+				621BE2DE29496C1A0075CDA8 /* ETParamsTests.m */,
+				9FB4A9DC294B34830011453F /* ETReferTests.m */,
+				621BE2EF2949B6040075CDA8 /* ETVisibleTests.m */,
+				621BE2E7294973AE0075CDA8 /* EventTracingDefines.h */,
+				621BE2B4294878D00075CDA8 /* EventTracingTestUsefullFuncs.h */,
+				621BE2B5294878D00075CDA8 /* EventTracingTestUsefullFuncs.m */,
+				621BE2E3294971060075CDA8 /* KIFUITestActor+ET_Extra.h */,
+				621BE2E4294971060075CDA8 /* KIFUITestActor+ET_Extra.m */,
+				9F9BA3C0294C200900CD17B6 /* NSMutableArray+ET_Extra.h */,
+				9F9BA3C1294C200900CD17B6 /* NSMutableArray+ET_Extra.m */,
+				6003F5B6195388D20070C39A /* Supporting Files */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		6003F5B6195388D20070C39A /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				9F766C44294ABC3600EED05C /* ETAutoImpressTests.m */,
+				6003F5B7195388D20070C39A /* Tests-Info.plist */,
+				6003F5B8195388D20070C39A /* InfoPlist.strings */,
+				606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		60FF7A9C1954A5C5007DD14C /* Podspec Metadata */ = {
+			isa = PBXGroup;
+			children = (
+				B466649140AA344C493872A8 /* EventTracing-iOS.podspec */,
+				E4587E304B805B2A96DE9ABD /* README.md */,
+				E8F05ADCCDBEAE32F65CB80B /* LICENSE */,
+			);
+			name = "Podspec Metadata";
+			sourceTree = "<group>";
+		};
+		621BE2B829487D770075CDA8 /* TestUtils */ = {
+			isa = PBXGroup;
+			children = (
+				621BD5402948765B0075CDA8 /* EventTracingTestLogComing.h */,
+				621BD4A72948765B0075CDA8 /* EventTracingTestLogComing.m */,
+			);
+			path = TestUtils;
+			sourceTree = "<group>";
+		};
+		621BE2E82949867D0075CDA8 /* Params */ = {
+			isa = PBXGroup;
+			children = (
+				621BE2E9294986FF0075CDA8 /* ETHomeParamsViewController.h */,
+				621BE2EA294986FF0075CDA8 /* ETHomeParamsViewController.m */,
+			);
+			path = Params;
+			sourceTree = "<group>";
+		};
+		621BE2F12949B8DC0075CDA8 /* Visible */ = {
+			isa = PBXGroup;
+			children = (
+				621BE2F22949B9040075CDA8 /* ETVisibleViewController.h */,
+				621BE2F32949B9040075CDA8 /* ETVisibleViewController.m */,
+			);
+			path = Visible;
+			sourceTree = "<group>";
+		};
+		621BE3B3294B184C0075CDA8 /* Alert */ = {
+			isa = PBXGroup;
+			children = (
+				621BE3B4294B185B0075CDA8 /* ETAlertViewController.h */,
+				621BE3B5294B185B0075CDA8 /* ETAlertViewController.m */,
+			);
+			path = Alert;
+			sourceTree = "<group>";
+		};
+		621BE3B9294C0BBC0075CDA8 /* Tip */ = {
+			isa = PBXGroup;
+			children = (
+				621BE3BA294C0C200075CDA8 /* ETTipViewController.h */,
+				621BE3BB294C0C200075CDA8 /* ETTipViewController.m */,
+			);
+			path = Tip;
+			sourceTree = "<group>";
+		};
+		621BE3E5294C263D0075CDA8 /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				621BE3E6294C26480075CDA8 /* ETBaseViewController.h */,
+				621BE3E7294C26480075CDA8 /* ETBaseViewController.m */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
+		6244B080295AFA01009EBCDB /* H5 */ = {
+			isa = PBXGroup;
+			children = (
+				6244B081295AFA11009EBCDB /* Jsb */,
+				6244B09F295B1F7F009EBCDB /* h5.html */,
+				6244B0A1295B205E009EBCDB /* ETH5ViewController.h */,
+				6244B0A2295B205E009EBCDB /* ETH5ViewController.m */,
+				6244B0A5295B259A009EBCDB /* ETJSBEventTracing.m */,
+			);
+			path = H5;
+			sourceTree = "<group>";
+		};
+		6244B081295AFA11009EBCDB /* Jsb */ = {
+			isa = PBXGroup;
+			children = (
+				6244B092295B0D34009EBCDB /* Message */,
+				6244B082295AFA29009EBCDB /* ETWebView.h */,
+				6244B083295AFA29009EBCDB /* ETWebView.m */,
+				6244B085295AFA54009EBCDB /* ETWebViewBridge.h */,
+				6244B086295AFA54009EBCDB /* ETWebViewBridge.m */,
+				6244B089295AFB84009EBCDB /* ETWebViewBridgeManager.h */,
+				6244B08A295AFB84009EBCDB /* ETWebViewBridgeManager.m */,
+				6244B08C295B09D4009EBCDB /* NSError+ETWebViewBridge.h */,
+				6244B08D295B09D4009EBCDB /* NSError+ETWebViewBridge.m */,
+				6244B08F295B0A80009EBCDB /* ETWebViewBridgeModuleContext.h */,
+				6244B09C295B1441009EBCDB /* ETWebUtility.h */,
+				6244B09D295B1441009EBCDB /* ETWebUtility.m */,
+				6244E7B7295BF4F9009EBCDB /* inject.js */,
+				6244E7BE295C2863009EBCDB /* smulate_click.js */,
+				6244E7BA295C1B78009EBCDB /* ETJSBInternalBridgeAvaiable.m */,
+			);
+			path = Jsb;
+			sourceTree = "<group>";
+		};
+		6244B092295B0D34009EBCDB /* Message */ = {
+			isa = PBXGroup;
+			children = (
+				6244B093295B0D41009EBCDB /* ETWebViewBridgeMessage.h */,
+				6244B094295B0D41009EBCDB /* ETWebViewBridgeMessage.m */,
+			);
+			path = Message;
+			sourceTree = "<group>";
+		};
+		9F0AD2372965370200CF2852 /* QRCode */ = {
+			isa = PBXGroup;
+			children = (
+				9F0AD2382965371600CF2852 /* ETQRCodeScanViewController.h */,
+				9F0AD2392965371600CF2852 /* ETQRCodeScanViewController.m */,
+			);
+			path = QRCode;
+			sourceTree = "<group>";
+		};
+		9F0D6FA129433319004F3BA5 /* tab_page_2 */ = {
+			isa = PBXGroup;
+			children = (
+				9F0D71832946C46A004F3BA5 /* ETHomeCollectionViewCell.h */,
+				9F0D71842946C46A004F3BA5 /* ETHomeCollectionViewCell.m */,
+				9F0D6FA629433343004F3BA5 /* ETHomeCollectionViewController.h */,
+				9F0D6FA729433343004F3BA5 /* ETHomeCollectionViewController.m */,
+			);
+			path = tab_page_2;
+			sourceTree = "<group>";
+		};
+		9F0D6FA229433319004F3BA5 /* tab_page_1 */ = {
+			isa = PBXGroup;
+			children = (
+				9F0AD2372965370200CF2852 /* QRCode */,
+				9F9BA7092950577900CD17B6 /* Logout */,
+				9F9BA5652950072300CD17B6 /* Event */,
+				9FB4A9D8294B34630011453F /* Refer */,
+				621BE3B3294B184C0075CDA8 /* Alert */,
+				9F766C182949EB2600EED05C /* Mount */,
+				621BE2F12949B8DC0075CDA8 /* Visible */,
+				621BE2E82949867D0075CDA8 /* Params */,
+				9F0D7A3C29481E31004F3BA5 /* Impress */,
+				9F0D73002946FE8B004F3BA5 /* Cell */,
+				9F0D6FA329433334004F3BA5 /* ETHomeTableViewController.h */,
+				9F0D6FA429433334004F3BA5 /* ETHomeTableViewController.m */,
+				9F0D6FA92943406F004F3BA5 /* ETTestLogicMountViewController.h */,
+				9F0D6FAA2943406F004F3BA5 /* ETTestLogicMountViewController.m */,
+				9F0D6FAC2943407E004F3BA5 /* ETTestLoginViewController.h */,
+				9F0D6FAD2943407E004F3BA5 /* ETTestLoginViewController.m */,
+			);
+			path = tab_page_1;
+			sourceTree = "<group>";
+		};
+		9F0D73002946FE8B004F3BA5 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				9F0D73052946FE8B004F3BA5 /* ETMainTestCell.h */,
+				9F0D73012946FE8B004F3BA5 /* ETMainTestCell.m */,
+				9F0D73032946FE8B004F3BA5 /* ETMainTestCellItem.h */,
+				9F0D73062946FE8B004F3BA5 /* ETMainTestCellItem.m */,
+				9F0D73022946FE8B004F3BA5 /* ETMainTestInputCell.h */,
+				9F0D73042946FE8B004F3BA5 /* ETMainTestInputCell.m */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
+		9F0D7A3C29481E31004F3BA5 /* Impress */ = {
+			isa = PBXGroup;
+			children = (
+				9F0D7A3D29481E31004F3BA5 /* ETAutoImpressController.h */,
+				9F0D7A3E29481E31004F3BA5 /* ETAutoImpressController.m */,
+			);
+			path = Impress;
+			sourceTree = "<group>";
+		};
+		9F7606B12948299B00EED05C /* categories */ = {
+			isa = PBXGroup;
+			children = (
+				9F7606B5294829BF00EED05C /* UICollectionView+ETDemo.h */,
+				9F7606B2294829BF00EED05C /* UICollectionView+ETDemo.m */,
+				9F7606B3294829BF00EED05C /* UITableView+ETDemo.h */,
+				9F7606B4294829BF00EED05C /* UITableView+ETDemo.m */,
+				621BE2EC2949A7100075CDA8 /* UIColor+ET.h */,
+				621BE2ED2949A7100075CDA8 /* UIColor+ET.m */,
+			);
+			path = categories;
+			sourceTree = "<group>";
+		};
+		9F766C182949EB2600EED05C /* Mount */ = {
+			isa = PBXGroup;
+			children = (
+				9F766C192949EC6600EED05C /* ETMountViewController.h */,
+				9F766C1A2949EC6600EED05C /* ETMountViewController.m */,
+			);
+			path = Mount;
+			sourceTree = "<group>";
+		};
+		9F9BA5652950072300CD17B6 /* Event */ = {
+			isa = PBXGroup;
+			children = (
+				9F9BA5672950074A00CD17B6 /* ETEventViewController.h */,
+				9F9BA5662950074A00CD17B6 /* ETEventViewController.m */,
+			);
+			path = Event;
+			sourceTree = "<group>";
+		};
+		9F9BA7092950577900CD17B6 /* Logout */ = {
+			isa = PBXGroup;
+			children = (
+				9F9BA70A2950577900CD17B6 /* ETLogoutViewController.h */,
+				9F9BA70B2950577900CD17B6 /* ETLogoutViewController.m */,
+			);
+			path = Logout;
+			sourceTree = "<group>";
+		};
+		9FB4A9D8294B34630011453F /* Refer */ = {
+			isa = PBXGroup;
+			children = (
+				9FB4A9D9294B34710011453F /* ETReferViewController.h */,
+				9FB4A9DA294B34710011453F /* ETReferViewController.m */,
+				9F9BA3EA294C591900CD17B6 /* ETBridgeViewController.h */,
+				9F9BA3EB294C591900CD17B6 /* ETBridgeViewController.m */,
+			);
+			path = Refer;
+			sourceTree = "<group>";
+		};
+		9FE910852941C02900E6D109 /* Native */ = {
+			isa = PBXGroup;
+			children = (
+				621BE3E5294C263D0075CDA8 /* Base */,
+				621BE3B9294C0BBC0075CDA8 /* Tip */,
+				9F7606B12948299B00EED05C /* categories */,
+				9F0D6FA229433319004F3BA5 /* tab_page_1 */,
+				9F0D6FA129433319004F3BA5 /* tab_page_2 */,
+			);
+			path = Native;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		6003F589195388D20070C39A /* EventTracing-iOS_Example */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6003F5BF195388D20070C39A /* Build configuration list for PBXNativeTarget "EventTracing-iOS_Example" */;
+			buildPhases = (
+				2F4B971646A43705842B8EC8 /* [CP] Check Pods Manifest.lock */,
+				6003F586195388D20070C39A /* Sources */,
+				6003F587195388D20070C39A /* Frameworks */,
+				6003F588195388D20070C39A /* Resources */,
+				56F820C198426CD3CFB23E9E /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "EventTracing-iOS_Example";
+			productName = "EventTracing-iOS";
+			productReference = 6003F58A195388D20070C39A /* EventTracing-iOS_Example.app */;
+			productType = "com.apple.product-type.application";
+		};
+		6003F5AD195388D20070C39A /* EventTracing-iOS_Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6003F5C2195388D20070C39A /* Build configuration list for PBXNativeTarget "EventTracing-iOS_Tests" */;
+			buildPhases = (
+				E92A410D2EAE555B1FB8138E /* [CP] Check Pods Manifest.lock */,
+				6003F5AA195388D20070C39A /* Sources */,
+				6003F5AB195388D20070C39A /* Frameworks */,
+				6003F5AC195388D20070C39A /* Resources */,
+				3F70D8FE265CD3E738056F39 /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6003F5B4195388D20070C39A /* PBXTargetDependency */,
+			);
+			name = "EventTracing-iOS_Tests";
+			productName = "EventTracing-iOSTests";
+			productReference = 6003F5AE195388D20070C39A /* EventTracing-iOS_Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6003F582195388D10070C39A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				CLASSPREFIX = ET;
+				LastUpgradeCheck = 1410;
+				ORGANIZATIONNAME = 9446796;
+				TargetAttributes = {
+					6003F589195388D20070C39A = {
+						DevelopmentTeam = JZ8AHNRCVZ;
+					};
+					6003F5AD195388D20070C39A = {
+						DevelopmentTeam = JZ8AHNRCVZ;
+						TestTargetID = 6003F589195388D20070C39A;
+					};
+				};
+			};
+			buildConfigurationList = 6003F585195388D10070C39A /* Build configuration list for PBXProject "EventTracing-iOS" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				English,
+				en,
+				Base,
+			);
+			mainGroup = 6003F581195388D10070C39A;
+			productRefGroup = 6003F58B195388D20070C39A /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				6003F589195388D20070C39A /* EventTracing-iOS_Example */,
+				6003F5AD195388D20070C39A /* EventTracing-iOS_Tests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6003F588195388D20070C39A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6244E7BF295C2863009EBCDB /* smulate_click.js in Resources */,
+				6244B0A0295B1F7F009EBCDB /* h5.html in Resources */,
+				873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */,
+				71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */,
+				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
+				6003F598195388D20070C39A /* InfoPlist.strings in Resources */,
+				6244E7B8295BF4F9009EBCDB /* inject.js in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6003F5AC195388D20070C39A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		2F4B971646A43705842B8EC8 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-EventTracing-iOS_Example-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3F70D8FE265CD3E738056F39 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-EventTracing-iOS_Tests/Pods-EventTracing-iOS_Tests-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/KIF/KIF.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/KIF.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-EventTracing-iOS_Tests/Pods-EventTracing-iOS_Tests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		56F820C198426CD3CFB23E9E /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-EventTracing-iOS_Example/Pods-EventTracing-iOS_Example-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/BlocksKit/BlocksKit.framework",
+				"${BUILT_PRODUCTS_DIR}/EventTracing-iOS/EventTracing.framework",
+				"${BUILT_PRODUCTS_DIR}/EventTracing-iOS-Debug/EventTracingDebug.framework",
+				"${BUILT_PRODUCTS_DIR}/EventTracing-iOS-LogViewer/EventTracingLogViewer.framework",
+				"${BUILT_PRODUCTS_DIR}/JRSwizzle/JRSwizzle.framework",
+				"${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework",
+				"${BUILT_PRODUCTS_DIR}/SocketRocket/SocketRocket.framework",
+				"${BUILT_PRODUCTS_DIR}/libextobjc/libextobjc.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BlocksKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/EventTracing.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/EventTracingDebug.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/EventTracingLogViewer.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/JRSwizzle.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Masonry.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SocketRocket.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libextobjc.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-EventTracing-iOS_Example/Pods-EventTracing-iOS_Example-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E92A410D2EAE555B1FB8138E /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-EventTracing-iOS_Tests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6003F586195388D20070C39A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9F9BA3EC294C591900CD17B6 /* ETBridgeViewController.m in Sources */,
+				621BE2EE2949A7100075CDA8 /* UIColor+ET.m in Sources */,
+				9F0AD23A2965371600CF2852 /* ETQRCodeScanViewController.m in Sources */,
+				6244B084295AFA29009EBCDB /* ETWebView.m in Sources */,
+				6244B0A3295B205E009EBCDB /* ETH5ViewController.m in Sources */,
+				9F0D6FAB2943406F004F3BA5 /* ETTestLogicMountViewController.m in Sources */,
+				6244B0A6295B259A009EBCDB /* ETJSBEventTracing.m in Sources */,
+				6244B09E295B1441009EBCDB /* ETWebUtility.m in Sources */,
+				9F9BA5682950074A00CD17B6 /* ETEventViewController.m in Sources */,
+				621BE3E8294C26480075CDA8 /* ETBaseViewController.m in Sources */,
+				621BE2F42949B9040075CDA8 /* ETVisibleViewController.m in Sources */,
+				9F0D6FA529433334004F3BA5 /* ETHomeTableViewController.m in Sources */,
+				9F7606B6294829BF00EED05C /* UICollectionView+ETDemo.m in Sources */,
+				9F0D73082946FE8B004F3BA5 /* ETMainTestInputCell.m in Sources */,
+				9FB4A9DB294B34710011453F /* ETReferViewController.m in Sources */,
+				6003F59E195388D20070C39A /* NEAppDelegate.m in Sources */,
+				621BD5A72948765B0075CDA8 /* EventTracingTestLogComing.m in Sources */,
+				9F7606B7294829BF00EED05C /* UITableView+ETDemo.m in Sources */,
+				9F0D6FA829433343004F3BA5 /* ETHomeCollectionViewController.m in Sources */,
+				6244B08E295B09D4009EBCDB /* NSError+ETWebViewBridge.m in Sources */,
+				621BE3B6294B185B0075CDA8 /* ETAlertViewController.m in Sources */,
+				6003F59A195388D20070C39A /* main.m in Sources */,
+				9F5391B429432AE9008D1276 /* ETTabBarViewController.m in Sources */,
+				9F766C1B2949EC6600EED05C /* ETMountViewController.m in Sources */,
+				9F0D73072946FE8B004F3BA5 /* ETMainTestCell.m in Sources */,
+				621BE3BC294C0C200075CDA8 /* ETTipViewController.m in Sources */,
+				6244B095295B0D41009EBCDB /* ETWebViewBridgeMessage.m in Sources */,
+				6244E7BB295C1B78009EBCDB /* ETJSBInternalBridgeAvaiable.m in Sources */,
+				6244B08B295AFB84009EBCDB /* ETWebViewBridgeManager.m in Sources */,
+				9F0D71852946C46A004F3BA5 /* ETHomeCollectionViewCell.m in Sources */,
+				621BE2EB294986FF0075CDA8 /* ETHomeParamsViewController.m in Sources */,
+				9F0D7A3F29481E31004F3BA5 /* ETAutoImpressController.m in Sources */,
+				9F0D6FAE2943407E004F3BA5 /* ETTestLoginViewController.m in Sources */,
+				9F0D73092946FE8B004F3BA5 /* ETMainTestCellItem.m in Sources */,
+				9F9BA70C2950577900CD17B6 /* ETLogoutViewController.m in Sources */,
+				6244B087295AFA54009EBCDB /* ETWebViewBridge.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6003F5AA195388D20070C39A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9F766C1D294A00C300EED05C /* ETMountTests.m in Sources */,
+				9F9BA56A295017A600CD17B6 /* ETEventTests.m in Sources */,
+				9F9BA3C3294C201000CD17B6 /* NSMutableArray+ET_Extra.m in Sources */,
+				621BE2F02949B6040075CDA8 /* ETVisibleTests.m in Sources */,
+				6244FC8C2959816A009EBCDB /* ETDiffTests.m in Sources */,
+				621BE2E6294971C50075CDA8 /* KIFUITestActor+ET_Extra.m in Sources */,
+				621BE3B8294B23CE0075CDA8 /* ETAlertTests.m in Sources */,
+				6244E7BD295C1F40009EBCDB /* ETH5Tests.m in Sources */,
+				9F766C6C294ABC5700EED05C /* ETAutoImpressTests.m in Sources */,
+				621BE2B729487A780075CDA8 /* EventTracingTestUsefullFuncs.m in Sources */,
+				9FB4A9DD294B34830011453F /* ETReferTests.m in Sources */,
+				621BE2DF29496C1A0075CDA8 /* ETParamsTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		6003F5B4195388D20070C39A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6003F589195388D20070C39A /* EventTracing-iOS_Example */;
+			targetProxy = 6003F5B3195388D20070C39A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		6003F596195388D20070C39A /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6003F597195388D20070C39A /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		6003F5B8195388D20070C39A /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6003F5B9195388D20070C39A /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				71719F9E1E33DC2100824A3D /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		6003F5BD195388D20070C39A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6003F5BE195388D20070C39A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		6003F5C0195388D20070C39A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = A33F9259560ADD9F8B6AFD9E /* Pods-EventTracing-iOS_Example.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = JZ8AHNRCVZ;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "EventTracing-iOS/EventTracing-iOS-Prefix.pch";
+				INFOPLIST_FILE = "EventTracing-iOS/EventTracing-iOS-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MODULE_NAME = ExampleApp;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = "org.cocoapods.demo.EventTracing-iOS-Example.xxq";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		6003F5C1195388D20070C39A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = B04FB248A58200ACD75EF6C3 /* Pods-EventTracing-iOS_Example.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = JZ8AHNRCVZ;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "EventTracing-iOS/EventTracing-iOS-Prefix.pch";
+				INFOPLIST_FILE = "EventTracing-iOS/EventTracing-iOS-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MODULE_NAME = ExampleApp;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = "org.cocoapods.demo.EventTracing-iOS-Example.xxq";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		6003F5C3195388D20070C39A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4FB07C5B74CC80A77114B01F /* Pods-EventTracing-iOS_Tests.debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = JZ8AHNRCVZ;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Tests/Tests-Prefix.pch";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = "Tests/Tests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = "org.cocoapods.demo.EventTracing-iOS-Tests.xxq";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EventTracing-iOS_Example.app/EventTracing-iOS_Example";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Debug;
+		};
+		6003F5C4195388D20070C39A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = BE2E708E3F78BE814BCFEDBF /* Pods-EventTracing-iOS_Tests.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = JZ8AHNRCVZ;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+					"$(inherited)",
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Tests/Tests-Prefix.pch";
+				INFOPLIST_FILE = "Tests/Tests-Info.plist";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.demo.${PRODUCT_NAME:rfc1034identifier}";
+				"PRODUCT_BUNDLE_IDENTIFIER[sdk=iphoneos*]" = "org.cocoapods.demo.EventTracing-iOS-Tests.xxq";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 4.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EventTracing-iOS_Example.app/EventTracing-iOS_Example";
+				WRAPPER_EXTENSION = xctest;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6003F585195388D10070C39A /* Build configuration list for PBXProject "EventTracing-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6003F5BD195388D20070C39A /* Debug */,
+				6003F5BE195388D20070C39A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6003F5BF195388D20070C39A /* Build configuration list for PBXNativeTarget "EventTracing-iOS_Example" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6003F5C0195388D20070C39A /* Debug */,
+				6003F5C1195388D20070C39A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6003F5C2195388D20070C39A /* Build configuration list for PBXNativeTarget "EventTracing-iOS_Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6003F5C3195388D20070C39A /* Debug */,
+				6003F5C4195388D20070C39A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6003F582195388D10070C39A /* Project object */;
+}

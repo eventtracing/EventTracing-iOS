@@ -1,0 +1,21 @@
+use_frameworks!
+
+platform :ios, '11.0'
+
+workspace 'EventTracing-iOS.xcworkspace'
+project 'EventTracing-iOS.xcodeproj'
+
+target 'EventTracing-iOS_Example' do
+  pod 'EventTracing-iOS', :path => '../'
+   pod 'EventTracing-iOS-Debug', :path => '../../EventTracing-iOS-Debug'
+   pod 'EventTracing-iOS-LogViewer', :path => '../../EventTracing-iOS-LogViewer'
+#  pod 'EventTracing-iOS-Debug', '~> 0.1.0'
+#  pod 'EventTracing-iOS-LogViewer', '~> 0.1.0'
+  pod 'libextobjc'
+  # pod 'LookinServer'
+
+  target 'EventTracing-iOS_Tests' do
+    inherit! :search_paths
+    pod 'KIF', :configurations => ['Debug']
+  end
+end

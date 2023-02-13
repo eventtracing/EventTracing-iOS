@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta
+      name="viewport"
+      content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <style type="text/css">
+      html {
+        font-family: Helvetica;
+        color: #222;
+      }
+      h1 {
+        color: steelblue;
+        font-size: 24px;
+        margin-top: 24px;
+      }
+      button {
+        margin: 0 3px 10px;
+        font-size: 12px;
+      }
+      .logLine {
+        border-bottom: 1px solid #ccc;
+        padding: 4px 2px;
+        font-family: courier;
+        font-size: 11px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>WebView Demo</h1>
+    <div id="buttons"></div>
+    <div id="log"></div>
+
+    <script>
+      var uniqueId = 1;
+      function log(message, data) {
+        var log = document.getElementById("log");
+        var el = document.createElement("div");
+        el.className = "logLine";
+        var el_html = uniqueId++ + ". " + message;
+        if (data !== undefined) {
+          el_html += ":<br/>" + JSON.stringify(data);
+        }
+        el.innerHTML = el_html;
+        if (log.children.length) {
+          log.insertBefore(el, log.children[0]);
+        } else {
+          log.appendChild(el);
+        }
+      }
+
+      window.onerror = function (err) {
+        log("window.onerror: " + err);
+      };
+
+      document.body.appendChild(document.createElement("br"));
+
+      var checkoutBridgeButton = document
+        .getElementById("buttons")
+        .appendChild(document.createElement("button"));
+      checkoutBridgeButton.setAttribute("id", "btn_check_avaiable");
+      checkoutBridgeButton.innerHTML = "Check Avaiable";
+      checkoutBridgeButton.onclick = function (e) {
+        bridge.isBridgeAvaiable("eventTracing", "log", function (avaiable, content) {
+            log("JS Checkout bridge avaiable", {content: content, avaiable: avaiable});
+          }
+        );
+      };
+
+      var eventTracingReportButton = document
+        .getElementById("buttons")
+        .appendChild(document.createElement("button"));
+      eventTracingReportButton.setAttribute("id", "btn_et_report");
+      eventTracingReportButton.innerHTML = "ET test";
+      eventTracingReportButton.onclick = function (e) {
+        e.preventDefault();
+        log('JS calling handler "eventTracing.test"');
+        bridge.call("eventTracing", "test", { foo: "bar" }, function (error, result, context) {
+            log("JS got response", {error: error, result: result, context: context});
+          }
+        );
+      };
+
+      var evnetTracingRefersButton = document
+        .getElementById("buttons")
+        .appendChild(document.createElement("button"));
+      evnetTracingRefersButton.setAttribute("id", "btn_et_refers");
+      evnetTracingRefersButton.innerHTML = "ET refers";
+      evnetTracingRefersButton.onclick = function (e) {
+        e.preventDefault();
+        log('JS calling handler "eventTracing.refers"');
+        bridge.call("eventTracing", "refers", function (error, result, context) {
+            log("JS got response", {error: error, result: result, context: context });
+          }
+        );
+      };
+
+      bridge.registe("module_in_js", "foo", function (args, context) {
+        log("Call JS Func", { args: args, context: context });
+        return { success: true };
+      });
+    </script>
+  </body>
+</html>

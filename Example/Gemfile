@@ -1,0 +1,6 @@
+source "https://rubygems.org"
+gem "fastlane"
+gem "cocoapods", '1.10.0'
+gem 'rest-client', '2.1.0'
+gem 'mail', '2.7.1'
+gem 'json', '2.3.1'
