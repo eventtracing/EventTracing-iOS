@@ -12,11 +12,11 @@
 #import "EventTracingInternalLog.h"
 #import "EventTracingConstData.h"
 
-NSString *ETParamKeyGuardEvent = @"Event";
-NSString *ETParamKeyGuardPublicParam = @"PublicParam";
-NSString *ETParamKeyGuardUserParam = @"UserParam";
+NSString * const ETParamKeyGuardEvent = @"Event";
+NSString * const ETParamKeyGuardPublicParam = @"PublicParam";
+NSString * const ETParamKeyGuardUserParam = @"UserParam";
 
-NSString *ETParamKeyGuardErrorRegxKey = @"regx";
+NSString * const ETParamKeyGuardErrorRegxKey = @"regx";
 
 BOOL ET_CheckEventKeyValid(NSString *eventKey) {
     NSError *error;

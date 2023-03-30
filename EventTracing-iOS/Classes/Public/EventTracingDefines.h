@@ -196,3 +196,8 @@ ET_CONST_DEF(ET_REUSE_BIZ_SET);
 #ifndef ETDispatchMainAsyncSafe
     #define ETDispatchMainAsyncSafe(block) ETDispatchQueueAsyncSafe(dispatch_get_main_queue(), block)
 #endif
+
+FOUNDATION_EXTERN NSString * const kEventTracingSessIdKey;
+FOUNDATION_EXTERN NSString * const ETParamKeyGuardEvent;
+FOUNDATION_EXTERN NSString * const ETParamKeyGuardPublicParam;
+FOUNDATION_EXTERN NSString * const ETParamKeyGuardUserParam;

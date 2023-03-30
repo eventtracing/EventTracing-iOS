@@ -23,6 +23,13 @@ Pod::Spec.new do |s|
     'EventTracing-iOS/Classes/**/*.{h,m,mm}'
   ]
 
+  #========== 组件信息 =========
+  s.description = '曙光埋点' 
+  s.attributes_hash['ne_owners'] = ["xiongxunquan@corp.netease.com","dingli@corp.netease.com"] 
+  s.attributes_hash['ne_biz_tags'] = ["开源曙光埋点"] 
+  s.attributes_hash['ne_level'] = '0' 
+  #============================  
+
   s.private_header_files = [
     'EventTracing-iOS/Classes/AOP/**/*.h',
     'EventTracing-iOS/Classes/Categorys/*.h',
@@ -49,6 +56,6 @@ Pod::Spec.new do |s|
     'EventTracing-iOS/Classes/Utils/NSArray+ETEnumerator.h'
   ]
 
-  s.dependency 'JRSwizzle', '~> 1.0'
+  s.dependency 'JRSwizzle', '~> 1.1.1'
   s.dependency 'BlocksKit', '~> 2.2.5'
 end

@@ -47,7 +47,7 @@ static void _check_node_oid_overwrite (UIView *view, bool isPage, NSString *oid)
 @property(nonatomic, assign) NSNumber *increaseActseqValue;
 @end
 
-@interface NELogETNodeUseForReferEventActionBuilder : EventTracingLogNodeParamsBuilder<EventTracingLogManuallyUseForReferEventActionBuilder>
+@interface EventTracingLogNodeUseForReferEventActionBuilder : EventTracingLogNodeParamsBuilder<EventTracingLogManuallyUseForReferEventActionBuilder>
 @property(nonatomic, copy) NSString *eventValue;
 @property(nonatomic, copy) NSString *referTypeValue;
 @property(nonatomic, copy) NSString *referSPMValue;
@@ -160,7 +160,7 @@ static void _check_node_oid_overwrite (UIView *view, bool isPage, NSString *oid)
 }
 
 + (void)logManuallyUseForReferWithBuilder:(ET_BuildManuallyUseForReferEventActionBlock NS_NOESCAPE)block {
-    NELogETNodeUseForReferEventActionBuilder *actionBuilder = [[NELogETNodeUseForReferEventActionBuilder alloc] init];
+    EventTracingLogNodeUseForReferEventActionBuilder *actionBuilder = [[EventTracingLogNodeUseForReferEventActionBuilder alloc] init];
     !block ?: block(actionBuilder);
     
     [[EventTracingEngine sharedInstance] logReferEvent:actionBuilder.eventValue
@@ -559,7 +559,7 @@ EventTracingLogNodeEventActionBuilderMethod(pld, ET_EVENT_ID_PLD)
 
 @end
 
-@implementation NELogETNodeUseForReferEventActionBuilder
+@implementation EventTracingLogNodeUseForReferEventActionBuilder
 
 - (id<EventTracingLogManuallyUseForReferEventActionBuilder> _Nonnull (^)(NSString * _Nonnull))event {
     return ^(NSString *event) {
