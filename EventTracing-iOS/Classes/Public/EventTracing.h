@@ -54,3 +54,5 @@
 
 // builder
 #import "EventTracingBuilder.h"
+
+#import "NSArray+ETEnumerator.h"
