@@ -21,6 +21,46 @@
 }
 @end
 
+@interface EventTracingStockedTraverseActionRecord()
+@property(nonatomic, strong) NSMutableArray<EventTracingTraverseAction *> *innerActions;
+@end
+@implementation EventTracingStockedTraverseActionRecord
+@synthesize passthrough = _passthrough;
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _innerActions = [NSMutableArray array];
+    }
+    return self;
+}
+
+- (void)actionDidOccured:(EventTracingTraverseAction *)action {
+    if (_passthrough) {
+        return;
+    }
+    
+    if (action.viewIsNil) {
+        _passthrough = YES;
+        [_innerActions removeAllObjects];
+        
+        return;
+    }
+    
+    [_innerActions addObject:action];
+}
+
+- (void)reset {
+    _passthrough = NO;
+    [_innerActions removeAllObjects];
+}
+
+- (NSArray<EventTracingTraverseAction *> *)actions {
+    return _innerActions.copy;
+}
+
+@end
+
 @implementation EventTracingEngine (TraverseAction)
 
 - (void)traverse:(UIView * _Nullable)view {
@@ -34,29 +74,14 @@
     }
     
     EventTracingTraverseAction *action = [EventTracingTraverseAction actionWithView:view];
-
     !block ?: block(action);
     
     void(^insertToStockedActions)(void) = ^() {
-        /// MARK: 对于同一个view的变动，一个周期内仅需添加一次即可
-        if (!action.viewIsNil) {
-            BOOL hasAddedThisView = [self.stockedTraverseActions bk_any:^BOOL(EventTracingTraverseAction *action) {
-                return action.view == view;
-            }];
-            if (hasAddedThisView) {
-                return;
-            }
+        if (!self.stockedTraverseActionRecord) {
+            self.stockedTraverseActionRecord = [[EventTracingStockedTraverseActionRecord alloc] init];
         }
         
-        if (!self.stockedTraverseActions) {
-            self.stockedTraverseActions = @[].mutableCopy;
-        }
-        
-        if (action.viewIsNil) {
-            [self.stockedTraverseActions insertObject:action atIndex:0];
-        } else {
-            [self.stockedTraverseActions addObject:action];
-        }
+        [self.stockedTraverseActionRecord actionDidOccured:action];
     };
     
     ETDispatchMainAsyncSafe(insertToStockedActions);

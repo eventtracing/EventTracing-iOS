@@ -29,7 +29,8 @@ BOOL ET_isElement(UIView *view) {
 }
 
 BOOL ET_isPageOrElement(UIView *view) {
-    return ET_isPage(view) || ET_isElement(view);
+    EventTracingAssociatedPros *props = view.et_props;
+    return view && (props.pageId.length > 0 || props.elementId.length > 0);
 }
 
 NSArray<UIView *> * ET_subViews(UIView *view) {

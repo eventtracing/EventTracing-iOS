@@ -184,10 +184,6 @@
 - (void)et_view_didMoveToSuperview {
     [self et_view_didMoveToSuperview];
     
-    if (ET_isPageOrElement(self) && self.superview == nil) {
-        [[EventTracingEngine sharedInstance] traverse];
-        return;
-    }
     [[EventTracingEngine sharedInstance] traverse:self];
 }
 

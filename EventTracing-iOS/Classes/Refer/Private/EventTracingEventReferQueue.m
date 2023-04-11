@@ -241,6 +241,7 @@
             [eventRefers addObject:refer];
         }
     }];
+    
     [eventRefers sortUsingComparator:^NSComparisonResult(EventTracingFormattedEventRefer * refer_1, EventTracingFormattedEventRefer *refer_2) {
         return refer_1.eventTime > refer_2.eventTime;
     }];

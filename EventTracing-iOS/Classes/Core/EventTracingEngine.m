@@ -241,9 +241,22 @@
 }
 
 - (void)traverseImmediatelyIfNeeded {
+    // 1. 穿透
+    if (self.stockedTraverseActionRecord.passthrough) {
+        [self.stockedTraverseActionRecord reset];
+        
+        // 全量生成 VTree 后，清空待处理的滚动action
+        [self.stockedTraverseScrollViews removeAllObjects];
+        
+        [self _doTraverse];
+        return;
+    }
+
+    // 逆着遍历
+    NSArray<EventTracingTraverseAction *> *stockedTraverseActions = [[self.stockedTraverseActionRecord.actions reverseObjectEnumerator] allObjects];
+    [self.stockedTraverseActionRecord reset];
+
     // 全量生成 VTree 后，清空待处理的滚动action
-    NSArray<EventTracingTraverseAction *> *stockedTraverseActions = self.stockedTraverseActions.copy;
-    [self.stockedTraverseActions removeAllObjects];
     [self.stockedTraverseScrollViews removeAllObjects];
     
     if (stockedTraverseActions.count == 0) {
@@ -251,19 +264,18 @@
     }
     
     BOOL needTraverse = [stockedTraverseActions bk_any:^BOOL(EventTracingTraverseAction *obj) {
-        if (obj.view == nil && !obj.viewIsNil) {
+        if (obj.view == nil) {
             return NO;
         }
         
         UIView *view = obj.view;
         
         BOOL needsRunTraversal = YES;
-        if (view != nil) {
-            if (obj.ignoreViewInvisible) {
-                needsRunTraversal = ET_isPageOrElement(view) || ET_isHasSubNodes(view);
-            } else {
-                needsRunTraversal = [view et_isSimpleVisible] && [view et_logicalVisible] && (ET_isPageOrElement(view) || ET_isHasSubNodes(view));
-            }
+        
+        if (obj.ignoreViewInvisible) {
+            needsRunTraversal = ET_isPageOrElement(view) || ET_isHasSubNodes(view);
+        } else {
+            needsRunTraversal = [view et_isSimpleVisible] && [view et_logicalVisible] && (ET_isPageOrElement(view) || ET_isHasSubNodes(view));
         }
         
         return needsRunTraversal;
