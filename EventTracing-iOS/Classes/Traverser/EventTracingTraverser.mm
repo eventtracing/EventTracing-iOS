@@ -576,18 +576,19 @@ struct ETTraverseObject {
     [node.parentNode removeSubNode:node];
     
     NSString *virtualParentNodeIdentifier = view.et_virtualParentProps.virtualParentNodeIdentifier;
-    NSString *virtualParentNodeElementId = view.et_virtualParentElementId;
+    NSString *virtualParentNodeOid = view.et_virtualParentOid;
     NSDictionary *virtualParentNodeParams = view.et_virtualParentProps.virtualParentNodeParams;
     EventTracingVTreeNode *virtualParentNode = [parentNode.subNodes bk_match:^BOOL(EventTracingVTreeNode *obj) {
         return [obj.identifier isEqualToString:virtualParentNodeIdentifier]
-                && [obj.oid isEqualToString:virtualParentNodeElementId];
+                && ([obj.oid isEqualToString:virtualParentNodeOid]);
     }];
     if (!virtualParentNode) {
-        virtualParentNode = [EventTracingVTreeNode buildVirtualNodeWithOid:view.et_virtualParentElementId
+        virtualParentNode = [EventTracingVTreeNode buildVirtualNodeWithOid:view.et_virtualParentOid
+                                                                    isPage:view.et_virtualParentIsPage
                                                                 identifier:virtualParentNodeIdentifier
-                                                                    position:view.et_virtualParentProps.position
-                                              buildinEventLogDisableStrategy:view.et_virtualParentProps.buildinEventLogDisableStrategy
-                                                                    params:virtualParentNodeParams];
+                                                                  position:view.et_virtualParentProps.position
+                                            buildinEventLogDisableStrategy:view.et_virtualParentProps.buildinEventLogDisableStrategy
+                                                                  params:virtualParentNodeParams];
         
         /// MARK: 虚拟父节点是否校验父节点，跟随原节点走
         [VTree pushNode:virtualParentNode parentNode:parentNode ignoreParentValid:ignoreParentValid];

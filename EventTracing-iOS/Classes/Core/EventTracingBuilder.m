@@ -210,11 +210,27 @@ static void _check_node_oid_overwrite (UIView *view, bool isPage, NSString *oid)
     EventTracingLogVirtualParentNodeBuilder *builder = [[EventTracingLogVirtualParentNodeBuilder alloc] init];
     !block ?: block(builder);
     
-    [view et_setVirtualParentElementId:elementId
-                           nodeIdentifier:identifier
-                                 position:builder.positionValue
-           buildinEventLogDisableStrategy:builder.buildinEventLogDisableStrategyValue
-                                   params:builder.paramsBuilder.params];
+    [view et_setVirtualParentOid:elementId
+                          isPage:NO
+                  nodeIdentifier:identifier
+                        position:builder.positionValue
+  buildinEventLogDisableStrategy:builder.buildinEventLogDisableStrategyValue
+                          params:builder.paramsBuilder.params];
+}
+
++ (void)buildVirtualParentNodeForView:(UIView *)view
+                               pageId:(NSString *)pageId
+                           identifier:(id)identifier
+                                block:(ET_BuildVirtualParentBlock NS_NOESCAPE _Nullable)block {
+    EventTracingLogVirtualParentNodeBuilder *builder = [[EventTracingLogVirtualParentNodeBuilder alloc] init];
+    !block ?: block(builder);
+    
+    [view et_setVirtualParentOid:pageId
+                          isPage:YES
+                  nodeIdentifier:identifier
+                        position:builder.positionValue
+  buildinEventLogDisableStrategy:builder.buildinEventLogDisableStrategyValue
+                          params:builder.paramsBuilder.params];
 }
 
 @end
@@ -719,21 +735,36 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
     };
 }
 
+- (void)_et_setVirtualParentOid:(NSString *)oid
+                         isPage:(BOOL)isPage
+                     identifier:(id)identifier
+                   builderBlock:(ET_BuildVirtualParentBlock)block
+{
+    if (![oid isKindOfClass:NSString.class] || oid.length == 0 || !identifier) {
+        return;
+    }
+    
+    EventTracingLogVirtualParentNodeBuilder *builder = [[EventTracingLogVirtualParentNodeBuilder alloc] init];
+    !block ?: block(builder);
+    
+    [self.view et_setVirtualParentOid:oid
+                               isPage:isPage
+                       nodeIdentifier:identifier
+                             position:builder.positionValue
+       buildinEventLogDisableStrategy:builder.buildinEventLogDisableStrategyValue
+                               params:builder.paramsBuilder.params];
+}
+
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(NSString * _Nonnull, id _Nonnull, ET_BuildVirtualParentBlock NS_NOESCAPE _Nullable))virtualParent {
     return ^(NSString *elementId, id identifier, ET_BuildVirtualParentBlock block) {
-        if (![elementId isKindOfClass:NSString.class] || elementId.length == 0 || !identifier) {
-            return self;
-        }
-        
-        EventTracingLogVirtualParentNodeBuilder *builder = [[EventTracingLogVirtualParentNodeBuilder alloc] init];
-        !block ?: block(builder);
-        
-        [self.view et_setVirtualParentElementId:elementId
-                                    nodeIdentifier:identifier
-                                          position:builder.positionValue
-                    buildinEventLogDisableStrategy:builder.buildinEventLogDisableStrategyValue
-                                            params:builder.paramsBuilder.params];
-        
+        [self _et_setVirtualParentOid:elementId isPage:NO identifier:identifier builderBlock:block];
+        return self;
+    };
+}
+
+- (id<EventTracingLogNodeBuilder>  _Nonnull (^)(NSString * _Nonnull, id _Nonnull, ET_BuildVirtualParentBlock NS_NOESCAPE _Nullable))virtualPageParent {
+    return ^(NSString *pageId, id identifier, ET_BuildVirtualParentBlock block) {
+        [self _et_setVirtualParentOid:pageId isPage:YES identifier:identifier builderBlock:block];
         return self;
     };
 }
@@ -749,6 +780,36 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
         return self;
     };
 }
+
+- (id<EventTracingLogNodeBuilder>  _Nonnull (^)(BOOL))enableSubPageProducePvRefer {
+    return ^(BOOL value) {
+        self.view.et_subpagePvToReferEnable = value;
+        return self;
+    };
+}
+
+- (id<EventTracingLogNodeBuilder>  _Nonnull (^)(BOOL))enableSubPageConsumeAllRefer {
+    return ^(BOOL value) {
+        if (value) {
+            [self.view et_makeSubpageConsumeAllRefer];
+        } else {
+            [self.view et_clearSubpageConsumeReferOption];
+        }
+        return self;
+    };
+}
+
+- (id<EventTracingLogNodeBuilder>  _Nonnull (^)(BOOL))enableSubPageConsumeEventRefer {
+    return ^(BOOL value) {
+        if (value) {
+            [self.view et_makeSubpageConsumeEventRefer];
+        } else {
+            [self.view et_clearSubpageConsumeReferOption];
+        }
+        return self;
+    };
+}
+
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(NSString * _Nonnull))bindDataForReuseWithAutoClassifyIdAppend {
     return ^(NSString *identifier) {
         [self.view et_bindDataForReuse:self.view.et_autoClassifyIdAppend(identifier)];

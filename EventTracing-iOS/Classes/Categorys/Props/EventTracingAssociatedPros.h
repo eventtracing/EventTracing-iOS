@@ -40,6 +40,18 @@ __attribute__((objc_direct_members))
 // psrefer 不参与链路追踪
 @property(nonatomic, assign, getter=isPsreferMuted) BOOL psreferMute;
 
+/// 子页面，pv曝光埋点，可以生成refer (refer_type == 'subpage_pv')
+@property(nonatomic, assign, getter=isSubpagePvToReferEnable) BOOL subpagePvToReferEnable;
+
+/// 针对 rootpage，该值默认为 "ec|custom"
+/// 针对 subpage，该值默认为 "none"
+/// 所有可选值: all,  subpage_pv, ec, custom
+/// 其中 custom 目前是除了 明确类型的 其他类型
+/// all 是全部类型
+/// subpage_pv 专指子页面曝光产生的refer
+@property(nonatomic, assign) EventTracingPageReferConsumeOption pageReferConsumeOption;
+
+
 // methods
 - (void)setupOid:(NSString *)oid
           isPage:(BOOL)isPage
@@ -90,7 +102,8 @@ __attribute__((objc_direct_members))
 
 @property(nonatomic, weak, readonly) UIView *view;
 
-@property(nonatomic, copy) NSString *virtualParentNodeElementId;
+@property(nonatomic, copy, nullable) NSString *virtualParentNodeElementId;
+@property(nonatomic, copy, nullable) NSString *virtualParentNodePageId;
 @property(nonatomic, copy) NSString *virtualParentNodeIdentifier;
 @property(nonatomic, copy) NSDictionary *virtualParentNodeParams;
 @property(nonatomic, assign, readonly) BOOL hasVirtualParentNode;
@@ -102,6 +115,10 @@ __attribute__((objc_direct_members))
 - (void)setupVirtualParentElementId:(NSString *)elementId
                      nodeIdentifier:(id)nodeIdentifier
                              params:(NSDictionary<NSString *, NSString *> *)params __attribute__((objc_direct));
+
+- (void)setupVirtualParentPageId:(NSString *)pageId
+                  nodeIdentifier:(id)nodeIdentifier
+                          params:(NSDictionary<NSString *, NSString *> *)params;
 
 @end
 

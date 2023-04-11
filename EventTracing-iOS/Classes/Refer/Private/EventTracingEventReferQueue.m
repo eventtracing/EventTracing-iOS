@@ -6,7 +6,7 @@
 //
 
 #import "EventTracingEventReferQueue.h"
-
+#import "EventTracingEventReferQueue+Query.h"
 #import "EventTracingDefines.h"
 #import "EventTracingVTree+Private.h"
 #import "EventTracingVTreeNode+Private.h"
@@ -60,9 +60,12 @@
 }
 
 - (void)pushEventRefer:(EventTracingFormattedEventRefer *)refer
-                  node:(EventTracingVTreeNode * _Nullable)node {
+                  node:(EventTracingVTreeNode * _Nullable)node
+             isSubPage:(BOOL)isSubPage {
     if (!node) {
-        [self pushEventRefer:refer];
+        if (!isSubPage) {
+            [self pushEventRefer:refer];
+        }
         return;
     }
     
@@ -71,7 +74,7 @@
     if ([rootPageNode.rootPagePVFormattedRefer.value isEqualToString:rootPagePVRefer.formattedRefer.value]) {
         [rootPagePVRefer addSubRefer:refer];
     }
-    else {
+    else if (!isSubPage) {
         [self pushEventRefer:refer];
     }
 }
@@ -122,11 +125,18 @@
     
     return [self _doPushEventReferForEvent:event node:node useForRefer:useForRefer useNextActseq:useNextActseq];
 }
-
 - (BOOL)_doPushEventReferForEvent:(NSString *)event
                              node:(EventTracingVTreeNode *)node
                       useForRefer:(BOOL)useForRefer
                     useNextActseq:(BOOL)useNextActseq {
+    return [self _doPushEventReferForEvent:event node:node useForRefer:useForRefer useNextActseq:useNextActseq isSubPage:NO];
+}
+
+- (BOOL)_doPushEventReferForEvent:(NSString *)event
+                             node:(EventTracingVTreeNode *)node
+                      useForRefer:(BOOL)useForRefer
+                    useNextActseq:(BOOL)useNextActseq
+                        isSubPage:(BOOL)isSubPage {
     /// MARK: 1. 如果向上找不到页面节点，则不会埋点，也不会参与链路追踪相关的事情, 也不做actseq自增
     if (![node firstAncestorPageNode]) {
         return NO;
@@ -160,13 +170,12 @@
     }];
     
     EventTracingFormattedEventRefer *refer = [EventTracingFormattedEventRefer referWithEvent:event
-                                                                                  formattedRefer:formattedRefer
-                                                                                      rootPagePV:rootPagePV
-                                                                                           toids:node.toids
-                                                                              shouldStartHsrefer:shouldStartHsrefer
-                                                                              isNodePsreferMuted:node.psreferMute];
+                                                                              formattedRefer:formattedRefer
+                                                                                  rootPagePV:rootPagePV
+                                                                          shouldStartHsrefer:shouldStartHsrefer
+                                                                          isNodePsreferMuted:node.psreferMute];
     
-    [self pushEventRefer:refer node:node];
+    [self pushEventRefer:refer node:node isSubPage:isSubPage];
     
     return YES;
 }
@@ -180,38 +189,12 @@
     [self _doPushEventReferForEvent:ET_EVENT_ID_P_VIEW node:node useForRefer:YES useNextActseq:NO];
 }
 
-- (EventTracingFormattedEventRefer *)findEventReferForOid:(NSString *)oid
-                                                 oidMatched:(BOOL *)oidMatched {
-    NSArray<EventTracingFormattedEventRefer *> *innerRefers = nil;
-    LOCK {
-        innerRefers = _innerRefers.copy;
-    } UNLOCK
-    
-    __block EventTracingFormattedEventRefer *oidMatchedRefer = nil;
-    [innerRefers enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(EventTracingFormattedEventRefer * _Nonnull refer, NSUInteger idx, BOOL * _Nonnull stop) {
-        // 1. 针对 rootpage refer ，则需要判断 subRefers 是否能匹配 toid
-        if (refer.isRootPagePV) {
-            oidMatchedRefer = [refer.subRefers.reverseObjectEnumerator.allObjects bk_match:^BOOL(EventTracingFormattedEventRefer *obj) {
-                return [obj.toids containsObject:oid];
-            }];
-        }
-        
-        // 2. 针对 非rootPagePV 的refer，需要判断自己是否匹配 toid
-        else {
-            oidMatchedRefer = [refer.toids containsObject:oid] ? refer : nil;
-        }
-        
-        if (oidMatchedRefer != nil) {
-            *stop = YES;
-        }
-    }];
-    
-    if (oidMatchedRefer) {
-        *oidMatched = YES;
-        return oidMatchedRefer;
+- (void)subPageNodeDidImpress:(EventTracingVTreeNode * _Nullable)node
+                      inVTree:(EventTracingVTree * _Nullable)VTree {
+    if (!node.isPageNode || !VTree) {
+        return;
     }
-    
-    return [self fetchLastestEventRefer];
+    [self _doPushEventReferForEvent:ET_EVENT_ID_P_VIEW node:node useForRefer:YES useNextActseq:YES isSubPage:YES];
 }
 
 - (EventTracingFormattedEventRefer *)fetchLastestRootPagePVRefer {
@@ -226,66 +209,15 @@
     }];
 }
 
-- (EventTracingFormattedEventRefer *)fetchLastestEventRefer {
-    NSArray<EventTracingFormattedEventRefer *> *innerRefers = nil;
-    
-    LOCK {
-        innerRefers = _innerRefers.copy;
-    } UNLOCK
-    
-    NSMutableArray<EventTracingFormattedEventRefer *> *eventRefers = @[].mutableCopy;
-    [innerRefers enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(EventTracingFormattedEventRefer * _Nonnull refer, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (refer.isRootPagePV) {
-            [eventRefers addObjectsFromArray:(refer.subRefers ?: @[])];
-        } else {
-            [eventRefers addObject:refer];
-        }
-    }];
-    
-    [eventRefers sortUsingComparator:^NSComparisonResult(EventTracingFormattedEventRefer * refer_1, EventTracingFormattedEventRefer *refer_2) {
-        return refer_1.eventTime > refer_2.eventTime;
-    }];
-    
-    return eventRefers.lastObject;
-}
-
-- (EventTracingFormattedEventRefer *)fetchLastestEventReferForEvent:(NSString *)event {
-    NSArray<EventTracingFormattedEventRefer *> *innerRefers = nil;
-    
-    LOCK {
-        innerRefers = _innerRefers.copy;
-    } UNLOCK
-    
-    __block EventTracingFormattedEventRefer *matchedRefer = nil;
-    [innerRefers enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(EventTracingFormattedEventRefer * _Nonnull refer, NSUInteger idx, BOOL * _Nonnull stop) {
-        // 1. 针对 rootpage refer ，则需要判断 subRefers 是否能匹配 toid
-        if (refer.isRootPagePV) {
-            matchedRefer = [refer.subRefers.reverseObjectEnumerator.allObjects bk_match:^BOOL(EventTracingFormattedEventRefer *obj) {
-                return [obj.event isEqualToString:event];
-            }];
-        }
-        
-        // 2. 针对 非rootPagePV 的refer，需要判断自己是否匹配 toid
-        if (!matchedRefer) {
-            matchedRefer = [refer.event isEqualToString:event] ? refer : nil;
-        }
-        
-        if (!matchedRefer) {
-            *stop = YES;
-        }
-    }];
-    
-    return matchedRefer;
-}
-
 @end
 
 @implementation EventTracingEventReferQueue (UndefinedXpathEventRefer)
 
 - (void)undefinedXpath_pushEventReferForEvent:(NSString *)event view:(UIView *)view {
-    EventTracingUndefinedXpathEventRefer *undefinedXpathRefer = [EventTracingUndefinedXpathEventRefer referWithEvent:event
-                                                                                                     undefinedXpathRefer:ET_undefinedXpathReferForView(view)];
-
+    EventTracingUndefinedXpathEventRefer *undefinedXpathRefer =
+    [EventTracingUndefinedXpathEventRefer referWithEvent:event
+                                     undefinedXpathRefer:ET_undefinedXpathReferForView(view)];
+    
     LOCK {
         [_innerUndefinedXpathRefers addObject:undefinedXpathRefer];
     } UNLOCK

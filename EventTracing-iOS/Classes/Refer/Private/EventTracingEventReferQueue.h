@@ -18,7 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)pushEventRefer:(EventTracingFormattedEventRefer *)refer;
 - (void)pushEventRefer:(EventTracingFormattedEventRefer *)refer
-                  node:(EventTracingVTreeNode * _Nullable)node;
+                  node:(EventTracingVTreeNode * _Nullable)node
+             isSubPage:(BOOL)isSubPage;
 - (void)removeEventRefer:(EventTracingFormattedEventRefer *)refer;
 - (void)clear;
 
@@ -37,12 +38,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)rootPageNodeDidImpress:(EventTracingVTreeNode * _Nullable)node
                        inVTree:(EventTracingVTree * _Nullable)VTree;
 
-- (EventTracingFormattedEventRefer *)findEventReferForOid:(NSString *)oid
-                                                 oidMatched:(BOOL *)oidMatched;
-- (EventTracingFormattedEventRefer *)fetchLastestRootPagePVRefer;
+- (void)subPageNodeDidImpress:(EventTracingVTreeNode * _Nullable)node
+                      inVTree:(EventTracingVTree * _Nullable)VTree;
 
-- (EventTracingFormattedEventRefer *)fetchLastestEventRefer;
-- (EventTracingFormattedEventRefer *)fetchLastestEventReferForEvent:(NSString *)event;
+- (EventTracingFormattedEventRefer *)fetchLastestRootPagePVRefer;
 
 @end
 

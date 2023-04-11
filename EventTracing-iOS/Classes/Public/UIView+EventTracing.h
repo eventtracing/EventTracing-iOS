@@ -90,6 +90,30 @@ typedef NSDictionary * _Nonnull (^ET_AddParamsCarryEventCallback)(NSString *even
 // 如果设置为 YES，则该节点的 psrefer 不参与链路追踪，即不会在 multirefers 中出现
 // default: NO
 @property(nonatomic, assign, setter=et_setPsreferMute:, getter=et_psreferMute) BOOL et_psreferMute;
+
+/// MARK: 子页面，pv曝光埋点，可以生成refer (refer_type == 'subpage_pv')
+@property(nonatomic, assign, setter=et_setSubpagePvToReferEnable:, getter=et_subpagePvToReferEnable) BOOL et_subpagePvToReferEnable;
+
+/// MARK: 子页面消费refer的类型
+/// 针对 rootpage，该值默认为 "ec|custom"
+/// 针对 subpage，该值默认为 "none"
+/// 所有可选值: all,  subpage_pv, ec, custom
+/// 其中 custom 目前是除了 明确类型的 其他类型
+/// all 是全部类型
+/// subpage_pv 专指子页面曝光产生的refer
+/// 不建议 root page 使用此 API
+/// 不建议直接使用此API，建议使用下面3个API
+///  - `et_clearSubpageConsumeReferOption`              =>  清空设置
+///  - `et_makeSubpageConsumeAllRefer`         =>  适合首页 tab 子页面切换的场景
+///  - `et_makeSubpageConsumeEventRefer`     =>  适合浮层弹窗场景，比如首页 alert
+@property(nonatomic, assign, setter=et_setSubpageConsumeOption:, getter=et_subpageConsumeOption) EventTracingPageReferConsumeOption et_subpageConsumeOption;
+
+/// MARK: 清空设置
+- (void)et_clearSubpageConsumeReferOption;
+/// MARK: 适合首页 tab 子页面切换的场景，设置为`NEEventTracingPageReferConsumeOptionAll`
+- (void)et_makeSubpageConsumeAllRefer;
+/// MARK: 适合浮层弹窗场景，比如首页 alert，设置为`NEEventTracingPageReferConsumeOptionExceptSubPagePV`
+- (void)et_makeSubpageConsumeEventRefer;
 @end
 
 @protocol EventTracingVTreeNodeParamsBuildProtocol <EventTracingVTreePageNodeParamsBuildProtocol>
@@ -117,6 +141,9 @@ typedef NSDictionary * _Nonnull (^ET_AddParamsCarryEventCallback)(NSString *even
 
 @interface UIView (EventTracingVTreeVirtualParentNode)
 @property(nonatomic, copy, readonly, nullable) NSString *et_virtualParentElementId;
+@property(nonatomic, copy, readonly, nullable) NSString *et_virtualParentPageId;
+@property(nonatomic, copy, readonly, nullable) NSString *et_virtualParentOid;
+@property(nonatomic, assign, readonly) BOOL et_virtualParentIsPage;
 
 /*!
  给一个节点/非节点向上插入一个虚拟节点
@@ -132,19 +159,31 @@ typedef NSDictionary * _Nonnull (^ET_AddParamsCarryEventCallback)(NSString *even
                       nodeIdentifier:(id)nodeIdentifier
                               params:(NSDictionary<NSString *, NSString *> * _Nullable)params;
 
+- (void)ne_et_setVirtualParentPageId:(NSString *)pageId
+                      nodeIdentifier:(id)nodeIdentifier
+                              params:(NSDictionary<NSString *,NSString *> *)params;
+
 /*!
  给一个节点/非节点向上插入一个虚拟节点
- @param elementId 必填，虚拟节点的 _oid
+ @param oid 必填，虚拟节点的 _oid
+ @param isPage 必填，虚拟节点是否是 page 节点
  @param nodeIdentifier 必填, 虚拟几点的唯一标识; 如果是字符串，则使用该字符串作为id，否则使用该id的内存地址;
  @param position 虚拟父节点也出现出现多次，_spm维度也需要区分
  @param buildinEventLogDisableStrategy 如果全局关闭了元素节点的曝光结束，则这里也需要单独开启
  @param params 虚拟节点的业务参数
 */
+- (void)et_setVirtualParentOid:(NSString *)oid
+                        isPage:(BOOL)isPage
+                nodeIdentifier:(id)nodeIdentifier
+                      position:(NSUInteger)position
+buildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
+                        params:(NSDictionary<NSString *, NSString *> * _Nullable)params;
+
 - (void)et_setVirtualParentElementId:(NSString *)elementId
-                         nodeIdentifier:(id)nodeIdentifier
-                               position:(NSUInteger)position
-         buildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
-                                 params:(NSDictionary<NSString *, NSString *> * _Nullable)params;
+                      nodeIdentifier:(id)nodeIdentifier
+                            position:(NSUInteger)position
+      buildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
+                              params:(NSDictionary<NSString *, NSString *> * _Nullable)params DEPRECATED_MSG_ATTRIBUTE("废弃, 请使用 `ne_et_setVirtualParentOid:...`");
 
 @end
 
@@ -223,6 +262,7 @@ typedef NSDictionary * _Nonnull (^ET_AddParamsCarryEventCallback)(NSString *even
 
 #pragma mark -
 #pragma mark - Tracing Refer
+__deprecated_msg("已废弃 toid，设置不会生效")
 @interface UIView (EventTracingRefer)
 /// 在该view上发生点击事件(或者自定义事件)后，会把该事件以及 et_toid 记录在一个队列中（队列最大保存最近的5个记录）
 /// 等下一个root page node曝光的时候，会到这个队列中查找

@@ -53,6 +53,13 @@ NSString * EventTracingMultiRefersEvents = @"_pv,_ec";
         // psrefer 静默，不添加到 multiRefersStack 中
         return;
     }
+    
+    EventTracingVTreeNode *rootPageNode = [VTree rootPageNode];
+    BOOL isRootPagePV = rootPageNode == node;
+    if (!isRootPagePV) {
+        // 非根节点曝光，不参与 multirefers
+        return;
+    }
     NSInteger location = [self.multiRefersStack indexOfObject:psrefer];
 
     // 出栈

@@ -210,10 +210,20 @@ __attribute__((objc_direct_members))
 }
 
 - (BOOL)hasVirtualParentNode {
-    return self.virtualParentNodeElementId.length && self.virtualParentNodeIdentifier.length;
+    if (self.virtualParentNodeIdentifier.length == 0) {
+        return NO;
+    }
+    return (self.virtualParentNodePageId.length > 0 || self.virtualParentNodeElementId.length > 0);
 }
 - (void)setupVirtualParentElementId:(NSString *)elementId nodeIdentifier:(id)nodeIdentifier params:(NSDictionary<NSString *, NSString *> *)params {
     self.virtualParentNodeElementId = elementId;
+    self.virtualParentNodePageId = nil;
+    self.virtualParentNodeIdentifier = nodeIdentifier;
+    self.virtualParentNodeParams = params.copy;
+}
+- (void)setupVirtualParentPageId:(NSString *)pageId nodeIdentifier:(id)nodeIdentifier params:(NSDictionary<NSString *, NSString *> *)params {
+    self.virtualParentNodePageId = pageId;
+    self.virtualParentNodeElementId = nil;
     self.virtualParentNodeIdentifier = nodeIdentifier;
     self.virtualParentNodeParams = params.copy;
 }

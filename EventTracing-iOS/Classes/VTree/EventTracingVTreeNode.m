@@ -33,7 +33,6 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 
 @synthesize oid = _oid;
 @synthesize ignoreRefer = _ignoreRefer;
-@synthesize toids = _toids;
 @synthesize pgrefer = _pgrefer;
 @synthesize psrefer = _psrefer;
 @synthesize pgstep = _pgstep;
@@ -49,6 +48,9 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 @synthesize callbackParams = _callbackParams;
 
 @synthesize psreferMute = _psreferMute;
+
+@synthesize subpagePvToReferEnable = _subpagePvToReferEnable;
+@synthesize pageReferConsumeOption = _pageReferConsumeOption;
 
 - (instancetype)init {
     self = [super init];
@@ -75,11 +77,14 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
     node->_identifier = view.et_reuseIdentifier;
     node->_isPageNode = ET_isPage(view);
     node->_oid = ET_isPage(view) ? view.et_pageId : view.et_elementId;
-    node->_toids = view.et_toids;
     node.position = view.et_position;
     node->_depth = 0;
     node->_pageOcclusionEnable = view.et_pageOcclusionEnable;
     node->_psreferMute = view.et_props.isPsreferMuted;
+    
+    node->_subpagePvToReferEnable = view.et_props.subpagePvToReferEnable;
+    node->_pageReferConsumeOption = view.et_props.pageReferConsumeOption;
+    
     node.hasBindData = view.et_props.bizLeafIdentifier.length > 0;
     if (node->_isPageNode) {
         node->_pageNodeMarkAsRootPage = view.et_isRootPage;
@@ -89,6 +94,7 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 }
 
 + (instancetype)buildVirtualNodeWithOid:(NSString *)oid
+                                 isPage:(BOOL)isPage
                              identifier:(NSString *)identifier
                                position:(NSUInteger)position
          buildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
@@ -96,10 +102,11 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
     EventTracingVTreeNode *node = [[EventTracingVTreeNode alloc] init];
     node->_oid = oid;
     node->_identifier = identifier;
-    node->_isPageNode = NO;
+    node->_isPageNode = isPage;
     node->_innerStaticParams = params;
     node->_visible = YES;           // 虚拟父节点的是否可见，取决于是否有子节点可见
     node->_virtualNode = YES;
+    node->_pageOcclusionEnable = NO; // 虚拟父节点不参与 page 遮挡
     node.position = position;
     node->_buildinEventLogDisableStrategy = buildinEventLogDisableStrategy;
     
@@ -339,7 +346,8 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
     node.position = self.position;
     node->_ignoreRefer = self.ignoreRefer;
     node->_psreferMute = self.psreferMute;
-    node->_toids = self.toids.copy;
+    node->_subpagePvToReferEnable = self.subpagePvToReferEnable;
+    node->_pageReferConsumeOption = self.pageReferConsumeOption;
     node->_pgrefer = self.pgrefer;
     node->_psrefer = self.psrefer;
     node->_pgstep = self.pgstep;
