@@ -148,19 +148,29 @@
 }
 
 - (void)appWillEnterForeground {
+    BOOL isAppInActive = _ctx.isAppInActive;
+    
     [_ctx appWillEnterForeground];
     [_ctx.traversalRunner resume];
-    [self _doOutputAppInLog];
+    
+    if (!isAppInActive) {
+        [self _doOutputAppInLog];
+    }
     
     [self _doTraverse];
 }
 
 - (void)appDidEnterBackground {
+    BOOL isAppInActive = _ctx.isAppInActive;
+    
     [_ctx appDidEnterBackground];
     [_ctx.traversalRunner pause];
     [_ctx.eventOutput removeCurrentActivePublicParmas];
     
-    [self _doOutputAppOutLog];
+    if (isAppInActive) {
+        [self _doOutputAppOutLog];
+    }
+    
     [self _doTraverse];
 }
 

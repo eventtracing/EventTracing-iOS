@@ -598,7 +598,7 @@ struct ETTraverseObject {
         [virtualParentNode updateStaticParams:params];
     }
     
-    [VTree pushNode:node parentNode:virtualParentNode ignoreParentValid:YES];
+    [VTree pushNode:node parentNode:virtualParentNode ignoreParentValid:view.et_virtualParentIsPage == NO];
 }
 
 @end
