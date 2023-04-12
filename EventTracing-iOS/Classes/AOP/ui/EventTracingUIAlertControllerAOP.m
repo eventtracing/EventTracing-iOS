@@ -14,6 +14,7 @@
 #import "UIAlertController+EventTracingParams.h"
 #import "UIView+EventTracingPrivate.h"
 #import "EventTracingEventReferQueue.h"
+#import "EventTracingConfuseMacro.h"
 
 #import "NSArray+ETEnumerator.h"
 #import <BlocksKit/BlocksKit.h>
@@ -51,9 +52,8 @@
     
     NSMutableArray<UIView *> *actionViews = @[].mutableCopy;
     // Alert || Actionsheet 中按钮，都处于 `UIStackView` 内，并且在 `_UIAlertControllerActionView` 内的label.text就是按钮文案
-    NSString *alertActionViewClsString = [NSString stringWithFormat:@"_%@%@", NSStringFromClass(UIAlertController.class), @"ActionView"];
     [self.view.subviews et_enumerateObjectsUsingBlock:^NSArray<__kindof UIView *> * _Nonnull(__kindof UIView * _Nonnull obj, BOOL * _Nonnull stop) {
-        if ([NSStringFromClass([obj class]) isEqualToString:alertActionViewClsString]) {
+        if (ET_STR_MATCHES(NSStringFromClass([obj class]), ET_CONFUSED(_,U,I,A,l,e,r,t),@"Controller",@"Action",@"View")) {
             [actionViews addObject:obj];
             return nil;
         }

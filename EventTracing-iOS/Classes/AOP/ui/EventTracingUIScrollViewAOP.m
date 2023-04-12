@@ -16,6 +16,7 @@
 #import "UIScrollView+EventTracingES.h"
 #import "EventTracingInternalLog.h"
 #import "EventTracingClickMonitor.h"
+#import "EventTracingConfuseMacro.h"
 
 #import <BlocksKit/BlocksKit.h>
 #import <JRSwizzle/JRSwizzle.h>
@@ -36,7 +37,7 @@
 
 #define PreSelectorNames @[NSStringFromSelector(@selector(collectionView:didSelectItemAtIndexPath:)), NSStringFromSelector(@selector(tableView:didSelectRowAtIndexPath:))]
 #define HockProtocols @[@protocol(UIScrollViewDelegate), @protocol(UITableViewDelegate), @protocol(UICollectionViewDelegateFlowLayout)]
-#define Blacklist @[@"UITextView", @"WKScrollView", @"_UIWebViewScrollView"]
+#define Blacklist @[@"UITextView", ET_CONFUSED(W,K,S,c,r,o,l,l,V,i,e,w), ET_CONFUSED(_,U,I,W,e,b,V,i,e,w,S,c,r,o,l,l,V,i,e,w)]
 
 ET_DelegateChainHockBlacklist(scrollView,
                                  UICollectionViewDelegateFlowLayout,
