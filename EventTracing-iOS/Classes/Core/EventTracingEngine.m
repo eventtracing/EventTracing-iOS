@@ -68,6 +68,18 @@
         context.needStartHsreferOids = [context.extraConfigurationProvider needStartHsreferOids];
     }
     
+    if ([context.extraConfigurationProvider respondsToSelector:@selector(eventTracingReferEventList)]) {
+        context.eventTracingReferEventList = [context.extraConfigurationProvider eventTracingReferEventList];
+    } else {
+        context.eventTracingReferEventList = @"_pv,_ec";
+    }
+    
+    if ([context.extraConfigurationProvider respondsToSelector:@selector(eventTracingPsReferNum)]) {
+        context.eventTracingPsReferNum = [context.extraConfigurationProvider eventTracingPsReferNum];
+    } else {
+        context.eventTracingPsReferNum = 5;
+    }
+    
     [context markRunState:YES];
     [self _doAOP];
 }
