@@ -159,9 +159,9 @@ typedef NSDictionary * _Nonnull (^ET_AddParamsCarryEventCallback)(NSString *even
                       nodeIdentifier:(id)nodeIdentifier
                               params:(NSDictionary<NSString *, NSString *> * _Nullable)params;
 
-- (void)ne_et_setVirtualParentPageId:(NSString *)pageId
-                      nodeIdentifier:(id)nodeIdentifier
-                              params:(NSDictionary<NSString *,NSString *> *)params;
+- (void)et_setVirtualParentPageId:(NSString *)pageId
+                   nodeIdentifier:(id)nodeIdentifier
+                           params:(NSDictionary<NSString *,NSString *> *)params;
 
 /*!
  给一个节点/非节点向上插入一个虚拟节点
