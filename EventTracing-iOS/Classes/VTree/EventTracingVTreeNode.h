@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy, readonly) NSString *oid;
 @property(nonatomic, assign, readonly) NSUInteger position;
 @property(nonatomic, assign, readonly) BOOL ignoreRefer;            // 该节点是否忽略refer链路（包括undefined-xpath）
-@property(nonatomic, strong, readonly, nullable) NSArray<NSString *> *toids;
+@property(nonatomic, strong, readonly, nullable) NSArray<NSString *> *toids DEPRECATED_MSG_ATTRIBUTE("已废弃toids，设置不会生效");
 @property(nonatomic, copy, readonly, nullable) NSString *pgrefer;
 // 页面第一次创建的时候的取的 pgrefer，后续不会随着页面的反复退出进入而修改
 // node equal的情况下，该值会被同步到后续的节点上
@@ -74,6 +74,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 // psrefer 静默表示节点不参与 multirefer
 @property(nonatomic, assign, readonly) BOOL psreferMute;
+
+/// 子页面，pv曝光埋点，可以生成refer (refer_type == 'subpage_pv')
+@property(nonatomic, assign, readonly) BOOL subpagePvToReferEnable;
+
+/// 针对 rootpage，该值默认为 "ec|custom"
+/// 针对 subpage，该值默认为 "none"
+/// 所有可选值: all, subpage_pv, ec, custom
+/// 其中 custom 目前是除了 明确类型的 其他类型
+/// all 是全部类型
+/// subpage_pv 专指子页面曝光产生的refer
+@property(nonatomic, assign, readonly) EventTracingPageReferConsumeOption pageReferConsumeOption;
+
 @end
 
 @interface EventTracingVTreeNode (Enumerater)

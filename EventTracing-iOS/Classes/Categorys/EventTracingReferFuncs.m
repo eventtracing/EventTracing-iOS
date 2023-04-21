@@ -8,6 +8,7 @@
 #import "EventTracingReferFuncs.h"
 #import "EventTracingDefines.h"
 #import "EventTracingEventReferQueue.h"
+#import "EventTracingEventReferQueue+Query.h"
 #import "EventTracingTraverser.h"
 #import "EventTracingEventRefer+Private.h"
 
@@ -126,44 +127,21 @@ NSString * _Nullable ET_eventReferForView(UIView *v, BOOL useNextActseq) {
 }
 
 id<EventTracingEventRefer> _ET_lastestAutoEventReferWithSessidAndUndefinedXpath(BOOL withSessid, NSString *event) {
-    EventTracingFormattedEventRefer *preferedRefer = nil;
-    if (!event) {
-        preferedRefer = [[EventTracingEventReferQueue queue] fetchLastestEventRefer];
-    } else {
-        preferedRefer = [[EventTracingEventReferQueue queue] fetchLastestEventReferForEvent:event];
-    }
+    EventTracingEventReferQueryResult * result =
+    [[EventTracingEventReferQueue queue] queryWithBuilder:^(EventTracingEventReferQueryParams * _Nonnull params) {
+        params.event = event;
+    }];
     
-    EventTracingFormattedEventRefer *lastestRootPagePVRefer = [[EventTracingEventReferQueue queue] fetchLastestRootPagePVRefer];
-    EventTracingUndefinedXpathEventRefer *lastestUndefinedXpathRefer = nil;
-    if (!event) {
-        lastestUndefinedXpathRefer = [[EventTracingEventReferQueue queue] undefinedXpath_fetchLastestEventRefer];
-    } else {
-        lastestUndefinedXpathRefer = [[EventTracingEventReferQueue queue] undefinedXpath_fetchLastestEventReferForEvent:event];
-    }
+    EventTracingFormattedEventRefer *preferedRefer = result.refer;
     
-    // 判断该次找到的 event refer 非法
-    /// MARK: 1. 找到的 event refer 比最近一次的 rootPage 曝光还要早，则此时应该降级到 rootPage 曝光
-    BOOL referValid = preferedRefer.eventTime >= lastestRootPagePVRefer.eventTime;
-    
-    /// MARK: 2. 在一个节点触发事件之后，有一个非节点的view也触发了事件，此时需要降级到 rootPage 曝光
-    referValid = referValid && lastestUndefinedXpathRefer.eventTime <= preferedRefer.eventTime;
-    
-    BOOL undefinedXpath = NO;
-    if (!referValid && lastestRootPagePVRefer) {
-        preferedRefer = lastestRootPagePVRefer;
-        undefinedXpath = YES;
-    }
-
     if (preferedRefer == nil) {
         return nil;
     }
-    
-    if (undefinedXpath || withSessid) {
+    if (!result.valid || withSessid) {
         return [EventTracingFormattedWithSessidUndefinedXpathEventRefer referFromFormattedEventRefer:preferedRefer
                                                                                             withSessid:withSessid
-                                                                                        undefinedXpath:undefinedXpath];
+                                                                                        undefinedXpath:!result.valid];
     }
-    
     return preferedRefer;
 }
 

@@ -25,6 +25,28 @@
     self.view.et_psreferMute = et_psreferMute;
 }
 
+- (BOOL)et_subpagePvToReferEnable {
+    return self.view.et_subpagePvToReferEnable;
+}
+- (void)et_setSubpagePvToReferEnable:(BOOL)et_subpagePvToReferEnable {
+    self.view.et_subpagePvToReferEnable = et_subpagePvToReferEnable;
+}
+- (EventTracingPageReferConsumeOption)et_subpageConsumeOption {
+    return self.view.et_subpageConsumeOption;
+}
+- (void)et_setSubpageConsumeOption:(EventTracingPageReferConsumeOption)et_subpageConsumeOption {
+    self.view.et_subpageConsumeOption = et_subpageConsumeOption;
+}
+- (void)et_clearSubpageConsumeReferOption {
+    [self.view et_clearSubpageConsumeReferOption];
+}
+- (void)et_makeSubpageConsumeAllRefer {
+    [self.view et_makeSubpageConsumeAllRefer];
+}
+- (void)et_makeSubpageConsumeEventRefer {
+    [self.view et_makeSubpageConsumeEventRefer];
+}
+
 - (void)et_configLastestActionWithElementId:(NSString *)elementId
                                      params:(NSDictionary<NSString *,NSString *> *)params {
     [self et_configLastestActionWithElementId:elementId position:0 params:params];

@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "EventTracingContext.h"
 #import "EventTracingEventActionConfig.h"
+#import "EventTracingAppLifecycleProcotol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -176,6 +177,10 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EventTracingEngine (VTreeObserver)
 - (void)addVTreeObserver:(id<EventTracingVTreeObserver>)observer;
 - (void)removeVTreeObserver:(id<EventTracingVTreeObserver>)observer;
+@end
+
+// AppLifeCycle
+@interface EventTracingEngine (InnerLifecycle) <EventTracingAppLifecycleProcotol>
 @end
 
 NS_ASSUME_NONNULL_END

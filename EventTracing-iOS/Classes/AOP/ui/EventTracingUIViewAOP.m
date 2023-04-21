@@ -10,6 +10,7 @@
 #import "EventTracingEngine+Private.h"
 #import "UIView+EventTracingPrivate.h"
 #import "EventTracingClickMonitor.h"
+#import "EventTracingConfuseMacro.h"
 
 #import <BlocksKit/BlocksKit.h>
 #import <JRSwizzle/JRSwizzle.h>
@@ -170,12 +171,8 @@
 }
 
 - (BOOL)_shouldFilterdTapGesureForView:(UIView *)view {
-    NSMutableArray<NSString *> *blacklistClassName = @[].mutableCopy;
     /// MARK: WKWebView中，系统默认给添加了一个 TapGesture 到 WKContentView 上
-    [blacklistClassName addObject:[NSString stringWithFormat:@"%@%@%@", @"WK", @"Content", @"View"]];
-    return [blacklistClassName bk_any:^BOOL(NSString *className) {
-        return [NSStringFromClass(view.class) isEqualToString:className];
-    }];
+    return ET_STR_MATCHES(NSStringFromClass(view.class), ET_CONFUSED(W,K), ET_CONFUSED(C,o,n,t,e,n,t), @"View");
 }
 @end
 
@@ -184,10 +181,6 @@
 - (void)et_view_didMoveToSuperview {
     [self et_view_didMoveToSuperview];
     
-    if (ET_isPageOrElement(self) && self.superview == nil) {
-        [[EventTracingEngine sharedInstance] traverse];
-        return;
-    }
     [[EventTracingEngine sharedInstance] traverse:self];
 }
 

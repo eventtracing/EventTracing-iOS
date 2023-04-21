@@ -28,7 +28,6 @@ id<EventTracingFormattedRefer> ET_formattedReferForNode(EventTracingVTreeNode *n
 /// MARK: 1.2 rootpage 曝光对应的refer
 @interface EventTracingFormattedEventRefer : EventTracingEventRefer
 
-@property(nonatomic, copy, nullable) NSArray<NSString *> *toids;
 @property(nonatomic, assign) BOOL shouldStartHsrefer;
 
 @property(nonatomic, assign, readonly, getter=isRootPagePV) BOOL rootPagePV;     // 是否是 root page PV
@@ -43,7 +42,6 @@ id<EventTracingFormattedRefer> ET_formattedReferForNode(EventTracingVTreeNode *n
 +(instancetype)referWithEvent:(NSString *)event
                formattedRefer:(id<EventTracingFormattedRefer>)formattedRefer
                    rootPagePV:(BOOL)rootPagePV
-                        toids:(NSArray<NSString *> * _Nullable)toids
            shouldStartHsrefer:(BOOL)shouldStartHsrefer
            isNodePsreferMuted:(BOOL)isNodePsreferMuted;
 

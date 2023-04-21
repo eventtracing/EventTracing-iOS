@@ -62,6 +62,7 @@ extern NSString * const kETAddParamCallbackObjectkey;
 + (instancetype)buildWithView:(UIView *)view;
 
 + (instancetype)buildVirtualNodeWithOid:(NSString *)oid
+                                 isPage:(BOOL)isPage
                              identifier:(NSString *)identifier
                                position:(NSUInteger)position
          buildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy

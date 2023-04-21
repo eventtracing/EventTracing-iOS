@@ -61,12 +61,10 @@ id<EventTracingFormattedRefer> ET_formattedReferForNode(EventTracingVTreeNode *n
 +(instancetype)referWithEvent:(NSString *)event
                formattedRefer:(id<EventTracingFormattedRefer>)formattedRefer
                   rootPagePV:(BOOL)rootPagePV
-                        toids:(NSArray<NSString *> * _Nullable)toids
            shouldStartHsrefer:(BOOL)shouldStartHsrefer
            isNodePsreferMuted:(BOOL)isNodePsreferMuted {
     EventTracingFormattedEventRefer *refer = [[EventTracingFormattedEventRefer alloc] init];
     refer.rootPagePV = rootPagePV;
-    refer.toids = toids;
     refer.shouldStartHsrefer = shouldStartHsrefer;
     refer.event = event;
     refer.formattedRefer = formattedRefer;
@@ -151,11 +149,10 @@ id<EventTracingFormattedRefer> ET_formattedReferForNode(EventTracingVTreeNode *n
     }].generateRefer;
     
     return [EventTracingFormattedEventRefer referWithEvent:ET_EVENT_ID_APP_ACTIVE
-                                              formattedRefer:formattedRefer
-                                                  rootPagePV:NO
-                                                       toids:nil
-                                          shouldStartHsrefer:NO
-                                          isNodePsreferMuted:NO];
+                                            formattedRefer:formattedRefer
+                                                rootPagePV:NO
+                                        shouldStartHsrefer:NO
+                                        isNodePsreferMuted:NO];
 }
 
 + (instancetype)enterForegroundRefer {
@@ -167,11 +164,10 @@ id<EventTracingFormattedRefer> ET_formattedReferForNode(EventTracingVTreeNode *n
     }].generateRefer;
     
     return [EventTracingFormattedEventRefer referWithEvent:ET_EVENT_ID_APP_IN
-                                              formattedRefer:formattedRefer
-                                                  rootPagePV:NO
-                                                       toids:nil
-                                          shouldStartHsrefer:NO
-                                          isNodePsreferMuted:NO];
+                                            formattedRefer:formattedRefer
+                                                rootPagePV:NO
+                                        shouldStartHsrefer:NO
+                                        isNodePsreferMuted:NO];
 }
 
 @end

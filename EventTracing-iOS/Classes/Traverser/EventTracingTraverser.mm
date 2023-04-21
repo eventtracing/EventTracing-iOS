@@ -29,7 +29,8 @@ BOOL ET_isElement(UIView *view) {
 }
 
 BOOL ET_isPageOrElement(UIView *view) {
-    return ET_isPage(view) || ET_isElement(view);
+    EventTracingAssociatedPros *props = view.et_props;
+    return view && (props.pageId.length > 0 || props.elementId.length > 0);
 }
 
 NSArray<UIView *> * ET_subViews(UIView *view) {
@@ -575,18 +576,19 @@ struct ETTraverseObject {
     [node.parentNode removeSubNode:node];
     
     NSString *virtualParentNodeIdentifier = view.et_virtualParentProps.virtualParentNodeIdentifier;
-    NSString *virtualParentNodeElementId = view.et_virtualParentElementId;
+    NSString *virtualParentNodeOid = view.et_virtualParentOid;
     NSDictionary *virtualParentNodeParams = view.et_virtualParentProps.virtualParentNodeParams;
     EventTracingVTreeNode *virtualParentNode = [parentNode.subNodes bk_match:^BOOL(EventTracingVTreeNode *obj) {
         return [obj.identifier isEqualToString:virtualParentNodeIdentifier]
-                && [obj.oid isEqualToString:virtualParentNodeElementId];
+                && ([obj.oid isEqualToString:virtualParentNodeOid]);
     }];
     if (!virtualParentNode) {
-        virtualParentNode = [EventTracingVTreeNode buildVirtualNodeWithOid:view.et_virtualParentElementId
+        virtualParentNode = [EventTracingVTreeNode buildVirtualNodeWithOid:view.et_virtualParentOid
+                                                                    isPage:view.et_virtualParentIsPage
                                                                 identifier:virtualParentNodeIdentifier
-                                                                    position:view.et_virtualParentProps.position
-                                              buildinEventLogDisableStrategy:view.et_virtualParentProps.buildinEventLogDisableStrategy
-                                                                    params:virtualParentNodeParams];
+                                                                  position:view.et_virtualParentProps.position
+                                            buildinEventLogDisableStrategy:view.et_virtualParentProps.buildinEventLogDisableStrategy
+                                                                  params:virtualParentNodeParams];
         
         /// MARK: 虚拟父节点是否校验父节点，跟随原节点走
         [VTree pushNode:virtualParentNode parentNode:parentNode ignoreParentValid:ignoreParentValid];
@@ -596,7 +598,7 @@ struct ETTraverseObject {
         [virtualParentNode updateStaticParams:params];
     }
     
-    [VTree pushNode:node parentNode:virtualParentNode ignoreParentValid:YES];
+    [VTree pushNode:node parentNode:virtualParentNode ignoreParentValid:view.et_virtualParentIsPage == NO];
 }
 
 @end

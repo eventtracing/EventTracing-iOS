@@ -8,9 +8,7 @@
 #import "EventTracingMultiReferPatch.h"
 #import "EventTracingReferObserver.h"
 #import "EventTracingOutputFormatter.h"
-
-NSUInteger EventTracingMultiRefersMaxCount = 5;
-NSString * EventTracingMultiRefersEvents = @"_pv,_ec";
+#import "EventTracingEngine+Private.h"
 
 @interface EventTracingMultiReferPatch()<EventTracingReferObserver, EventTracingOutputParamsFilter>
 @property(nonatomic, strong) NSMutableArray<NSString *> *multiRefersStack;
@@ -53,6 +51,13 @@ NSString * EventTracingMultiRefersEvents = @"_pv,_ec";
         // psrefer 静默，不添加到 multiRefersStack 中
         return;
     }
+    
+    EventTracingVTreeNode *rootPageNode = [VTree rootPageNode];
+    BOOL isRootPagePV = rootPageNode == node;
+    if (!isRootPagePV) {
+        // 非根节点曝光，不参与 multirefers
+        return;
+    }
     NSInteger location = [self.multiRefersStack indexOfObject:psrefer];
 
     // 出栈
@@ -69,7 +74,11 @@ NSString * EventTracingMultiRefersEvents = @"_pv,_ec";
                            originalJson:(NSDictionary *)originalJson
                                    node:(EventTracingVTreeNode * _Nullable)node
                                 inVTree:(EventTracingVTree * _Nullable)VTree {
-    NSArray<NSString *> *events = [EventTracingMultiRefersEvents componentsSeparatedByString:@","];
+    NSString *eventListStr = [EventTracingEngine sharedInstance].ctx.multiReferAppliedEventList;
+    NSArray<NSString *> *events = [eventListStr componentsSeparatedByString:@","];
+    if (!events.count) {
+        events = @[ET_EVENT_ID_E_CLCK, ET_EVENT_ID_P_VIEW];
+    }
     // MARK: 业务侧参数优先级更高，不覆盖
     if ([events containsObject:event] && ![originalJson.allKeys containsObject:@"_multirefers"]) {
         NSMutableDictionary *json = originalJson.mutableCopy;
@@ -81,7 +90,7 @@ NSString * EventTracingMultiRefersEvents = @"_pv,_ec";
 }
 
 - (NSArray<NSString *> *)multiRefers {
-    NSInteger multiReferCount = 5;
+    NSInteger multiReferCount = [EventTracingEngine sharedInstance].ctx.multiReferMaxItemCount;
     NSArray<NSString *> *refers = self.multiRefersStack;
     if (refers.count > multiReferCount) {
         refers = [refers subarrayWithRange:NSMakeRange(0, multiReferCount)];

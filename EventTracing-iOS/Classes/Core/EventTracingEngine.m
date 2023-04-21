@@ -68,6 +68,18 @@
         context.needStartHsreferOids = [context.extraConfigurationProvider needStartHsreferOids];
     }
     
+    if ([context.extraConfigurationProvider respondsToSelector:@selector(multiReferAppliedEventList)]) {
+        context.multiReferAppliedEventList = [context.extraConfigurationProvider multiReferAppliedEventList];
+    } else {
+        context.multiReferAppliedEventList = @"_pv,_ec";
+    }
+    
+    if ([context.extraConfigurationProvider respondsToSelector:@selector(multiReferMaxItemCount)]) {
+        context.multiReferMaxItemCount = [context.extraConfigurationProvider multiReferMaxItemCount];
+    } else {
+        context.multiReferMaxItemCount = 5;
+    }
+    
     [context markRunState:YES];
     [self _doAOP];
 }
@@ -148,19 +160,29 @@
 }
 
 - (void)appWillEnterForeground {
+    BOOL isAppInActive = _ctx.isAppInActive;
+    
     [_ctx appWillEnterForeground];
     [_ctx.traversalRunner resume];
-    [self _doOutputAppInLog];
+    
+    if (!isAppInActive) {
+        [self _doOutputAppInLog];
+    }
     
     [self _doTraverse];
 }
 
 - (void)appDidEnterBackground {
+    BOOL isAppInActive = _ctx.isAppInActive;
+    
     [_ctx appDidEnterBackground];
     [_ctx.traversalRunner pause];
     [_ctx.eventOutput removeCurrentActivePublicParmas];
     
-    [self _doOutputAppOutLog];
+    if (isAppInActive) {
+        [self _doOutputAppOutLog];
+    }
+    
     [self _doTraverse];
 }
 
@@ -241,9 +263,22 @@
 }
 
 - (void)traverseImmediatelyIfNeeded {
+    // 1. 穿透
+    if (self.stockedTraverseActionRecord.passthrough) {
+        [self.stockedTraverseActionRecord reset];
+        
+        // 全量生成 VTree 后，清空待处理的滚动action
+        [self.stockedTraverseScrollViews removeAllObjects];
+        
+        [self _doTraverse];
+        return;
+    }
+
+    // 逆着遍历
+    NSArray<EventTracingTraverseAction *> *stockedTraverseActions = [[self.stockedTraverseActionRecord.actions reverseObjectEnumerator] allObjects];
+    [self.stockedTraverseActionRecord reset];
+
     // 全量生成 VTree 后，清空待处理的滚动action
-    NSArray<EventTracingTraverseAction *> *stockedTraverseActions = self.stockedTraverseActions.copy;
-    [self.stockedTraverseActions removeAllObjects];
     [self.stockedTraverseScrollViews removeAllObjects];
     
     if (stockedTraverseActions.count == 0) {
@@ -251,19 +286,18 @@
     }
     
     BOOL needTraverse = [stockedTraverseActions bk_any:^BOOL(EventTracingTraverseAction *obj) {
-        if (obj.view == nil && !obj.viewIsNil) {
+        if (obj.view == nil) {
             return NO;
         }
         
         UIView *view = obj.view;
         
         BOOL needsRunTraversal = YES;
-        if (view != nil) {
-            if (obj.ignoreViewInvisible) {
-                needsRunTraversal = ET_isPageOrElement(view) || ET_isHasSubNodes(view);
-            } else {
-                needsRunTraversal = [view et_isSimpleVisible] && [view et_logicalVisible] && (ET_isPageOrElement(view) || ET_isHasSubNodes(view));
-            }
+        
+        if (obj.ignoreViewInvisible) {
+            needsRunTraversal = ET_isPageOrElement(view) || ET_isHasSubNodes(view);
+        } else {
+            needsRunTraversal = [view et_isSimpleVisible] && [view et_logicalVisible] && (ET_isPageOrElement(view) || ET_isHasSubNodes(view));
         }
         
         return needsRunTraversal;

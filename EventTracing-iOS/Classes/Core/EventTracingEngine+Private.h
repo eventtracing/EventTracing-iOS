@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic, strong, readonly) EventTracingContext *ctx;
 
-@property(nonatomic, strong) NSMutableArray<EventTracingTraverseAction *> *stockedTraverseActions;
+@property(nonatomic, strong) EventTracingStockedTraverseActionRecord *stockedTraverseActionRecord;
 // 列表滚动
 @property(nonatomic, strong) NSHashTable<UIScrollView *> *stockedTraverseScrollViews;
 
@@ -29,8 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EventTracingEngine (InnerLifecycle) <EventTracingAppLifecycleProcotol>
-@end
 
 @interface EventTracingEngine (InnerTraverse)
 

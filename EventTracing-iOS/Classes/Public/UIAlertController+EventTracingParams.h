@@ -6,6 +6,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EventTracingDefines.h"
 #import "EventTracingEventActionConfig.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -72,6 +73,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 // MARK: 在UIView维度，该值是默认为NO，在Alert场景，该值默认是 YES
 @property(nonatomic, assign, setter=et_setPsreferMute:, getter=et_psreferMute) BOOL et_psreferMute;
+
+/// MARK: 子页面，pv曝光埋点，可以生成refer (refer_type == 'subpage_pv')
+@property(nonatomic, assign, setter=et_setSubpagePvToReferEnable:, getter=et_subpagePvToReferEnable) BOOL et_subpagePvToReferEnable;
+
+/// MARK: 子页面消费refer的类型
+/// 针对 rootpage，该值默认为 "ec|custom"
+/// 针对 subpage，该值默认为 "none"
+/// 所有可选值: all,  subpage_pv, ec, custom
+/// 其中 custom 目前是除了 明确类型的 其他类型
+/// all 是全部类型
+/// subpage_pv 专指子页面曝光产生的refer
+/// 不建议 root page 使用此 API
+/// 不建议直接使用此API，建议使用下面3个API
+///  - `et_clearSubpageConsumeReferOption`              =>  清空设置
+///  - `et_makeSubpageConsumeAllRefer`         =>  适合首页 tab 子页面切换的场景
+///  - `et_makeSubpageConsumeEventRefer`     =>  适合浮层弹窗场景，比如首页 alert
+@property(nonatomic, assign, setter=et_setSubpageConsumeOption:, getter=et_subpageConsumeOption) EventTracingPageReferConsumeOption et_subpageConsumeOption;
+
+/// MARK: 清空设置
+- (void)et_clearSubpageConsumeReferOption;
+/// MARK: 适合首页 tab 子页面切换的场景，设置为`NEEventTracingPageReferConsumeOptionAll`
+- (void)et_makeSubpageConsumeAllRefer;
+/// MARK: 适合浮层弹窗场景，比如首页 alert，设置为`NEEventTracingPageReferConsumeOptionExceptSubPagePV`
+- (void)et_makeSubpageConsumeEventRefer;
 
 /// 给刚刚添加进来的 `UIAlertAction` 做节点配置
 /// - Parameters:

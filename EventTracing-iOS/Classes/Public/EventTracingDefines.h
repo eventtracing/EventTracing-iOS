@@ -121,6 +121,20 @@ typedef NS_ENUM(NSUInteger, ETAutoMountRootPageQueuePriority) {
     ETAutoMountRootPageQueuePriorityVeryHigh            = 1000
 };
 
+/// `root page pv` 会强制作为兜底
+typedef NS_OPTIONS(NSUInteger, EventTracingPageReferConsumeOption) {
+    EventTracingPageReferConsumeOptionNone       = 0L,
+    /// 只要该页面会使用 psrefer，即使 `root pv option` 为 0，也是会作为兜底逻辑降级到 root pv
+    EventTracingPageReferConsumeOptionEventEc    = 1L << 1,
+    EventTracingPageReferConsumeOptionCustom     = 1L << 2,
+    EventTracingPageReferConsumeOptionSubPagePV  = 1L << 3,
+    /// 一般用于浮层子页面
+    EventTracingPageReferConsumeOptionExceptSubPagePV = EventTracingPageReferConsumeOptionEventEc |
+                                                        EventTracingPageReferConsumeOptionCustom,
+    /// 一般用于需要参与 psrefer 的子页面，比如首页 tab
+    EventTracingPageReferConsumeOptionAll        = (NSUInteger)(~0L),
+};
+
 #pragma mark - Event Id
 #define ET_CONST_DEF(_et_name_) FOUNDATION_EXTERN NSString *const _et_name_
 
@@ -196,3 +210,8 @@ ET_CONST_DEF(ET_REUSE_BIZ_SET);
 #ifndef ETDispatchMainAsyncSafe
     #define ETDispatchMainAsyncSafe(block) ETDispatchQueueAsyncSafe(dispatch_get_main_queue(), block)
 #endif
+
+FOUNDATION_EXTERN NSString * const kEventTracingSessIdKey;
+FOUNDATION_EXTERN NSString * const ETParamKeyGuardEvent;
+FOUNDATION_EXTERN NSString * const ETParamKeyGuardPublicParam;
+FOUNDATION_EXTERN NSString * const ETParamKeyGuardUserParam;

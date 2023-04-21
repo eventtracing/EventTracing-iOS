@@ -9,8 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-extern NSString *ETParamKeyGuardErrorRegxKey;
-extern NSString *ETParamKeyGuardErrorErrmsgKey;
+extern NSString * const ETParamKeyGuardErrorRegxKey;
 
 FOUNDATION_EXPORT BOOL ET_CheckEventKeyValid(NSString *eventKey);
 FOUNDATION_EXPORT BOOL ET_CheckPublicParamKeyValid(NSString *publicParamKey);

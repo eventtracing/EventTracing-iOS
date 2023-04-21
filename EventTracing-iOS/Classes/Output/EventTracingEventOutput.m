@@ -350,10 +350,9 @@
     EventTracingFormattedEventRefer *refer = [EventTracingFormattedEventRefer referWithEvent:event
                                                                                   formattedRefer:formattedRefer
                                                                                       rootPagePV:NO
-                                                                                           toids:nil
                                                                               shouldStartHsrefer:NO
                                                                               isNodePsreferMuted:NO];
-    [[EventTracingEventReferQueue queue] pushEventRefer:refer node:node];
+    [[EventTracingEventReferQueue queue] pushEventRefer:refer node:node isSubPage:NO];
 }
 
 - (NSString *)_mergeLogH5_spmFromNode:(EventTracingVTreeNode *)node

@@ -98,11 +98,10 @@
     }].generateRefer;
     
     EventTracingFormattedEventRefer *refer = [EventTracingFormattedEventRefer referWithEvent:event
-                                                                                  formattedRefer:formattedRefer
-                                                                                      rootPagePV:NO
-                                                                                           toids:nil
-                                                                              shouldStartHsrefer:NO
-                                                                              isNodePsreferMuted:NO];
+                                                                              formattedRefer:formattedRefer
+                                                                                  rootPagePV:NO
+                                                                          shouldStartHsrefer:NO
+                                                                          isNodePsreferMuted:NO];
     [[EventTracingEventReferQueue queue] pushEventRefer:refer];
 }
 

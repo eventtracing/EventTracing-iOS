@@ -19,18 +19,12 @@ NSArray<UIView *> *EventTracingAutoMountRootPageViews(void) {
     NSArray<NSNumber *> *orderdPrioritys = [sETAutoMountRootPageViewsContainer.keyEnumerator.allObjects sortedArrayUsingComparator:^NSComparisonResult(NSNumber * _Nonnull obj1, NSNumber * _Nonnull obj2) {
         return obj1.unsignedIntegerValue > obj2.unsignedIntegerValue;
     }];
-    NSMutableArray<UIView *> *views = [@[] mutableCopy];
+    NSMutableOrderedSet * viewsSet = [NSMutableOrderedSet orderedSet];
     [orderdPrioritys enumerateObjectsUsingBlock:^(NSNumber * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSHashTable<UIView *> *viewsForPriority = [sETAutoMountRootPageViewsContainer objectForKey:obj];
-        [viewsForPriority.allObjects enumerateObjectsUsingBlock:^(UIView * _Nonnull v, NSUInteger idx, BOOL * _Nonnull stop) {
-            if ([views containsObject:v]) {
-                return;
-            }
-            [views addObject:v];
-        }];
+        [viewsSet addObjectsFromArray:viewsForPriority.allObjects];
     }];
-    
-    return views.copy;
+    return viewsSet.array.copy;
 }
 void EventTracingPushAutoMountRootPageView(UIView *view, ETAutoMountRootPageQueuePriority priority) {
     static dispatch_once_t onceToken;

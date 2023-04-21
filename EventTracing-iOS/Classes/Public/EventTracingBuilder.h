@@ -202,6 +202,8 @@ typedef void(^ET_BuildParamsCarryEventsBlock)(id<EventTracingLogNodeParamsBuilde
 
 // virtual parent
 @property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^virtualParent)(NSString *elementId, id identifier, ET_BuildVirtualParentBlock NS_NOESCAPE _Nullable builder);
+// virtual page parent
+@property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^virtualPageParent)(NSString *pageId, id identifier, ET_BuildVirtualParentBlock NS_NOESCAPE _Nullable builder);
 
 // reuse
 /// MARK: 建议使用 model 对象作为参数（则内部使用 data 的内存地址参与生成 identifier）
@@ -218,7 +220,18 @@ typedef void(^ET_BuildParamsCarryEventsBlock)(id<EventTracingLogNodeParamsBuilde
 // default: NO
 @property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^ignoreReferCascade)(BOOL value);
 
+/// MARK: 节点不参与 multirefer
 @property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^doNotParticipateMultirefer)(BOOL value);
+
+/// MARK: 子页面是否产生 pv refer，仅对 subpage 生效
+@property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^enableSubPageProducePvRefer)(BOOL value);
+
+/// MARK: 子页面是否消费 all refer，仅对 subpage 生效
+@property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^enableSubPageConsumeAllRefer)(BOOL value);
+
+/// MARK: 子页面是否消费 event refer（除了 subpage pv refer，含`ec`和`自定义事件`的 refer）
+/// MARK: 仅对 subpage 生效
+@property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^enableSubPageConsumeEventRefer)(BOOL value);
 
 @property(nonatomic, readonly) id<EventTracingLogNodeParamsBuilder> params;
 @property(nonatomic, readonly) id<EventTracingLogNodeParamsBuilder> emptyParams;
@@ -311,6 +324,11 @@ typedef void(^ET_BuildEventActionBlock)(id<EventTracingLogNodeEventActionBuilder
 @interface EventTracingBuilder (VirtualParent)
 + (void)buildVirtualParentNodeForView:(UIView *)view
                             elementId:(NSString *)elementId
+                           identifier:(id)identifier
+                                block:(ET_BuildVirtualParentBlock NS_NOESCAPE _Nullable)block;
+
++ (void)buildVirtualParentNodeForView:(UIView *)view
+                               pageId:(NSString *)pageId
                            identifier:(id)identifier
                                 block:(ET_BuildVirtualParentBlock NS_NOESCAPE _Nullable)block;
 @end

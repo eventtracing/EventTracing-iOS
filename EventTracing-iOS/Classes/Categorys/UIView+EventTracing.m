@@ -63,6 +63,8 @@
     [self.p_et_view et_addParamsCarryEventCallback:callback forEvents:events];
 }
 
+
+
 - (NSUInteger)et_position {
     return self.p_et_view.et_position;
 }
@@ -109,6 +111,28 @@
 }
 - (void)et_setPsreferMute:(BOOL)et_psreferMute {
     self.p_et_view.et_psreferMute = et_psreferMute;
+}
+
+- (BOOL)et_subpagePvToReferEnable {
+    return self.p_et_view.et_subpagePvToReferEnable;
+}
+- (void)et_setSubpagePvToReferEnable:(BOOL)et_subpagePvToReferEnable {
+    self.p_et_view.et_subpagePvToReferEnable = et_subpagePvToReferEnable;
+}
+- (EventTracingPageReferConsumeOption)et_subpageConsumeOption {
+    return self.p_et_view.et_subpageConsumeOption;
+}
+- (void)et_setSubpageConsumeOption:(EventTracingPageReferConsumeOption)et_subpageConsumeOption {
+    self.p_et_view.et_subpageConsumeOption = et_subpageConsumeOption;
+}
+- (void)et_clearSubpageConsumeReferOption {
+    [self.p_et_view et_clearSubpageConsumeReferOption];
+}
+- (void)et_makeSubpageConsumeAllRefer {
+    [self.p_et_view et_makeSubpageConsumeAllRefer];
+}
+- (void)et_makeSubpageConsumeEventRefer {
+    [self.p_et_view et_makeSubpageConsumeEventRefer];
 }
 
 #pragma mark - setters & getters
@@ -206,6 +230,9 @@
 - (void)et_addParamsCarryEventCallback:(ET_AddParamsCarryEventCallback NS_NOESCAPE)callback forEvents:(NSArray<NSString *> *)events {
     [self.et_props addParamsCarryEventCallback:callback forEvents:events];
 }
+
+
+
 
 - (NSUInteger)et_position {
     return [self.et_props position];
@@ -320,6 +347,28 @@
     self.et_props.psreferMute = et_psreferMute;
 }
 
+- (BOOL)et_subpagePvToReferEnable {
+    return self.et_props.isSubpagePvToReferEnable;
+}
+- (void)et_setSubpagePvToReferEnable:(BOOL)et_subpagePvToReferEnable {
+    self.et_props.subpagePvToReferEnable = et_subpagePvToReferEnable;
+}
+- (void)et_setSubpageConsumeOption:(EventTracingPageReferConsumeOption)option {
+    self.et_props.pageReferConsumeOption = option;
+}
+- (EventTracingPageReferConsumeOption)et_subpageConsumeOption {
+    return self.et_props.pageReferConsumeOption;
+}
+- (void)et_clearSubpageConsumeReferOption {
+    self.et_props.pageReferConsumeOption = EventTracingPageReferConsumeOptionNone;
+}
+- (void)et_makeSubpageConsumeAllRefer {
+    self.et_props.pageReferConsumeOption = EventTracingPageReferConsumeOptionAll;
+}
+- (void)et_makeSubpageConsumeEventRefer {
+    self.et_props.pageReferConsumeOption = EventTracingPageReferConsumeOptionExceptSubPagePV;
+}
+
 - (EventTracingVTreeNode *)et_currentVTreeNode {
     return objc_getAssociatedObject(self, _cmd);
 }
@@ -331,26 +380,53 @@
 
 
 @implementation UIView (EventTracingVTreeVirtualParentNode)
+- (BOOL)et_virtualParentIsPage {
+    return self.et_virtualParentProps.virtualParentNodePageId.length > 0;
+}
+- (NSString *)et_virtualParentOid {
+    return self.et_virtualParentIsPage ?
+    self.et_virtualParentProps.virtualParentNodePageId :
+    self.et_virtualParentProps.virtualParentNodeElementId;
+}
 - (NSString *)et_virtualParentElementId {
     return self.et_virtualParentProps.virtualParentNodeElementId;
 }
+- (NSString *)et_virtualParentPageId {
+    return self.et_virtualParentProps.virtualParentNodePageId;
+}
+
+
+
 - (void)et_setVirtualParentElementId:(NSString *)elementId
                       nodeIdentifier:(id)nodeIdentifier
                               params:(NSDictionary<NSString *,NSString *> *)params {
     ETNodeBuildinEventLogDisableStrategy buildinEventLogDisableStrategy = [EventTracingEngine sharedInstance].ctx.isElementAutoImpressendEnable ? ETNodeBuildinEventLogDisableStrategyNone : ETNodeBuildinEventLogDisableStrategyImpressend;
-    [self et_setVirtualParentElementId:elementId
-                           nodeIdentifier:nodeIdentifier
-                                 position:0
-           buildinEventLogDisableStrategy:buildinEventLogDisableStrategy
-                                   params:params];
+    [self et_setVirtualParentOid:elementId
+                          isPage:NO
+                  nodeIdentifier:nodeIdentifier
+                        position:0
+  buildinEventLogDisableStrategy:buildinEventLogDisableStrategy
+                          params:params];
 }
 
-- (void)et_setVirtualParentElementId:(NSString *)elementId
-                         nodeIdentifier:(id)nodeIdentifier
-                               position:(NSUInteger)position
-         buildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
-                                 params:(NSDictionary<NSString *, NSString *> * _Nullable)params {
-    if (![elementId isKindOfClass:NSString.class] || !elementId.length) {
+- (void)et_setVirtualParentPageId:(NSString *)pageId
+                   nodeIdentifier:(id)nodeIdentifier
+                           params:(NSDictionary<NSString *,NSString *> *)params {
+    [self et_setVirtualParentOid:pageId
+                          isPage:YES
+                  nodeIdentifier:nodeIdentifier
+                        position:0
+  buildinEventLogDisableStrategy:ETNodeBuildinEventLogDisableStrategyNone
+                          params:params];
+}
+
+- (void)et_setVirtualParentOid:(NSString *)oid
+                        isPage:(BOOL)isPage
+                nodeIdentifier:(id)nodeIdentifier
+                      position:(NSUInteger)position
+buildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
+                        params:(NSDictionary<NSString *, NSString *> * _Nullable)params {
+    if (![oid isKindOfClass:NSString.class] || !oid.length) {
         return;
     }
 
@@ -366,11 +442,24 @@
     }
 
     self.et_virtualParentProps = [EventTracingVirtualParentAssociatedPros associatedProsWithView:self];
-    [self.et_virtualParentProps setupVirtualParentElementId:elementId nodeIdentifier:identifierString params:params];
+    if (isPage) {
+        [self.et_virtualParentProps setupVirtualParentPageId:oid nodeIdentifier:identifierString params:params];
+    } else {
+        [self.et_virtualParentProps setupVirtualParentElementId:oid nodeIdentifier:identifierString params:params];
+    }
     self.et_virtualParentProps.position = position;
     self.et_virtualParentProps.buildinEventLogDisableStrategy = buildinEventLogDisableStrategy;
 
     [[EventTracingEngine sharedInstance] traverse];
+}
+
+- (void)et_setVirtualParentElementId:(NSString *)elementId
+                      nodeIdentifier:(id)nodeIdentifier
+                            position:(NSUInteger)position
+      buildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
+                              params:(NSDictionary<NSString *, NSString *> * _Nullable)params
+{
+    [self et_setVirtualParentOid:elementId isPage:NO nodeIdentifier:nodeIdentifier position:position buildinEventLogDisableStrategy:buildinEventLogDisableStrategy params:params];
 }
 
 @end

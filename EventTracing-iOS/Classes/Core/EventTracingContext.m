@@ -33,6 +33,7 @@
 @synthesize appStartedTime = _appStartedTime;
 @synthesize appLastAtForegroundTime = _appLastAtForegroundTime;
 @synthesize appLastEnterBackgroundTime = _appLastEnterBackgroundTime;
+@synthesize useCustomAppLifeCycle = _useCustomAppLifeCycle;
 
 #define LOCK        dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
 #define UNLOCK      dispatch_semaphore_signal(_lock);
@@ -190,14 +191,20 @@ NSString * const kEventTracingSessIdKey = @"kEventTracingSessIdKey";
         _appStartedTime = [NSDate date].timeIntervalSince1970;
     });
     
-    if (!self.isAppInActive) {
-        _appLastAtForegroundTime = [NSDate date].timeIntervalSince1970;
-        [self doUpdateAppInActiveState:YES];
-        [_eventEmitter.referCollector appWillEnterForeground];
+    if (self.isAppInActive) {
+        return;
     }
+    
+    _appLastAtForegroundTime = [NSDate date].timeIntervalSince1970;
+    [self doUpdateAppInActiveState:YES];
+    [_eventEmitter.referCollector appWillEnterForeground];
 }
 
 - (void)appWillEnterForeground {
+    if (self.isAppInActive) {
+        return;
+    }
+    
     _appLastAtForegroundTime = [NSDate date].timeIntervalSince1970;
     [self doUpdateAppInActiveState:YES];
     [_eventEmitter.referCollector appWillEnterForeground];
@@ -205,7 +212,10 @@ NSString * const kEventTracingSessIdKey = @"kEventTracingSessIdKey";
 
 - (void)appDidEnterBackground {
     _appLastEnterBackgroundTime = [NSDate date].timeIntervalSince1970;
-    _appEnterBackgroundSeq ++;
+    
+    if (self.isAppInActive) {
+        _appEnterBackgroundSeq ++;
+    }
     [self doUpdateAppInActiveState:NO];
 }
 
