@@ -80,12 +80,6 @@
         context.multiReferMaxItemCount = 5;
     }
     
-    if ([context.extraConfigurationProvider respondsToSelector:@selector(useCustomAppLifeCycle)]) {
-        context.useCustomAppLifeCycle = [context.extraConfigurationProvider useCustomAppLifeCycle];
-    } else {
-        context.useCustomAppLifeCycle = NO;
-    }
-    
     [context markRunState:YES];
     [self _doAOP];
 }

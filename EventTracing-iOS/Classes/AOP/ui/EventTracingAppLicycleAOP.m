@@ -25,8 +25,8 @@ EventTracingAOPInstanceImp
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(et_appDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(et_appWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(et_appDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(et_appWillTerminate:) name:UIApplicationWillTerminateNotification object:nil];
         }
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(et_appWillTerminate:) name:UIApplicationWillTerminateNotification object:nil];
     });
     
     [[EventTracingEngine sharedInstance] refreshAppInActiveState];
