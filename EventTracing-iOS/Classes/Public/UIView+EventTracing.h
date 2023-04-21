@@ -183,7 +183,7 @@ buildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)buildinEven
                       nodeIdentifier:(id)nodeIdentifier
                             position:(NSUInteger)position
       buildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
-                              params:(NSDictionary<NSString *, NSString *> * _Nullable)params DEPRECATED_MSG_ATTRIBUTE("废弃, 请使用 `ne_et_setVirtualParentOid:...`");
+                              params:(NSDictionary<NSString *, NSString *> * _Nullable)params DEPRECATED_MSG_ATTRIBUTE("废弃, 请使用 `-[UIView et_setVirtualParentOid:isPage:nodeIdentifier:position:buildinEventLogDisableStrategy:params:]`");
 
 @end
 
@@ -268,7 +268,7 @@ __deprecated_msg("已废弃 toid，设置不会生效")
 /// 等下一个root page node曝光的时候，会到这个队列中查找
 /// 如果可以通过 toid 的的方式查找到，则将该事件跟 root page node的曝光关联起来
 /// 降级: 如果匹配不到，则直接去最近的一次事件
-@property(nonatomic, copy, readonly) NSArray<NSString *> *et_toids;
+@property(nonatomic, copy, readonly, nullable) NSArray<NSString *> *et_toids;
 
 - (void)et_makeReferToid:(NSString *)toid;
 - (void)et_makeReferToids:(NSString *)toid, ...NS_REQUIRES_NIL_TERMINATION;

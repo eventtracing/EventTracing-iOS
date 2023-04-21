@@ -38,14 +38,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 需要打 _multiRefers 参数的事件，默认 "_pv, _ec"
 /// 示例："_pv, _ec, _ai"
-- (NSString *)eventTracingReferEventList;
+- (NSString *)multiReferAppliedEventList;
 
 /// multiRefers 的最大数量限制，默认 5
-- (NSInteger)eventTracingPsReferNum;
+- (NSInteger)multiReferMaxItemCount;
 
 /// 生命周期监听，默认会使用 UIApplicationDidBecomeActiveNotification,UIApplicationWillEnterForegroundNotification,UIApplicationDidEnterBackgroundNotification
 /// 如果自定义，返回 YES，否则返回 NO
-- (BOOL)useCustomAppLifeCycleEventDelegate:(id<EventTracingContextAppLifeCycleObserver>)delegate;
+- (BOOL)useCustomAppLifeCycleEventDelegateToETObserver:(id<EventTracingContextAppLifeCycleObserver>)observer;
 @end
 
 /// @brief 性能调试数据
@@ -118,14 +118,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 日志输出到 `OutputChannel` 之前，有一些修改或者监控的能力
 @protocol EventTracingContextOutputParamsFilterBuilder <NSObject>
-// => ！！！强持有
-- (void)addParamsFilter:(id<EventTracingOutputParamsFilter>)paramsFilter;
-- (void)removeParamsFilter:(id<EventTracingOutputParamsFilter>)paramsFilter;
-- (void)removeAllParamsFilters;
-@end
-
-/// 日志输出到 `OutputChannel` 之前，有一些修改或者监控的能力
-@protocol EventTracingContextOutputXBuilder <NSObject>
 // => ！！！强持有
 - (void)addParamsFilter:(id<EventTracingOutputParamsFilter>)paramsFilter;
 - (void)removeParamsFilter:(id<EventTracingOutputParamsFilter>)paramsFilter;

@@ -74,7 +74,7 @@
                            originalJson:(NSDictionary *)originalJson
                                    node:(EventTracingVTreeNode * _Nullable)node
                                 inVTree:(EventTracingVTree * _Nullable)VTree {
-    NSString *eventListStr = [EventTracingEngine sharedInstance].ctx.eventTracingReferEventList;
+    NSString *eventListStr = [EventTracingEngine sharedInstance].ctx.multiReferAppliedEventList;
     NSArray<NSString *> *events = [eventListStr componentsSeparatedByString:@","];
     if (!events.count) {
         events = @[ET_EVENT_ID_E_CLCK, ET_EVENT_ID_P_VIEW];
@@ -90,7 +90,7 @@
 }
 
 - (NSArray<NSString *> *)multiRefers {
-    NSInteger multiReferCount = [EventTracingEngine sharedInstance].ctx.eventTracingPsReferNum;
+    NSInteger multiReferCount = [EventTracingEngine sharedInstance].ctx.multiReferMaxItemCount;
     NSArray<NSString *> *refers = self.multiRefersStack;
     if (refers.count > multiReferCount) {
         refers = [refers subarrayWithRange:NSMakeRange(0, multiReferCount)];

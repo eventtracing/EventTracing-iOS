@@ -68,16 +68,16 @@
         context.needStartHsreferOids = [context.extraConfigurationProvider needStartHsreferOids];
     }
     
-    if ([context.extraConfigurationProvider respondsToSelector:@selector(eventTracingReferEventList)]) {
-        context.eventTracingReferEventList = [context.extraConfigurationProvider eventTracingReferEventList];
+    if ([context.extraConfigurationProvider respondsToSelector:@selector(multiReferAppliedEventList)]) {
+        context.multiReferAppliedEventList = [context.extraConfigurationProvider multiReferAppliedEventList];
     } else {
-        context.eventTracingReferEventList = @"_pv,_ec";
+        context.multiReferAppliedEventList = @"_pv,_ec";
     }
     
-    if ([context.extraConfigurationProvider respondsToSelector:@selector(eventTracingPsReferNum)]) {
-        context.eventTracingPsReferNum = [context.extraConfigurationProvider eventTracingPsReferNum];
+    if ([context.extraConfigurationProvider respondsToSelector:@selector(multiReferMaxItemCount)]) {
+        context.multiReferMaxItemCount = [context.extraConfigurationProvider multiReferMaxItemCount];
     } else {
-        context.eventTracingPsReferNum = 5;
+        context.multiReferMaxItemCount = 5;
     }
     
     [context markRunState:YES];

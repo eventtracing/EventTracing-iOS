@@ -52,8 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong) NSMutableArray<EventTracingEventAction *> *stockedEventActions;
 @property(nonatomic, strong) NSArray<NSString *> *needStartHsreferOids;
 
-@property(nonatomic, copy) NSString *eventTracingReferEventList;
-@property(nonatomic, assign) NSInteger eventTracingPsReferNum;
+@property(nonatomic, copy) NSString *multiReferAppliedEventList;
+@property(nonatomic, assign) NSInteger multiReferMaxItemCount;
 
 - (void)refreshAppInActiveState;
 - (void)markRunState:(BOOL)started;
