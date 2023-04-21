@@ -80,10 +80,10 @@
         context.multiReferMaxItemCount = 5;
     }
     
-    if ([context.extraConfigurationProvider respondsToSelector:@selector(useCustomAppLifeCycleEventDelegate)]) {
-        context.useCustomAppLifeCycleEventDelegate = [context.extraConfigurationProvider useCustomAppLifeCycleEventDelegate];
+    if ([context.extraConfigurationProvider respondsToSelector:@selector(useCustomAppLifeCycle)]) {
+        context.useCustomAppLifeCycle = [context.extraConfigurationProvider useCustomAppLifeCycle];
     } else {
-        context.useCustomAppLifeCycleEventDelegate = NO;
+        context.useCustomAppLifeCycle = NO;
     }
     
     [context markRunState:YES];

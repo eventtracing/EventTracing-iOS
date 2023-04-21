@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 ///     UIApplicationWillEnterForegroundNotification    => [[EventTracingEngine sharedInstance] appWillEnterForeground];
 ///     UIApplicationDidEnterBackgroundNotification    => [[EventTracingEngine sharedInstance] appDidEnterBackground];
 ///     UIApplicationWillTerminateNotification                => [[EventTracingEngine sharedInstance] appDidTerminate];
-- (BOOL)useCustomAppLifeCycleEventDelegate;
+- (BOOL)useCustomAppLifeCycle;
 @end
 
 /// @brief 性能调试数据
@@ -256,7 +256,7 @@ EventTracingContextOutputParamsFilterBuilder
 ///  UIApplicationDidEnterBackgroundNotification   => [[EventTracingEngine sharedInstance] appDidEnterBackground];
 ///  UIApplicationWillTerminateNotification        => [[EventTracingEngine sharedInstance] appDidTerminate];
 /// ```
-@property(nonatomic, assign, getter=isUseCustomAppLifeCycleEventDelegate) BOOL useCustomAppLifeCycleEventDelegate;
+@property(nonatomic, assign, getter=isUseCustomAppLifeCycle) BOOL useCustomAppLifeCycle;
 
 /// MARK: 以下均属于 Debug 能力
 /// @brief 监控每一次 VTree 生成构建的耗时
