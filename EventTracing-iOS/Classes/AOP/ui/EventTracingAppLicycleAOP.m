@@ -9,7 +9,7 @@
 #import "EventTracingEngine+Private.h"
 
 
-@interface EventTracingAppLicycleAOP () <EventTracingContextAppLifeCycleObserver>
+@interface EventTracingAppLicycleAOP ()
 @end
 
 @implementation EventTracingAppLicycleAOP
@@ -19,7 +19,7 @@ EventTracingAOPInstanceImp
 - (void)inject {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        if ([[EventTracingEngine sharedInstance].context.extraConfigurationProvider useCustomAppLifeCycleEventDelegateToETObserver:self]) {
+        if ([EventTracingEngine sharedInstance].context.isUseCustomAppLifeCycleEventDelegate) {
             // 使用外部的生命周期事件
         } else {
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(et_appDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
@@ -45,20 +45,6 @@ EventTracingAOPInstanceImp
 }
 
 - (void)et_appWillTerminate:(NSNotification *)noti {
-    [[EventTracingEngine sharedInstance] appDidTerminate];
-}
-
-#pragma mark - EventTracingContextAppLifeCycleObserver
-- (void)appDidBecomeActive {
-    [[EventTracingEngine sharedInstance] appDidBecomeActive];
-}
-- (void)appWillEnterForeground {
-    [[EventTracingEngine sharedInstance] appWillEnterForeground];
-}
-- (void)appDidEnterBackground {
-    [[EventTracingEngine sharedInstance] appDidEnterBackground];
-}
-- (void)appWillTerminate {
     [[EventTracingEngine sharedInstance] appDidTerminate];
 }
 

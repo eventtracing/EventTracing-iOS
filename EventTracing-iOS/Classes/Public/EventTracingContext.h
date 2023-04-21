@@ -18,14 +18,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol EventTracingContextAppLifeCycleObserver <NSObject>
-- (void)appDidBecomeActive;
-- (void)appWillEnterForeground;
-- (void)appDidEnterBackground;
-- (void)appWillTerminate;
-
-@end
-
 /// 一些额外配置
 @protocol EventTracingExtraConfigurationProvider <NSObject>
 @optional
@@ -43,9 +35,17 @@ NS_ASSUME_NONNULL_BEGIN
 /// multiRefers 的最大数量限制，默认 5
 - (NSInteger)multiReferMaxItemCount;
 
-/// 生命周期监听，默认会使用 UIApplicationDidBecomeActiveNotification,UIApplicationWillEnterForegroundNotification,UIApplicationDidEnterBackgroundNotification
-/// 如果自定义，返回 YES，否则返回 NO
-- (BOOL)useCustomAppLifeCycleEventDelegateToETObserver:(id<EventTracingContextAppLifeCycleObserver>)observer;
+/// 如果为 YES 则表示使用外部的APP生命周期事件，此时需要外部在适当的时机调用下面的方法
+///     [[EventTracingEngine sharedInstance] appDidBecomeActive];
+///     [[EventTracingEngine sharedInstance] appWillEnterForeground];
+///     [[EventTracingEngine sharedInstance] appDidEnterBackground];
+///     [[EventTracingEngine sharedInstance] appDidTerminate];
+/// 默认 NO，使用 UIApplicationDidBecomeActiveNotification,UIApplicationWillEnterForegroundNotification,UIApplicationDidEnterBackgroundNotification
+///     UIApplicationDidBecomeActiveNotification         => [[EventTracingEngine sharedInstance] appDidBecomeActive];
+///     UIApplicationWillEnterForegroundNotification    => [[EventTracingEngine sharedInstance] appWillEnterForeground];
+///     UIApplicationDidEnterBackgroundNotification    => [[EventTracingEngine sharedInstance] appDidEnterBackground];
+///     UIApplicationWillTerminateNotification                => [[EventTracingEngine sharedInstance] appDidTerminate];
+- (BOOL)useCustomAppLifeCycleEventDelegate;
 @end
 
 /// @brief 性能调试数据
@@ -241,6 +241,22 @@ EventTracingContextOutputParamsFilterBuilder
 
 /// refer _scm 部分node级别的的formatter
 @property(nonatomic, strong, readonly, nullable) id<EventTracingReferNodeSCMFormatter> referNodeSCMFormatter;
+
+/// - 如果为 YES 则表示使用外部的APP生命周期事件，此时需要外部在适当的时机调用下面的方法
+/// ```
+///  [[EventTracingEngine sharedInstance] appDidBecomeActive];
+///  [[EventTracingEngine sharedInstance] appWillEnterForeground];
+///  [[EventTracingEngine sharedInstance] appDidEnterBackground];
+///  [[EventTracingEngine sharedInstance] appDidTerminate];
+/// ```
+/// - 默认：NO，使用 UIApplicationDidBecomeActiveNotification,UIApplicationWillEnterForegroundNotification,UIApplicationDidEnterBackgroundNotification
+/// ```
+///  UIApplicationDidBecomeActiveNotification      => [[EventTracingEngine sharedInstance] appDidBecomeActive];
+///  UIApplicationWillEnterForegroundNotification  => [[EventTracingEngine sharedInstance] appWillEnterForeground];
+///  UIApplicationDidEnterBackgroundNotification   => [[EventTracingEngine sharedInstance] appDidEnterBackground];
+///  UIApplicationWillTerminateNotification        => [[EventTracingEngine sharedInstance] appDidTerminate];
+/// ```
+@property(nonatomic, assign, getter=isUseCustomAppLifeCycleEventDelegate) BOOL useCustomAppLifeCycleEventDelegate;
 
 /// MARK: 以下均属于 Debug 能力
 /// @brief 监控每一次 VTree 生成构建的耗时

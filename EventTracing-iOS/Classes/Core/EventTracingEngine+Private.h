@@ -29,8 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EventTracingEngine (InnerLifecycle) <EventTracingAppLifecycleProcotol>
-@end
 
 @interface EventTracingEngine (InnerTraverse)
 
