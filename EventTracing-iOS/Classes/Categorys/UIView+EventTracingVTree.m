@@ -66,6 +66,8 @@ void EventTracingRemoveLogicalParentSPMView(UIView *view) {
 }
 
 @implementation UIViewController (EventTracingVTree)
+#pragma mark - EventTracingVTreeNodeExtraConfigProtocol
+- (NSArray<NSString *> *)et_validForContainingSubNodeOids { return [self.p_et_view et_validForContainingSubNodeOids]; }
 
 #pragma mark - Others
 - (void)et_setLogicalParentViewController:(UIViewController *)et_logicalParentViewController {
@@ -127,6 +129,8 @@ void EventTracingRemoveLogicalParentSPMView(UIView *view) {
 @end
 
 @implementation UIView (EventTracingVTree)
+#pragma mark - EventTracingVTreeNodeExtraConfigProtocol
+- (NSArray<NSString *> *)et_validForContainingSubNodeOids { return @[]; }
 
 #pragma mark - Others
 - (void)et_setLogicalParentViewController:(UIViewController *)et_logicalParentViewController {

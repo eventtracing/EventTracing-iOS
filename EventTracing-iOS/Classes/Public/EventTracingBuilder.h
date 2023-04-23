@@ -377,14 +377,14 @@ typedef void(^ET_BuildSCMComponentBlock)(id<EventTracingLogSCMComponentBuilder> 
 @end
 
 // Dynamic Params
-@protocol EvevntTracingLogNodeDynamicParamsBuilder <NSObject>
+@protocol EventTracingLogNodeDynamicParamsBuilder <NSObject>
 @optional
 - (void)et_makeDynamicParams:(id <EventTracingLogNodeParamsBuilder>)builder;
 @end
 
-@interface UIView (EventTracingLogNodeDynsmicParams) <EvevntTracingLogNodeDynamicParamsBuilder>
+@interface UIView (EventTracingLogNodeDynsmicParams) <EventTracingLogNodeDynamicParamsBuilder>
 @end
-@interface UIViewController (EventTracingLogNodeDynsmicParams) <EvevntTracingLogNodeDynamicParamsBuilder>
+@interface UIViewController (EventTracingLogNodeDynsmicParams) <EventTracingLogNodeDynamicParamsBuilder>
 @end
 
 

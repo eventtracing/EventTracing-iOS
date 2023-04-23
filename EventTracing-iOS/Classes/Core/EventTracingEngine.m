@@ -83,7 +83,7 @@
     }
     
     if (context.VTreeNodeExtraConfigProtocol) {
-        ET_SetVTreeNodeExtraConfigNewSelectorMapByProtocol(context.VTreeNodeExtraConfigProtocol);
+        ET_ReplaceProtocolByExternalProtocol(@protocol(EventTracingVTreeNodeExtraConfigProtocol), context.VTreeNodeExtraConfigProtocol)
     }
     
     [context markRunState:YES];

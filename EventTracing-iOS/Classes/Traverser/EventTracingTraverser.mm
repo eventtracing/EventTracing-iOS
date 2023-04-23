@@ -548,10 +548,10 @@ struct ETTraverseObject {
 }
 
 - (void)_setupValidForContainingSubNodeOidsForNode:(EventTracingVTreeNode *)node {
-    NSArray<NSString *> *validForContainingSubNodeOids = ET_GetVTreeNodeExtraConfigInfo(node.view, et_validForContainingSubNodeOids);
+    NSArray<NSString *> *validForContainingSubNodeOids = ET_CallVTreeNodeExtraConfig(node.view, et_validForContainingSubNodeOids);
     UIViewController *vc = node.view.et_currentViewController;
     if (vc) {
-        validForContainingSubNodeOids = ET_GetVTreeNodeExtraConfigInfo(vc, et_validForContainingSubNodeOids);
+        validForContainingSubNodeOids = ET_CallVTreeNodeExtraConfig(vc, et_validForContainingSubNodeOids);
     }
     node.validForContainingSubNodeOids = validForContainingSubNodeOids;
 }

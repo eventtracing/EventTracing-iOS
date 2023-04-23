@@ -1000,6 +1000,7 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
         [vc et_makeDynamicParams:builder];
     }
     
+    ET_CallLogNodeDynamicParamsBuilder(self, et_makeDynamicParams:)
     [self et_makeDynamicParams:builder];
     
     // 将 position 同步到节点配置中

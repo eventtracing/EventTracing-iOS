@@ -55,9 +55,8 @@ static NSDictionary<NSString *, NSString *> * _ET_GetSuffixToSelectorMapFromProt
     return [suffixToSelName copy];
 }
 
-static NSDictionary<NSString *, NSString *> * _ET_GetNewSelectorMapFromExternalProtocol(Protocol * externalProtocol)
+static NSDictionary<NSString *, NSString *> * _ET_GetNewSelectorMapFromExternalProtocol(Protocol * oriProtocol, Protocol * externalProtocol)
 {
-    Protocol * oriProtocol = @protocol(EventTracingVTreeNodeExtraConfigProtocol);
     if (!externalProtocol || externalProtocol == oriProtocol) {
         return nil; //内置的协议，直接用原始方法
     }
@@ -74,53 +73,77 @@ static NSDictionary<NSString *, NSString *> * _ET_GetNewSelectorMapFromExternalP
     return selNameToSelNameResult;
 }
 
-static NSDictionary<NSString *, NSString *> * s_VTreeNodeExtraConfigSelectorMap = nil;
-
-NSDictionary<NSString *, NSString *> * ET_GetVTreeNodeExtraConfigNewSelectorMap(void)
+static NSMutableDictionary <NSString *, NSDictionary<NSString *, NSString *> *> * _ET_GetProtocolToCallSelectorMap(void)
 {
-    return s_VTreeNodeExtraConfigSelectorMap;
+    static NSMutableDictionary <NSString *, NSDictionary<NSString *, NSString *> *> * s_protocolToCallSelectorMap;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        s_protocolToCallSelectorMap = [NSMutableDictionary dictionary];
+    });
+    return s_protocolToCallSelectorMap;
 }
 
-void ET_SetVTreeNodeExtraConfigNewSelectorMapByProtocol(Protocol * protocol)
+static NSDictionary<NSString *, NSString *> * ET_GetForwardMapByOriProtocol(Protocol *oriProtocol)
 {
-    s_VTreeNodeExtraConfigSelectorMap = _ET_GetNewSelectorMapFromExternalProtocol(protocol);
+    return [_ET_GetProtocolToCallSelectorMap() objectForKey:NSStringFromProtocol(oriProtocol)];
 }
 
-@implementation UIViewController (EventTracingVTreeNodeExtraConfig)
-#pragma mark - EventTracingVTreeNodeExtraConfigProtocol
-- (NSArray<NSString *> *)et_validForContainingSubNodeOids { return [self.p_et_view et_validForContainingSubNodeOids]; }
-@end
+void ET_ReplaceProtocolByExternalProtocol(Protocol * oriProtocol, Protocol * newProtocol)
+{
+    [_ET_GetProtocolToCallSelectorMap() setObject:_ET_GetNewSelectorMapFromExternalProtocol(oriProtocol, newProtocol) forKey:NSStringFromProtocol(oriProtocol)];
+}
 
 
-
-@implementation UIView (EventTracingVTreeNodeExtraConfig)
-#pragma mark - EventTracingVTreeNodeExtraConfigProtocol
-- (NSArray<NSString *> *)et_validForContainingSubNodeOids { return @[]; }
-@end
-
-
-
-
-@interface EventTracingVTreeNodeExtraConfigInfoForwarder ()
+@interface EventTracingConfigExternalProtocolForwarder ()
 @property (nonatomic, weak) id target;
+@property (nonatomic, strong) Protocol * oriProtocol;
 @end
 
-@implementation EventTracingVTreeNodeExtraConfigInfoForwarder
 
-+ (instancetype)forwarderForTarget:(id)target
+@implementation EventTracingConfigExternalProtocolForwarder
+
++ (instancetype)forwarderForTarget:(id)target protocol:(Protocol *)oriProtocol
 {
-    EventTracingVTreeNodeExtraConfigInfoForwarder *forwarder = [[EventTracingVTreeNodeExtraConfigInfoForwarder alloc] init];
+    EventTracingConfigExternalProtocolForwarder *forwarder = [[EventTracingConfigExternalProtocolForwarder alloc] init];
     forwarder.target = target;
     return forwarder;
 }
 
-- (NSArray<NSString *> *)et_validForContainingSubNodeOids {
-    NSString * selName = [ET_GetVTreeNodeExtraConfigNewSelectorMap() objectForKey:NSStringFromSelector(_cmd)];
+/**
+ 支持外部传入协议清单：
+ @code
+ EventTracingLogNodeDynamicParamsBuilder
+    => `- (void)et_makeDynamicParams:(id <EventTracingLogNodeParamsBuilder>)builder;`
+ EventTracingVTreeNodeExtraConfigProtocol
+    => `- (NSArray<NSString *> *)et_validForContainingSubNodeOids;`
+ EventTracingVTreeNodeDynamicParamsProtocol
+    => `- (NSDictionary *)et_dynamicParams;`
+ @endcode
+ */
+- (NSDictionary *)et_dynamicParams {
+    NSString * selName = [ET_GetForwardMapByOriProtocol(self.oriProtocol) objectForKey:NSStringFromSelector(_cmd)];
     if (selName.length == 0) {
-        return [self.target performSelector:_cmd];
+        return [self.target et_validForContainingSubNodeOids];
     }
     return [self.target performSelector:NSSelectorFromString(selName)];
 }
+
+- (void)et_makeDynamicParams:(id <EventTracingLogNodeParamsBuilder>)builder {
+    NSString * selName = [ET_GetForwardMapByOriProtocol(self.oriProtocol) objectForKey:NSStringFromSelector(_cmd)];
+    if (selName.length == 0) {
+        return [self.target et_makeDynamicParams:builder];
+    }
+    return [self.target performSelector:NSSelectorFromString(selName) withObject:builder];
+}
+
+- (NSArray<NSString *> *)et_validForContainingSubNodeOids {
+    NSString * selName = [ET_GetForwardMapByOriProtocol(self.oriProtocol) objectForKey:NSStringFromSelector(_cmd)];
+    if (selName.length == 0) {
+        return [self.target et_validForContainingSubNodeOids];
+    }
+    return [self.target performSelector:NSSelectorFromString(selName)];
+}
+
 @end
 
 
