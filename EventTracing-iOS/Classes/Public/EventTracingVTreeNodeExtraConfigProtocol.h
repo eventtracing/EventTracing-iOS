@@ -10,6 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /// MARK: 针对 page 节点，一些额外的配置
+/// MARK: 注意⚠️目前仅支持添加无参数的 getter 方法⚠️
 @protocol EventTracingVTreeNodeExtraConfigProtocol <NSObject>
 
 // 如果设置了oids列表，遍历结果中如果该节点未包含oids列表中的任何节点，则该节点置为invalid, 并且不可见

@@ -29,6 +29,8 @@
 #import "EventTracingVTreeNode+Private.h"
 #import "EventTracingInternalLog.h"
 
+#import "UIView+EventTracingVTreeNodeExtraConfig.h"
+
 @implementation EventTracingEngine
 @synthesize incrementalVTreeWhenScrollEnable = _incrementalVTreeWhenScrollEnable;
 
@@ -78,6 +80,10 @@
         context.multiReferMaxItemCount = [context.extraConfigurationProvider multiReferMaxItemCount];
     } else {
         context.multiReferMaxItemCount = 5;
+    }
+    
+    if (context.VTreeNodeExtraConfigProtocol) {
+        ET_SetVTreeNodeExtraConfigNewSelectorMapByProtocol(context.VTreeNodeExtraConfigProtocol);
     }
     
     [context markRunState:YES];

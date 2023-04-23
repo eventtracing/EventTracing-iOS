@@ -19,6 +19,7 @@
 
 #import "UIView+EventTracingPrivate.h"
 #import "EventTracingEngine+Private.h"
+#import "UIView+EventTracingVTreeNodeExtraConfig.h"
 
 BOOL ET_isPage(UIView *view) {
     return view && view.et_pageId.length > 0;
@@ -547,10 +548,10 @@ struct ETTraverseObject {
 }
 
 - (void)_setupValidForContainingSubNodeOidsForNode:(EventTracingVTreeNode *)node {
-    NSArray<NSString *> *validForContainingSubNodeOids = [node.view et_validForContainingSubNodeOids];
+    NSArray<NSString *> *validForContainingSubNodeOids = ET_GetVTreeNodeExtraConfigInfo(node.view, et_validForContainingSubNodeOids);
     UIViewController *vc = node.view.et_currentViewController;
     if (vc) {
-        validForContainingSubNodeOids = [vc et_validForContainingSubNodeOids];
+        validForContainingSubNodeOids = ET_GetVTreeNodeExtraConfigInfo(vc, et_validForContainingSubNodeOids);
     }
     node.validForContainingSubNodeOids = validForContainingSubNodeOids;
 }

@@ -180,6 +180,12 @@ EventTracingContextOutputParamsFilterBuilder
 ///  UIApplicationDidEnterBackgroundNotification   => [[EventTracingEngine sharedInstance] appDidEnterBackground];
 /// ```
 @property(nonatomic, assign, getter=isUseCustomAppLifeCycle) BOOL useCustomAppLifeCycle;
+
+/// 针对 page 节点，一些额外的配置的协议，该协议的方法需要和默认原有协议的`后缀`相同，才会被替换上
+/// 比如协议方法 `- (NSArray<NSString *> *)et_validForContainingSubNodeOids;`
+/// 外部要定制该方法，则命名上可以是 `- (NSArray<NSString *> *)my_et_validForContainingSubNodeOids;`或 `- (NSArray<NSString *> *)my_validForContainingSubNodeOids;`
+/// 为空则使用默认协议 `@protocol(EventTracingVTreeNodeExtraConfigProtocol)`
+@property (nonatomic, strong) Protocol * VTreeNodeExtraConfigProtocol;
 @end
 
 /// SDK 的 context 信息

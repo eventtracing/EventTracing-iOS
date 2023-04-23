@@ -34,6 +34,7 @@
 @synthesize appLastAtForegroundTime = _appLastAtForegroundTime;
 @synthesize appLastEnterBackgroundTime = _appLastEnterBackgroundTime;
 @synthesize useCustomAppLifeCycle = _useCustomAppLifeCycle;
+@synthesize VTreeNodeExtraConfigProtocol = _VTreeNodeExtraConfigProtocol;
 
 #define LOCK        dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
 #define UNLOCK      dispatch_semaphore_signal(_lock);
