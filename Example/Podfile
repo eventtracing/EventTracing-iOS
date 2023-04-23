@@ -7,8 +7,8 @@ project 'EventTracing-iOS.xcodeproj'
 
 target 'EventTracing-iOS_Example' do
   pod 'EventTracing-iOS', :path => '../'
-   pod 'EventTracing-iOS-Debug', :path => '../../EventTracing-iOS-Debug'
-   pod 'EventTracing-iOS-LogViewer', :path => '../../EventTracing-iOS-LogViewer'
+#  pod 'EventTracing-iOS-Debug', :path => '../../EventTracing-iOS-Debug'
+#  pod 'EventTracing-iOS-LogViewer', :path => '../../EventTracing-iOS-LogViewer'
 #  pod 'EventTracing-iOS-Debug', '~> 0.1.0'
 #  pod 'EventTracing-iOS-LogViewer', '~> 0.1.0'
   pod 'libextobjc'

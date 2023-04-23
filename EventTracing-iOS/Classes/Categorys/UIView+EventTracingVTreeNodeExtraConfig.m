@@ -99,15 +99,6 @@ void ET_SetVTreeNodeExtraConfigNewSelectorMapByProtocol(Protocol * protocol)
 @end
 
 
-@interface EventTracingVTreeNodeExtraConfigInfo : NSObject
-@property (nonatomic, strong) Protocol * protocol;
-@property (nonatomic, assign) SEL selector;
-@end
-
-@implementation EventTracingVTreeNodeExtraConfigInfo
-@end
-
-
 
 
 @interface EventTracingVTreeNodeExtraConfigInfoForwarder ()
