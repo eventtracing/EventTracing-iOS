@@ -1,25 +1,25 @@
 //
-//  EventTracingEventOutput.h
+//  NEEventTracingEventOutput.h
 //  BlocksKit
 //
 //  Created by dl on 2021/3/22.
 //
 
 #import <Foundation/Foundation.h>
-#import "EventTracingOutputFormatter.h"
-#import "EventTracingEventOutputChannel.h"
+#import "NEEventTracingOutputFormatter.h"
+#import "NEEventTracingEventOutputChannel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingEventOutput : NSObject
+@interface NEEventTracingEventOutput : NSObject
 
-@property(nonatomic, strong, readonly) id<EventTracingOutputFormatter> formatter;
-@property(nonatomic, weak, readonly) id<EventTracingOutputPublicDynamicParamsProvider> publicDynamicParamsProvider;
+@property(nonatomic, strong, readonly) id<NEEventTracingOutputFormatter> formatter;
+@property(nonatomic, weak, readonly) id<NEEventTracingOutputPublicDynamicParamsProvider> publicDynamicParamsProvider;
 @property(nonatomic, strong, readonly) NSDictionary *staticPublicParmas;
 @property(nonatomic, strong, readonly) NSDictionary *currentActivePublicParmas;
 
-@property(nonatomic, strong, readonly) NSArray<id<EventTracingEventOutputChannel>> *allOutputChannels;
-@property(nonatomic, strong, readonly) NSArray<id<EventTracingOutputParamsFilter>> *allParmasFilters;
+@property(nonatomic, strong, readonly) NSArray<id<NEEventTracingEventOutputChannel>> *allOutputChannels;
+@property(nonatomic, strong, readonly) NSArray<id<NEEventTracingOutputParamsFilter>> *allParmasFilters;
 
 - (void)configStaticPublicParams:(NSDictionary<NSString *,NSString *> *)params withParamGuard:(BOOL)withParamGuard;
 - (void)configCurrentActivePublicParams:(NSDictionary<NSString *,NSString *> *)params withParamGuard:(BOOL)withParamGuard;

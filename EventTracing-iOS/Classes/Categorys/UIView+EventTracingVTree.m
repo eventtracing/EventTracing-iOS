@@ -1,21 +1,21 @@
 //
 //  UIView+EventTracingVTree.m
-//  EventTracing
+//  NEEventTracing
 //
 //  Created by dl on 2021/3/18.
 //
 
 #import "UIView+EventTracing.h"
 #import "UIView+EventTracingPrivate.h"
-#import "EventTracingEngine+Private.h"
-#import "EventTracingContext+Private.h"
+#import "NEEventTracingEngine+Private.h"
+#import "NEEventTracingContext+Private.h"
 
 #import "NSArray+ETEnumerator.h"
 #import <BlocksKit/BlocksKit.h>
 #import <objc/runtime.h>
 
 static NSMutableDictionary<NSNumber *, NSHashTable<UIView *> *> *sETAutoMountRootPageViewsContainer = nil;
-NSArray<UIView *> *EventTracingAutoMountRootPageViews(void) {
+NSArray<UIView *> *NEEventTracingAutoMountRootPageViews(void) {
     NSArray<NSNumber *> *orderdPrioritys = [sETAutoMountRootPageViewsContainer.keyEnumerator.allObjects sortedArrayUsingComparator:^NSComparisonResult(NSNumber * _Nonnull obj1, NSNumber * _Nonnull obj2) {
         return obj1.unsignedIntegerValue > obj2.unsignedIntegerValue;
     }];
@@ -26,7 +26,7 @@ NSArray<UIView *> *EventTracingAutoMountRootPageViews(void) {
     }];
     return viewsSet.array.copy;
 }
-void EventTracingPushAutoMountRootPageView(UIView *view, ETAutoMountRootPageQueuePriority priority) {
+void NEEventTracingPushAutoMountRootPageView(UIView *view, NEETAutoMountRootPageQueuePriority priority) {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         sETAutoMountRootPageViewsContainer = [@{} mutableCopy];
@@ -42,231 +42,250 @@ void EventTracingPushAutoMountRootPageView(UIView *view, ETAutoMountRootPageQueu
     [views addObject:view];
 }
 
-void EventTracingRemoveAutoMountRootPageView(UIView *view) {
+void NEEventTracingRemoveAutoMountRootPageView(UIView *view) {
     [sETAutoMountRootPageViewsContainer enumerateKeysAndObjectsUsingBlock:^(NSNumber * _Nonnull key, NSHashTable<UIView *> * _Nonnull views, BOOL * _Nonnull stop) {
         [views removeObject:view];
     }];
 }
 
-static NSHashTable<UIView *> *sEventTracingLogicalParentSPMViews = nil;
-NSArray<UIView *> *EventTracingLogicalParentSPMViews(void) {
-    return sEventTracingLogicalParentSPMViews.allObjects;
+static NSHashTable<UIView *> *sNEEventTracingLogicalParentSPMViews = nil;
+NSArray<UIView *> *NEEventTracingLogicalParentSPMViews(void) {
+    return sNEEventTracingLogicalParentSPMViews.allObjects;
 }
 
-void EventTracingPushLogicalParentSPMView(UIView *view) {
+void NEEventTracingPushLogicalParentSPMView(UIView *view) {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sEventTracingLogicalParentSPMViews = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
+        sNEEventTracingLogicalParentSPMViews = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
     });
-    [sEventTracingLogicalParentSPMViews addObject:view];
+    [sNEEventTracingLogicalParentSPMViews addObject:view];
 }
 
-void EventTracingRemoveLogicalParentSPMView(UIView *view) {
-    [sEventTracingLogicalParentSPMViews removeObject:view];
+void NEEventTracingRemoveLogicalParentSPMView(UIView *view) {
+    [sNEEventTracingLogicalParentSPMViews removeObject:view];
 }
 
 @implementation UIViewController (EventTracingVTree)
-#pragma mark - EventTracingVTreeNodeExtraConfigProtocol
-- (NSArray<NSString *> *)et_validForContainingSubNodeOids { return [self.p_et_view et_validForContainingSubNodeOids]; }
+#pragma mark - NEEventTracingVTreeNodeExtraConfigProtocol
+- (NSArray<NSString *> *)ne_et_validForContainingSubNodeOids { return [self.p_ne_et_view ne_et_validForContainingSubNodeOids]; }
 
 #pragma mark - Others
-- (void)et_setLogicalParentViewController:(UIViewController *)et_logicalParentViewController {
-    self.p_et_view.et_logicalParentViewController = et_logicalParentViewController;
+- (void)ne_et_setLogicalParentViewController:(UIViewController *)ne_et_logicalParentViewController {
+    self.p_ne_et_view.ne_et_logicalParentViewController = ne_et_logicalParentViewController;
 }
-- (UIViewController *)et_logicalParentViewController {
-    return self.p_et_view.et_logicalParentViewController;
-}
-
-- (void)et_setLogicalParentView:(UIView *)et_logicalParentView {
-    self.p_et_view.et_logicalParentView = et_logicalParentView;
-}
-- (UIView *)et_logicalParentView {
-    return self.p_et_view.et_logicalParentView;
+- (UIViewController *)ne_et_logicalParentViewController {
+    return self.p_ne_et_view.ne_et_logicalParentViewController;
 }
 
-- (NSString *)et_logicalParentSPM {
-    return self.p_et_view.et_logicalParentSPM;
+- (void)ne_et_setLogicalParentView:(UIView *)ne_et_logicalParentView {
+    self.p_ne_et_view.ne_et_logicalParentView = ne_et_logicalParentView;
+}
+- (UIView *)ne_et_logicalParentView {
+    return self.p_ne_et_view.ne_et_logicalParentView;
 }
 
-- (void)et_setLogicalParentSPM:(NSString *)et_logicalParentSPM {
-    self.p_et_view.et_logicalParentSPM = et_logicalParentSPM;
+- (NSString *)ne_et_logicalParentSPM {
+    return self.p_ne_et_view.ne_et_logicalParentSPM;
 }
 
-- (BOOL)et_logicalVisible {
-    return [self.p_et_view et_logicalVisible];
-}
-- (void)et_setLogicalVisible:(BOOL)et_logicalVisible {
-    [self.p_et_view et_setLogicalVisible:et_logicalVisible];
+- (void)ne_et_setLogicalParentSPM:(NSString *)ne_et_logicalParentSPM {
+    self.p_ne_et_view.ne_et_logicalParentSPM = ne_et_logicalParentSPM;
 }
 
-- (BOOL)et_isAutoMountOnCurrentRootPageEnable {
-    return [self.p_et_view et_isAutoMountOnCurrentRootPageEnable];
+- (BOOL)ne_et_logicalVisible {
+    return [self.p_ne_et_view ne_et_logicalVisible];
 }
-- (void)et_autoMountOnCurrentRootPage {
-    [self.p_et_view et_autoMountOnCurrentRootPage];
-}
-- (void)et_autoMountOnCurrentRootPageWithPriority:(ETAutoMountRootPageQueuePriority)priority {
-    [self.p_et_view et_autoMountOnCurrentRootPageWithPriority:priority];
-}
-- (void)et_cancelAutoMountOnCurrentRootPage {
-    [self.p_et_view et_cancelAutoMountOnCurrentRootPage];
-}
-- (UIEdgeInsets)et_visibleEdgeInsets {
-    return self.p_et_view.et_visibleEdgeInsets;
-}
-- (void)et_setVisibleEdgeInsets:(UIEdgeInsets)et_visibleEdgeInsets {
-    self.p_et_view.et_visibleEdgeInsets = et_visibleEdgeInsets;
+- (void)ne_et_setLogicalVisible:(BOOL)ne_et_logicalVisible {
+    [self.p_ne_et_view ne_et_setLogicalVisible:ne_et_logicalVisible];
 }
 
-- (ETNodeVisibleRectCalculateStrategy)et_visibleRectCalculateStrategy {
-    return self.p_et_view.et_visibleRectCalculateStrategy;
+- (BOOL)ne_et_isAutoMountOnCurrentRootPageEnable {
+    return [self.p_ne_et_view ne_et_isAutoMountOnCurrentRootPageEnable];
 }
-- (void)et_setVisibleRectCalculateStrategy:(ETNodeVisibleRectCalculateStrategy)et_visibleRectCalculateStrategy {
-    self.p_et_view.et_visibleRectCalculateStrategy = et_visibleRectCalculateStrategy;
+- (void)ne_et_autoMountOnCurrentRootPage {
+    [self.p_ne_et_view ne_et_autoMountOnCurrentRootPage];
+}
+- (void)ne_et_autoMountOnCurrentRootPageWithPriority:(NEETAutoMountRootPageQueuePriority)priority {
+    [self.p_ne_et_view ne_et_autoMountOnCurrentRootPageWithPriority:priority];
+}
+- (void)ne_et_cancelAutoMountOnCurrentRootPage {
+    [self.p_ne_et_view ne_et_cancelAutoMountOnCurrentRootPage];
+}
+- (void)ne_et_cancelAutoMountOnCuurentRootPage {
+    [self ne_et_cancelAutoMountOnCurrentRootPage];
+}
+
+- (UIEdgeInsets)ne_et_visibleEdgeInsets {
+    return self.p_ne_et_view.ne_et_visibleEdgeInsets;
+}
+- (void)ne_et_setVisibleEdgeInsets:(UIEdgeInsets)ne_et_visibleEdgeInsets {
+    self.p_ne_et_view.ne_et_visibleEdgeInsets = ne_et_visibleEdgeInsets;
+}
+
+- (NEETNodeVisibleRectCalculateStrategy)ne_et_visibleRectCalculateStrategy {
+    return self.p_ne_et_view.ne_et_visibleRectCalculateStrategy;
+}
+- (void)ne_et_setVisibleRectCalculateStrategy:(NEETNodeVisibleRectCalculateStrategy)ne_et_visibleRectCalculateStrategy {
+    self.p_ne_et_view.ne_et_visibleRectCalculateStrategy = ne_et_visibleRectCalculateStrategy;
     
-    [[EventTracingEngine sharedInstance] traverse];
+    [[NEEventTracingEngine sharedInstance] traverse];
 }
 @end
 
 @implementation UIView (EventTracingVTree)
-#pragma mark - EventTracingVTreeNodeExtraConfigProtocol
-- (NSArray<NSString *> *)et_validForContainingSubNodeOids { return @[]; }
+#pragma mark - NEEventTracingVTreeNodeExtraConfigProtocol
+- (NSArray<NSString *> *)ne_et_validForContainingSubNodeOids { return @[]; }
 
 #pragma mark - Others
-- (void)et_setLogicalParentViewController:(UIViewController *)et_logicalParentViewController {
-    [self et_setLogicalParentView:et_logicalParentViewController.p_et_view];
+- (void)ne_et_setLogicalParentViewController:(UIViewController *)ne_et_logicalParentViewController {
+    [self ne_et_setLogicalParentView:ne_et_logicalParentViewController.p_ne_et_view];
 }
-- (UIViewController *)et_logicalParentViewController {
-    UIViewController *viewController = (UIViewController *)self.et_logicalParentView.nextResponder;
+- (UIViewController *)ne_et_logicalParentViewController {
+    UIViewController *viewController = (UIViewController *)self.ne_et_logicalParentView.nextResponder;
     return [viewController isKindOfClass:UIViewController.class] ? viewController : nil;
 }
 
-- (void)et_setLogicalParentView:(UIView *)et_logicalParentView {
-    if (self.et_isAutoMountOnCurrentRootPageEnable) {
-        [self et_cancelAutoMountOnCurrentRootPage];
+- (void)ne_et_setLogicalParentView:(UIView *)ne_et_logicalParentView {
+    if (self.ne_et_isAutoMountOnCurrentRootPageEnable) {
+        [self ne_et_cancelAutoMountOnCurrentRootPage];
     }
-    self.et_logicalParentSPM = nil;
+    self.ne_et_logicalParentSPM = nil;
     
-    if (et_logicalParentView) {
-        if (et_logicalParentView != self.et_logicalParentView
-            && !ET_checkIfExistsLogicalMountEndlessLoopAtView(self, et_logicalParentView)) {
+    if (ne_et_logicalParentView) {
+        if (ne_et_logicalParentView != self.ne_et_logicalParentView
+            && !NE_ET_checkIfExistsLogicalMountEndlessLoopAtView(self, ne_et_logicalParentView)) {
             
             // 循环性的检测
             
-            EventTracingWeakObjectContainer<UIView *> *container = [[EventTracingWeakObjectContainer alloc] initWithTarget:self object:et_logicalParentView];
-            objc_setAssociatedObject(self, @selector(et_logicalParentView), container, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+            NEEventTracingWeakObjectContainer<UIView *> *container = [[NEEventTracingWeakObjectContainer alloc] initWithTarget:self object:ne_et_logicalParentView];
+            objc_setAssociatedObject(self, @selector(ne_et_logicalParentView), container, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
             
-            NSHashTable<EventTracingWeakObjectContainer<UIView *> *> *table = et_logicalParentView.et_subLogicalViews;
+            NSHashTable<NEEventTracingWeakObjectContainer<UIView *> *> *table = ne_et_logicalParentView.ne_et_subLogicalViews;
             if (!table) {
                 table = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
-                et_logicalParentView.et_subLogicalViews = table;
+                ne_et_logicalParentView.ne_et_subLogicalViews = table;
             }
             [table addObject:container];
             
-            [[EventTracingEngine sharedInstance] traverse];
+            [[NEEventTracingEngine sharedInstance] traverse];
         }
         
         return;
     }
     
-    if (!et_logicalParentView) {
-        objc_setAssociatedObject(self, @selector(et_logicalParentView), nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    if (!ne_et_logicalParentView) {
+        objc_setAssociatedObject(self, @selector(ne_et_logicalParentView), nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
         
-        [[EventTracingEngine sharedInstance] traverse];
+        [[NEEventTracingEngine sharedInstance] traverse];
     }
 }
-- (UIView *)et_logicalParentView {
-    EventTracingWeakObjectContainer<UIView *> *container = [self bk_associatedValueForKey:_cmd];
+- (UIView *)ne_et_logicalParentView {
+    NEEventTracingWeakObjectContainer<UIView *> *container = [self bk_associatedValueForKey:_cmd];
     return container.object;
 }
 
-- (NSString *)et_logicalParentSPM {
-    return self.et_props.logicalParentSPM;
+- (NSString *)ne_et_logicalParentSPM {
+    return self.ne_et_props.logicalParentSPM;
 }
-- (void)et_setLogicalParentSPM:(NSString *)et_logicalParentSPM {
-    if (self.et_logicalParentView != nil) {
+- (void)ne_et_setLogicalParentSPM:(NSString *)ne_et_logicalParentSPM {
+    if (self.ne_et_logicalParentView != nil) {
         return;
     }
     
-    self.et_props.logicalParentSPM = et_logicalParentSPM;
+    self.ne_et_props.logicalParentSPM = ne_et_logicalParentSPM;
     
-    if (et_logicalParentSPM != nil) {
-        EventTracingPushLogicalParentSPMView(self);
+    if (ne_et_logicalParentSPM != nil) {
+        NEEventTracingPushLogicalParentSPMView(self);
     } else {
-        EventTracingRemoveLogicalParentSPMView(self);
+        NEEventTracingRemoveLogicalParentSPMView(self);
     }
     
-    [[EventTracingEngine sharedInstance] traverse];
+    [[NEEventTracingEngine sharedInstance] traverse];
 }
 
-- (BOOL)et_logicalVisible {
-    return self.et_props.logicalVisible;
+- (BOOL)ne_et_logicalVisible {
+    return self.ne_et_props.logicalVisible;
 }
-- (void)et_setLogicalVisible:(BOOL)et_logicalVisible {
-    if (self.et_logicalVisible == et_logicalVisible) {
+- (void)ne_et_setLogicalVisible:(BOOL)ne_et_logicalVisible {
+    if (self.ne_et_logicalVisible == ne_et_logicalVisible) {
         return;
     }
     
-    self.et_props.logicalVisible = et_logicalVisible;
-    [[EventTracingEngine sharedInstance] traverse];
+    self.ne_et_props.logicalVisible = ne_et_logicalVisible;
+    [[NEEventTracingEngine sharedInstance] traverse];
 }
 
-- (BOOL)et_isAutoMountOnCurrentRootPageEnable {
-    return self.et_props.isAutoMountRootPage;
+- (BOOL)ne_et_isAutoMountOnCurrentRootPageEnable {
+    return self.ne_et_props.isAutoMountRootPage;
 }
-- (void)et_autoMountOnCurrentRootPage {
-    [self et_autoMountOnCurrentRootPageWithPriority:ETAutoMountRootPageQueuePriorityDefault];
+- (void)ne_et_autoMountOnCurrentRootPage {
+    [self ne_et_autoMountOnCurrentRootPageWithPriority:NEETAutoMountRootPageQueuePriorityDefault];
 }
-- (void)et_autoMountOnCurrentRootPageWithPriority:(ETAutoMountRootPageQueuePriority)priority {
-    if (self.et_logicalParentView != nil || self.et_logicalParentSPM != nil) {
+- (void)ne_et_autoMountOnCurrentRootPageWithPriority:(NEETAutoMountRootPageQueuePriority)priority {
+    if (self.ne_et_logicalParentView != nil || self.ne_et_logicalParentSPM != nil) {
         return;
     }
-    self.et_props.autoMountRootPage = YES;
+    self.ne_et_props.autoMountRootPage = YES;
     
-    EventTracingPushAutoMountRootPageView(self, priority);
-    [[EventTracingEngine sharedInstance] traverse];
+    NEEventTracingPushAutoMountRootPageView(self, priority);
+    [[NEEventTracingEngine sharedInstance] traverse];
 }
-- (void)et_cancelAutoMountOnCurrentRootPage {
-    self.et_props.autoMountRootPage = NO;
+- (void)ne_et_cancelAutoMountOnCurrentRootPage {
+    self.ne_et_props.autoMountRootPage = NO;
     
-    EventTracingRemoveAutoMountRootPageView(self);
-    [[EventTracingEngine sharedInstance] traverse];
+    NEEventTracingRemoveAutoMountRootPageView(self);
+    [[NEEventTracingEngine sharedInstance] traverse];
 }
 
-- (UIEdgeInsets)et_visibleEdgeInsets {
-    return self.et_props.visibleEdgeInsets;
+- (void)ne_et_cancelAutoMountOnCuurentRootPage {
+    [self ne_et_cancelAutoMountOnCurrentRootPage];
 }
-- (void)et_setVisibleEdgeInsets:(UIEdgeInsets)et_visibleEdgeInsets {
-    UIEdgeInsets preInsets = [self et_visibleEdgeInsets];
-    if (UIEdgeInsetsEqualToEdgeInsets(preInsets, et_visibleEdgeInsets)) {
+
+- (UIEdgeInsets)ne_et_visibleEdgeInsets {
+    return self.ne_et_props.visibleEdgeInsets;
+}
+- (void)ne_et_setVisibleEdgeInsets:(UIEdgeInsets)ne_et_visibleEdgeInsets {
+    UIEdgeInsets preInsets = [self ne_et_visibleEdgeInsets];
+    if (UIEdgeInsetsEqualToEdgeInsets(preInsets, ne_et_visibleEdgeInsets)) {
         return;
     }
-    self.et_props.visibleEdgeInsets = et_visibleEdgeInsets;
+    self.ne_et_props.visibleEdgeInsets = ne_et_visibleEdgeInsets;
     
-    [[EventTracingEngine sharedInstance] traverse];
+    [[NEEventTracingEngine sharedInstance] traverse];
 }
 
-- (ETNodeVisibleRectCalculateStrategy)et_visibleRectCalculateStrategy {
-    return self.et_props.visibleRectCalculateStrategy;
+- (NEETNodeVisibleRectCalculateStrategy)ne_et_visibleRectCalculateStrategy {
+    return self.ne_et_props.visibleRectCalculateStrategy;
 }
-- (void)et_setVisibleRectCalculateStrategy:(ETNodeVisibleRectCalculateStrategy)et_visibleRectCalculateStrategy {
-    self.et_props.visibleRectCalculateStrategy = et_visibleRectCalculateStrategy;
+- (void)ne_et_setVisibleRectCalculateStrategy:(NEETNodeVisibleRectCalculateStrategy)ne_et_visibleRectCalculateStrategy {
+    self.ne_et_props.visibleRectCalculateStrategy = ne_et_visibleRectCalculateStrategy;
 }
+
+#pragma mark - NEEventTracingVTreeNodeElementImpressThresholdProtocol
+- (CGFloat)ne_et_impressRatioThreshold {
+    return 0.f;
+}
+- (void)ne_et_setImpressRatioThreshold:(CGFloat)ne_et_impressRatioThreshold {}
+
+- (NSTimeInterval)ne_et_impressIntervalThreshold {
+    return 0;
+}
+- (void)ne_et_setImpressIntervalThreshold:(NSTimeInterval)ne_et_impressIntervalThreshold {}
 
 @end
 
 #pragma mark - VTreeNodeImpressObserver
 @implementation UIView (EventTracingVTreeObserver)
-- (NSArray<id<EventTracingVTreeNodeImpressObserver>> *)et_impressObservers {
-    NSHashTable<id<EventTracingVTreeNodeImpressObserver>> *observers = objc_getAssociatedObject(self, _cmd);
+- (NSArray<id<NEEventTracingVTreeNodeImpressObserver>> *)ne_et_impressObservers {
+    NSHashTable<id<NEEventTracingVTreeNodeImpressObserver>> *observers = objc_getAssociatedObject(self, _cmd);
     return observers.allObjects;
 }
 
-- (void)et_addImpressObserver:(id<EventTracingVTreeNodeImpressObserver>)observer {
-    NSHashTable<id<EventTracingVTreeNodeImpressObserver>> *observers = objc_getAssociatedObject(self, @selector(et_impressObservers));
+- (void)ne_et_addImpressObserver:(id<NEEventTracingVTreeNodeImpressObserver>)observer {
+    NSHashTable<id<NEEventTracingVTreeNodeImpressObserver>> *observers = objc_getAssociatedObject(self, @selector(ne_et_impressObservers));
     if (!observers) {
         observers = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
-        objc_setAssociatedObject(self, @selector(et_impressObservers), observers, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        objc_setAssociatedObject(self, @selector(ne_et_impressObservers), observers, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
     }
     
     if ([observers containsObject:observer]) {
@@ -276,13 +295,13 @@ void EventTracingRemoveLogicalParentSPMView(UIView *view) {
     [observers addObject:observer];
 }
 
-- (void)et_removeImpressObserver:(id<EventTracingVTreeNodeImpressObserver>)observer {
-    NSHashTable<id<EventTracingVTreeNodeImpressObserver>> *observers = objc_getAssociatedObject(self, @selector(et_impressObservers));
+- (void)ne_et_removeImpressObserver:(id<NEEventTracingVTreeNodeImpressObserver>)observer {
+    NSHashTable<id<NEEventTracingVTreeNodeImpressObserver>> *observers = objc_getAssociatedObject(self, @selector(ne_et_impressObservers));
     [observers removeObject:observer];
 }
 
-- (void)et_removeallImpressObservers {
-    NSHashTable<id<EventTracingVTreeNodeImpressObserver>> *observers = objc_getAssociatedObject(self, @selector(et_impressObservers));
+- (void)ne_et_removeallImpressObservers {
+    NSHashTable<id<NEEventTracingVTreeNodeImpressObserver>> *observers = objc_getAssociatedObject(self, @selector(ne_et_impressObservers));
     [observers removeAllObjects];
 }
 @end

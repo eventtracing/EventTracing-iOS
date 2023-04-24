@@ -1,14 +1,14 @@
 //
-//  EventTracingAssociatedPros.m
+//  NEEventTracingAssociatedPros.m
 //  BlocksKit
 //
 //  Created by dl on 2021/7/27.
 //
 
-#import "EventTracingAssociatedPros.h"
-#import "EventTracingTraverser.h"
-#import "EventTracingVTreeNode+Private.h"
-#import "EventTracingEngine+Private.h"
+#import "NEEventTracingAssociatedPros.h"
+#import "NEEventTracingTraverser.h"
+#import "NEEventTracingVTreeNode+Private.h"
+#import "NEEventTracingEngine+Private.h"
 
 #import <objc/runtime.h>
 #import <BlocksKit/BlocksKit.h>
@@ -29,25 +29,25 @@ static NSNumber *uniqueBizClassId(UIView *view) {
     return classIdRet;
 }
 
-@interface EventTracingAssociatedProsParamsCallback()
-@property (nonatomic, copy, readwrite) ET_AddParamsCallback callback;
-@property (nonatomic, copy, readwrite) ET_AddParamsCarryEventCallback carryEventCallback;
+@interface NEEventTracingAssociatedProsParamsCallback()
+@property (nonatomic, copy, readwrite) NE_ET_AddParamsCallback callback;
+@property (nonatomic, copy, readwrite) NE_ET_AddParamsCarryEventCallback carryEventCallback;
 @property (nonatomic, copy, readwrite) NSArray<NSString *> *events;
 @end
 
-@implementation EventTracingAssociatedProsParamsCallback
+@implementation NEEventTracingAssociatedProsParamsCallback
 @end
 
-@interface EventTracingAssociatedPros() {
+@interface NEEventTracingAssociatedPros() {
     __weak UIView *_view;
     BOOL _buildinEventLogDisableStrategyHasBeenSetted;
 }
 
-@property(nonatomic, strong, readonly) NSMutableArray<EventTracingAssociatedProsParamsCallback *> *innerParamCallbacks;
+@property(nonatomic, strong, readonly) NSMutableArray<NEEventTracingAssociatedProsParamsCallback *> *innerParamCallbacks;
 @end
 
 __attribute__((objc_direct_members))
-@implementation EventTracingAssociatedPros
+@implementation NEEventTracingAssociatedPros
 @synthesize view = _view;
 @synthesize pageId = _pageId;
 @synthesize elementId = _elementId;
@@ -71,7 +71,7 @@ __attribute__((objc_direct_members))
 }
 
 + (instancetype)associatedProsWithView:(UIView *)view {
-    EventTracingAssociatedPros *props = [[EventTracingAssociatedPros alloc] init];
+    NEEventTracingAssociatedPros *props = [[NEEventTracingAssociatedPros alloc] init];
     props->_view = view;
     return props;
 }
@@ -92,24 +92,24 @@ __attribute__((objc_direct_members))
     }
 }
 
-- (void)addParamsCallback:(ET_AddParamsCallback)callback forEvent:(NSString *)event {
+- (void)addParamsCallback:(NE_ET_AddParamsCallback)callback forEvent:(NSString *)event {
     if (event.length == 0 || !callback) {
         return;
     }
     
-    EventTracingAssociatedProsParamsCallback *callbackObj = [[EventTracingAssociatedProsParamsCallback alloc] init];
+    NEEventTracingAssociatedProsParamsCallback *callbackObj = [[NEEventTracingAssociatedProsParamsCallback alloc] init];
     callbackObj.callback = callback;
     callbackObj.events = @[event];
     
     [self.innerParamCallbacks addObject:callbackObj];
 }
 
-- (void)addParamsCarryEventCallback:(ET_AddParamsCarryEventCallback)callback forEvents:(NSArray<NSString *> *)events {
+- (void)addParamsCarryEventCallback:(NE_ET_AddParamsCarryEventCallback)callback forEvents:(NSArray<NSString *> *)events {
     if (events.count == 0 || !callback) {
         return;
     }
     
-    EventTracingAssociatedProsParamsCallback *callbackObj = [[EventTracingAssociatedProsParamsCallback alloc] init];
+    NEEventTracingAssociatedProsParamsCallback *callbackObj = [[NEEventTracingAssociatedProsParamsCallback alloc] init];
     callbackObj.carryEventCallback = callback;
     callbackObj.events = events;
     
@@ -137,14 +137,14 @@ __attribute__((objc_direct_members))
     BOOL hasBizLeafIdentifier = _bizLeafIdentifier.length > 0;
     NSString *bizLeafIdentifier = hasBizLeafIdentifier ? _bizLeafIdentifier : memAddrStr;
     
-    EventTracingSentinel *sentinel = _reuseSEQ;
+    NEEventTracingSentinel *sentinel = _reuseSEQ;
     
     NSMutableString *identifierString = [@"" mutableCopy];
     [identifierString appendFormat:@"[seq_(%@)]", @(sentinel.value).stringValue];
-    [identifierString appendFormat:@"[%@_(%@)]", (self.isPage ? ET_REFER_KEY_P : ET_REFER_KEY_E), (self.isPage ? self.pageId : self.elementId)];
+    [identifierString appendFormat:@"[%@_(%@)]", (self.isPage ? NE_ET_REFER_KEY_P : NE_ET_REFER_KEY_E), (self.isPage ? self.pageId : self.elementId)];
     [identifierString appendFormat:@"[biz_(%@)]", bizLeafIdentifier];
     if (hasBizLeafIdentifier) {
-        [identifierString appendFormat:@"[%@]", ET_REUSE_BIZ_SET];
+        [identifierString appendFormat:@"[%@]", NE_ET_REUSE_BIZ_SET];
     }
     
     _reuseIdentifier = identifierString.copy;
@@ -166,9 +166,9 @@ __attribute__((objc_direct_members))
     }
     return identifier;
 }
-- (EventTracingSentinel *)reuseSEQ {
+- (NEEventTracingSentinel *)reuseSEQ {
     if (!_reuseSEQ) {
-        _reuseSEQ = [[EventTracingSentinel alloc] init];
+        _reuseSEQ = [[NEEventTracingSentinel alloc] init];
     }
     return _reuseSEQ;
 }
@@ -179,32 +179,32 @@ __attribute__((objc_direct_members))
     };
 }
 
-- (ETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy {
+- (NEETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy {
     if (!_buildinEventLogDisableStrategyHasBeenSetted
-        && ET_isElement(self.view)
-        && ![EventTracingEngine sharedInstance].ctx.isElementAutoImpressendEnable) {
-        return ETNodeBuildinEventLogDisableStrategyImpressend;
+        && NE_ET_isElement(self.view)
+        && ![NEEventTracingEngine sharedInstance].ctx.isElementAutoImpressendEnable) {
+        return NEETNodeBuildinEventLogDisableStrategyImpressend;
     }
 
     return _buildinEventLogDisableStrategy;
 }
 
-- (void)setBuildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy {
+- (void)setBuildinEventLogDisableStrategy:(NEETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy {
     _buildinEventLogDisableStrategy = buildinEventLogDisableStrategy;
     _buildinEventLogDisableStrategyHasBeenSetted = YES;
 }
 
-- (NSArray<EventTracingAssociatedProsParamsCallback *> *)paramCallbacks {
+- (NSArray<NEEventTracingAssociatedProsParamsCallback *> *)paramCallbacks {
     return self.innerParamCallbacks.copy;
 }
 
 @end
 
-@implementation EventTracingVirtualParentAssociatedPros
+@implementation NEEventTracingVirtualParentAssociatedPros
 @synthesize view = _view;
 
 + (instancetype)associatedProsWithView:(UIView *)view {
-    EventTracingVirtualParentAssociatedPros *props = [[EventTracingVirtualParentAssociatedPros alloc] init];
+    NEEventTracingVirtualParentAssociatedPros *props = [[NEEventTracingVirtualParentAssociatedPros alloc] init];
     props->_view = view;
     return props;
 }

@@ -1,13 +1,13 @@
 //
-//  EventTracingWeakObjectContainer.m
-//  EventTracing
+//  NEEventTracingWeakObjectContainer.m
+//  NEEventTracing
 //
 //  Created by dl on 2021/7/27.
 //
 
-#import "EventTracingWeakObjectContainer.h"
+#import "NEEventTracingWeakObjectContainer.h"
 
-@implementation EventTracingWeakObjectContainer
+@implementation NEEventTracingWeakObjectContainer
 - (instancetype)initWithObject:(id)object {
     return [self initWithTarget:nil object:object];
 }

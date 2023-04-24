@@ -1,29 +1,29 @@
 //
-//  EventTracingAssociatedPros.h
+//  NEEventTracingAssociatedPros.h
 //  BlocksKit
 //
 //  Created by dl on 2021/7/27.
 //
 
 #import <Foundation/Foundation.h>
-#import "EventTracingDefines.h"
-#import "EventTracingSentinel.h"
-#import "EventTracingWeakObjectContainer.h"
-#import "EventTracingVTree.h"
-#import "EventTracingVTreeNode.h"
+#import "NEEventTracingDefines.h"
+#import "NEEventTracingSentinel.h"
+#import "NEEventTracingWeakObjectContainer.h"
+#import "NEEventTracingVTree.h"
+#import "NEEventTracingVTreeNode.h"
 
 #import "UIView+EventTracing.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingAssociatedProsParamsCallback : NSObject
-@property (nonatomic, copy, readonly) ET_AddParamsCallback callback;
-@property (nonatomic, copy, readonly) ET_AddParamsCarryEventCallback carryEventCallback;
+@interface NEEventTracingAssociatedProsParamsCallback : NSObject
+@property (nonatomic, copy, readonly) NE_ET_AddParamsCallback callback;
+@property (nonatomic, copy, readonly) NE_ET_AddParamsCarryEventCallback carryEventCallback;
 @property (nonatomic, copy, readonly) NSArray<NSString *> *events;
 @end
 
 __attribute__((objc_direct_members))
-@interface EventTracingAssociatedPros : NSObject
+@interface NEEventTracingAssociatedPros : NSObject
 
 + (instancetype)associatedProsWithView:(UIView *)view __attribute__((objc_direct));
 
@@ -49,7 +49,7 @@ __attribute__((objc_direct_members))
 /// 其中 custom 目前是除了 明确类型的 其他类型
 /// all 是全部类型
 /// subpage_pv 专指子页面曝光产生的refer
-@property(nonatomic, assign) EventTracingPageReferConsumeOption pageReferConsumeOption;
+@property(nonatomic, assign) NEEventTracingPageReferConsumeOption pageReferConsumeOption;
 
 
 // methods
@@ -62,12 +62,12 @@ __attribute__((objc_direct_members))
 @property(nonatomic, strong, readonly) NSMutableSet<NSString *> *checkedGuardParamKeys;
 
 /// MARK: 对 block 的持有操作
-@property(nonatomic, strong, readonly) NSArray<EventTracingAssociatedProsParamsCallback *> *paramCallbacks;
-- (void)addParamsCallback:(ET_AddParamsCallback)callback forEvent:(NSString * _Nullable)event __attribute__((objc_direct));
-- (void)addParamsCarryEventCallback:(ET_AddParamsCarryEventCallback)callback forEvents:(NSArray<NSString *> *)events __attribute__((objc_direct));
+@property(nonatomic, strong, readonly) NSArray<NEEventTracingAssociatedProsParamsCallback *> *paramCallbacks;
+- (void)addParamsCallback:(NE_ET_AddParamsCallback)callback forEvent:(NSString * _Nullable)event __attribute__((objc_direct));
+- (void)addParamsCarryEventCallback:(NE_ET_AddParamsCarryEventCallback)callback forEvents:(NSArray<NSString *> *)events __attribute__((objc_direct));
 
 // others
-@property(nonatomic, assign) ETNodeBuildinEventLogDisableStrategy buildinEventLogDisableStrategy;
+@property(nonatomic, assign) NEETNodeBuildinEventLogDisableStrategy buildinEventLogDisableStrategy;
 @property(nonatomic, assign) NSUInteger position;
 
 // virtual parent node
@@ -75,7 +75,7 @@ __attribute__((objc_direct_members))
 // visible & logical parent & auto mount
 @property(nonatomic, assign) BOOL logicalVisible;
 @property(nonatomic, assign) UIEdgeInsets visibleEdgeInsets;
-@property(nonatomic, assign) ETNodeVisibleRectCalculateStrategy visibleRectCalculateStrategy;
+@property(nonatomic, assign) NEETNodeVisibleRectCalculateStrategy visibleRectCalculateStrategy;
 @property(nonatomic, assign, getter=isAutoMountRootPage) BOOL autoMountRootPage;
 
 @property(nonatomic, copy) NSString *logicalParentSPM;
@@ -84,7 +84,7 @@ __attribute__((objc_direct_members))
 @property(nonatomic, copy, readonly) NSString *reuseIdentifier;
 @property(nonatomic, copy, readonly) NSString *bizLeafIdentifier;
 @property(nonatomic, assign, readonly) BOOL reuseIdentifierNeedsUpdate;
-@property(nonatomic, strong, readonly) EventTracingSentinel *reuseSEQ;
+@property(nonatomic, strong, readonly) NEEventTracingSentinel *reuseSEQ;
 @property(nonatomic, readonly) NSString *(^autoClassifyIdAppend)(NSString *identifier);
 - (void)bindDataForReuse:(id)data __attribute__((objc_direct));
 - (void)setResueIdentifierNeedsUpdate __attribute__((objc_direct));
@@ -96,7 +96,7 @@ __attribute__((objc_direct_members))
 
 /// MARK: Virtual Parent Node
 __attribute__((objc_direct_members))
-@interface EventTracingVirtualParentAssociatedPros : NSObject
+@interface NEEventTracingVirtualParentAssociatedPros : NSObject
 
 + (instancetype)associatedProsWithView:(UIView *)view __attribute__((objc_direct));
 
@@ -109,7 +109,7 @@ __attribute__((objc_direct_members))
 @property(nonatomic, assign, readonly) BOOL hasVirtualParentNode;
 
 // 针对虚拟父节点，需要支持掉这俩配置
-@property(nonatomic, assign) ETNodeBuildinEventLogDisableStrategy buildinEventLogDisableStrategy;
+@property(nonatomic, assign) NEETNodeBuildinEventLogDisableStrategy buildinEventLogDisableStrategy;
 @property(nonatomic, assign) NSUInteger position;
 
 - (void)setupVirtualParentElementId:(NSString *)elementId

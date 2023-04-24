@@ -1,26 +1,26 @@
 //
-//  EventTracingEventRefer.m
-//  EventTracing
+//  NEEventTracingEventRefer.m
+//  NEEventTracing
 //
 //  Created by dl on 2022/2/23.
 //
 
-#import "EventTracingEventRefer+Private.h"
-#import "EventTracingFormattedReferBuilder.h"
-#import "EventTracingEngine.h"
-#import "EventTracingDefines.h"
-#import "EventTracingVTreeNode+Private.h"
-#import "EventTracingTraverser.h"
+#import "NEEventTracingEventRefer+Private.h"
+#import "NEEventTracingFormattedReferBuilder.h"
+#import "NEEventTracingEngine.h"
+#import "NEEventTracingDefines.h"
+#import "NEEventTracingVTreeNode+Private.h"
+#import "NEEventTracingTraverser.h"
 #import "UIView+EventTracingPrivate.h"
-#import "EventTracingEngine+Private.h"
+#import "NEEventTracingEngine+Private.h"
 
-id<EventTracingFormattedRefer> ET_formattedReferForNode(EventTracingVTreeNode *node, BOOL useNextActseq) {
+id<NEEventTracingFormattedRefer> NE_ET_formattedReferForNode(NEEventTracingVTreeNode *node, BOOL useNextActseq) {
     NSInteger actseq = useNextActseq ? (node.actseq + 1) : node.actseq;
     NSInteger pgstep = [node findToppestNode:YES].pgstep;
     
-    id<EventTracingFormattedRefer> formattedRefer = [EventTracingFormattedReferBuilder build:^(id<EventTracingFormattedReferComponentBuilder>  _Nonnull builder) {
+    id<NEEventTracingFormattedRefer> formattedRefer = [NEEventTracingFormattedReferBuilder build:^(id<NEEventTracingFormattedReferComponentBuilder>  _Nonnull builder) {
         builder
-        .type(node.isPageNode ? ET_REFER_KEY_P : ET_REFER_KEY_E)
+        .type(node.isPageNode ? NE_ET_REFER_KEY_P : NE_ET_REFER_KEY_E)
         .actseq(actseq)
         .pgstep(pgstep)
         .spm(node.spm)
@@ -34,21 +34,21 @@ id<EventTracingFormattedRefer> ET_formattedReferForNode(EventTracingVTreeNode *n
     return formattedRefer;
 }
 
-@interface EventTracingFormattedEventRefer ()
-@property(nonatomic, strong) NSMutableArray<EventTracingFormattedEventRefer *> *innerSubRefers;
+@interface NEEventTracingFormattedEventRefer ()
+@property(nonatomic, strong) NSMutableArray<NEEventTracingFormattedEventRefer *> *innerSubRefers;
 @property(nonatomic, assign, readwrite) BOOL rootPagePV;
 @end
 
-@implementation EventTracingEventRefer
-- (EventTracingEventReferType)referType {
-    return EventTracingEventReferTypeFormatted;
+@implementation NEEventTracingEventRefer
+- (NEEventTracingEventReferType)referType {
+    return NEEventTracingEventReferTypeFormatted;
 }
 - (NSString *)refer {
     return @"";
 }
 @end
 
-@implementation EventTracingFormattedEventRefer
+@implementation NEEventTracingFormattedEventRefer
 
 - (instancetype)init {
     self = [super init];
@@ -59,27 +59,27 @@ id<EventTracingFormattedRefer> ET_formattedReferForNode(EventTracingVTreeNode *n
 }
 
 +(instancetype)referWithEvent:(NSString *)event
-               formattedRefer:(id<EventTracingFormattedRefer>)formattedRefer
+               formattedRefer:(id<NEEventTracingFormattedRefer>)formattedRefer
                   rootPagePV:(BOOL)rootPagePV
            shouldStartHsrefer:(BOOL)shouldStartHsrefer
            isNodePsreferMuted:(BOOL)isNodePsreferMuted {
-    EventTracingFormattedEventRefer *refer = [[EventTracingFormattedEventRefer alloc] init];
+    NEEventTracingFormattedEventRefer *refer = [[NEEventTracingFormattedEventRefer alloc] init];
     refer.rootPagePV = rootPagePV;
     refer.shouldStartHsrefer = shouldStartHsrefer;
     refer.event = event;
     refer.formattedRefer = formattedRefer;
     refer.eventTime = [NSDate date].timeIntervalSince1970;
-    refer.appEnterBackgroundSeq = [EventTracingEngine sharedInstance].ctx.appEnterBackgroundSeq;
+    refer.appEnterBackgroundSeq = [NEEventTracingEngine sharedInstance].ctx.appEnterBackgroundSeq;
     refer.psreferMute = isNodePsreferMuted;
     return refer;
 }
 
-- (void)addSubRefer:(EventTracingFormattedEventRefer *)refer {
+- (void)addSubRefer:(NEEventTracingFormattedEventRefer *)refer {
     refer.parentRefer = self;
     [_innerSubRefers addObject:refer];
 }
 
-- (NSArray<EventTracingFormattedEventRefer *> *)subRefers {
+- (NSArray<NEEventTracingFormattedEventRefer *> *)subRefers {
     return _innerSubRefers.copy;
 }
 
@@ -106,7 +106,7 @@ id<EventTracingFormattedRefer> ET_formattedReferForNode(EventTracingVTreeNode *n
     }
     
     if (self.subRefers.count) {
-        [self.subRefers enumerateObjectsUsingBlock:^(EventTracingFormattedEventRefer * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.subRefers enumerateObjectsUsingBlock:^(NEEventTracingFormattedEventRefer * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [description appendFormat:@"----> [Sub%@][T: %@]: %@\n", @(idx).stringValue, @(obj.eventTime).stringValue, obj.formattedRefer.value];
         }];
     }
@@ -116,20 +116,20 @@ id<EventTracingFormattedRefer> ET_formattedReferForNode(EventTracingVTreeNode *n
 
 @end
 
-@implementation EventTracingUndefinedXpathEventRefer
+@implementation NEEventTracingUndefinedXpathEventRefer
 @synthesize refer = _refer;
 
 +(instancetype)referWithEvent:(NSString *)event
           undefinedXpathRefer:(NSString *)undefinedXpathRefer {
-    EventTracingUndefinedXpathEventRefer *refer = [[EventTracingUndefinedXpathEventRefer alloc] init];
+    NEEventTracingUndefinedXpathEventRefer *refer = [[NEEventTracingUndefinedXpathEventRefer alloc] init];
     refer->_refer = undefinedXpathRefer;
     refer.event = event;
     refer.eventTime = [NSDate date].timeIntervalSince1970;
     return refer;
 }
 
-- (EventTracingEventReferType)referType {
-    return EventTracingEventReferTypeUndefinedXpath;
+- (NEEventTracingEventReferType)referType {
+    return NEEventTracingEventReferTypeUndefinedXpath;
 }
 
 - (NSString *)refer {
@@ -138,48 +138,48 @@ id<EventTracingFormattedRefer> ET_formattedReferForNode(EventTracingVTreeNode *n
 
 @end
 
-@implementation EventTracingFormattedEventRefer (Util)
+@implementation NEEventTracingFormattedEventRefer (Util)
 
 + (instancetype)becomeActiveRefer {
-    id<EventTracingFormattedRefer> formattedRefer = [EventTracingFormattedReferBuilder build:^(id<EventTracingFormattedReferComponentBuilder>  _Nonnull builder) {
+    id<NEEventTracingFormattedRefer> formattedRefer = [NEEventTracingFormattedReferBuilder build:^(id<NEEventTracingFormattedReferComponentBuilder>  _Nonnull builder) {
         builder
-        .type(ET_REFER_KEY_S)
-        .pgstep([EventTracingEngine sharedInstance].context.pgstep)
-        .spm(ET_EVENT_ID_APP_ACTIVE);
+        .type(NE_ET_REFER_KEY_S)
+        .pgstep([NEEventTracingEngine sharedInstance].context.pgstep)
+        .spm(NE_ET_EVENT_ID_APP_ACTIVE);
     }].generateRefer;
     
-    return [EventTracingFormattedEventRefer referWithEvent:ET_EVENT_ID_APP_ACTIVE
-                                            formattedRefer:formattedRefer
-                                                rootPagePV:NO
-                                        shouldStartHsrefer:NO
-                                        isNodePsreferMuted:NO];
+    return [NEEventTracingFormattedEventRefer referWithEvent:NE_ET_EVENT_ID_APP_ACTIVE
+                                              formattedRefer:formattedRefer
+                                                  rootPagePV:NO
+                                          shouldStartHsrefer:NO
+                                          isNodePsreferMuted:NO];
 }
 
 + (instancetype)enterForegroundRefer {
-    id<EventTracingFormattedRefer> formattedRefer = [EventTracingFormattedReferBuilder build:^(id<EventTracingFormattedReferComponentBuilder>  _Nonnull builder) {
+    id<NEEventTracingFormattedRefer> formattedRefer = [NEEventTracingFormattedReferBuilder build:^(id<NEEventTracingFormattedReferComponentBuilder>  _Nonnull builder) {
         builder
-        .type(ET_REFER_KEY_S)
-        .pgstep([EventTracingEngine sharedInstance].context.pgstep)
-        .spm(ET_EVENT_ID_APP_IN);
+        .type(NE_ET_REFER_KEY_S)
+        .pgstep([NEEventTracingEngine sharedInstance].context.pgstep)
+        .spm(NE_ET_EVENT_ID_APP_IN);
     }].generateRefer;
     
-    return [EventTracingFormattedEventRefer referWithEvent:ET_EVENT_ID_APP_IN
-                                            formattedRefer:formattedRefer
-                                                rootPagePV:NO
-                                        shouldStartHsrefer:NO
-                                        isNodePsreferMuted:NO];
+    return [NEEventTracingFormattedEventRefer referWithEvent:NE_ET_EVENT_ID_APP_IN
+                                              formattedRefer:formattedRefer
+                                                  rootPagePV:NO
+                                          shouldStartHsrefer:NO
+                                          isNodePsreferMuted:NO];
 }
 
 @end
 
 
-@implementation EventTracingFormattedWithSessidUndefinedXpathEventRefer
+@implementation NEEventTracingFormattedWithSessidUndefinedXpathEventRefer
 @synthesize refer = _refer;
 
-+ (instancetype)referFromFormattedEventRefer:(EventTracingFormattedEventRefer *)formattedEventRefer
++ (instancetype)referFromFormattedEventRefer:(NEEventTracingFormattedEventRefer *)formattedEventRefer
                                   withSessid:(BOOL)withSessid
                               undefinedXpath:(BOOL)undefinedXPath {
-    EventTracingFormattedWithSessidUndefinedXpathEventRefer *refer = [[EventTracingFormattedWithSessidUndefinedXpathEventRefer alloc] init];
+    NEEventTracingFormattedWithSessidUndefinedXpathEventRefer *refer = [[NEEventTracingFormattedWithSessidUndefinedXpathEventRefer alloc] init];
     refer.event = formattedEventRefer.event;
     refer.eventTime = formattedEventRefer.eventTime;
     refer->_refer = [formattedEventRefer.formattedRefer valueWithSessid:withSessid undefinedXpath:undefinedXPath];

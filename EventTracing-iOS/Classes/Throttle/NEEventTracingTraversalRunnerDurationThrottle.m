@@ -1,21 +1,21 @@
 //
-//  EventTracingTraversalRunnerDurationThrottle.m
-//  EventTracing
+//  NEEventTracingTraversalRunnerDurationThrottle.m
+//  NEEventTracing
 //
 //  Created by dl on 2021/4/2.
 //
 
-#import "EventTracingTraversalRunnerDurationThrottle.h"
+#import "NEEventTracingTraversalRunnerDurationThrottle.h"
 
-@interface EventTracingTraversalRunnerDurationThrottle () {
+@interface NEEventTracingTraversalRunnerDurationThrottle () {
     BOOL _throttled;
-    __weak id<EventTracingTraversalRunnerThrottleCallback> _callback;
+    __weak id<NEEventTracingTraversalRunnerThrottleCallback> _callback;
     
     NSTimeInterval _preTime;
 }
 @end
 
-@implementation EventTracingTraversalRunnerDurationThrottle
+@implementation NEEventTracingTraversalRunnerDurationThrottle
 @synthesize throttled = _throttled;
 @synthesize paused = _paused;
 @synthesize callback = _callback;

@@ -1,6 +1,6 @@
 //
 //  UIView+EventTracingPipEvent.h
-//  EventTracing
+//  NEEventTracing
 //
 //  Created by dl on 2021/7/22.
 //
@@ -13,27 +13,27 @@ NS_ASSUME_NONNULL_BEGIN
 /// 前提条件: 当前view不是一个节点 && 目标view是一个节点
 @interface UIView (EventTracingPipEvent)
 
-@property(nonatomic, strong, readonly, nullable) NSDictionary<NSString *, NSArray<UIView *> *> *et_pipedToMeEventViews;
-@property(nonatomic, strong, readonly, nullable) NSDictionary<NSString *, UIView *> *et_pipTargetEventViews;
+@property(nonatomic, strong, readonly, nullable) NSDictionary<NSString *, NSArray<UIView *> *> *ne_et_pipedToMeEventViews;
+@property(nonatomic, strong, readonly, nullable) NSDictionary<NSString *, UIView *> *ne_et_pipTargetEventViews;
 
 /// 指定 view 进行 pip
-- (void)et_pipEventClickToView:(UIView *)view;
-- (void)et_pipEvent:(NSString *)event toView:(UIView *)view;
+- (void)ne_et_pipEventClickToView:(UIView *)view;
+- (void)ne_et_pipEvent:(NSString *)event toView:(UIView *)view;
 
 /// 针对 click 事件 pip
 ///   1. 向上查找最近的匹配oid的节点
 ///   2. 向上查找最近的(任意)节点
-- (void)et_pipEventClickToAncestorNodeViewOid:(NSString *)oid;
-- (void)et_pipEventClickToAncestorNodeView;
+- (void)ne_et_pipEventClickToAncestorNodeViewOid:(NSString *)oid;
+- (void)ne_et_pipEventClickToAncestorNodeView;
 
 /// 指定 event 事件 pip
 ///   1. 向上查找最近的匹配oid的节点
 ///   2. 向上查找最近的(任意)节点
-- (void)et_pipEvent:(NSString *)event toAncestorNodeViewOid:(NSString *)oid;
-- (void)et_pipEventToAncestorNodeView:(NSString *)event;
+- (void)ne_et_pipEvent:(NSString *)event toAncestorNodeViewOid:(NSString *)oid;
+- (void)ne_et_pipEventToAncestorNodeView:(NSString *)event;
 
 /// 取消到 目标view 的 pipEvent 操作
-- (void)et_cancelPipEvent;
+- (void)ne_et_cancelPipEvent;
 
 @end
 

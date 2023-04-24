@@ -1,6 +1,6 @@
 //
-//  EventTracingAppLifecycleProcotol.h
-//  EventTracing
+//  NEEventTracingAppLifecycleProcotol.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/3/24.
 //
@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol EventTracingAppLifecycleProcotol <NSObject>
+@protocol NEEventTracingAppLifecycleProcotol <NSObject>
 
 @required
 - (void)appViewController:(UIViewController *)controller changedToAppear:(BOOL)appear;

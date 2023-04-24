@@ -1,11 +1,11 @@
 //
-//  EventTracingClickMonitor.m
-//  EventTracing
+//  NEEventTracingClickMonitor.m
+//  NEEventTracing
 //
 //  Created by dl on 2022/7/14.
 //
 
-#import "EventTracingClickMonitor.h"
+#import "NEEventTracingClickMonitor.h"
 #import <pthread.h>
 #import <BlocksKit/BlocksKit.h>
 
@@ -13,19 +13,19 @@
 #define WRLOCK do { pthread_rwlock_wrlock(&self->_lock); } while (0);
 #define UNLOCK do { pthread_rwlock_unlock(&self->_lock); } while (0);
 
-@interface EventTracingClickMonitor () {
+@interface NEEventTracingClickMonitor () {
     pthread_rwlock_t _lock;
 }
-@property(nonatomic, strong) NSHashTable<id<EventTracingClickObserver>> *globalObservers;
+@property(nonatomic, strong) NSHashTable<id<NEEventTracingClickObserver>> *globalObservers;
 
-@property(nonatomic, strong) NSMapTable<UIView *, NSHashTable<id<EventTracingClickObserver>> *> *targetObservers;
-@property(nonatomic, strong) NSMapTable<UIView *, NSHashTable<id<EventTracingClickObserver>> *> *viewTargetObservers;
+@property(nonatomic, strong) NSMapTable<UIView *, NSHashTable<id<NEEventTracingClickObserver>> *> *targetObservers;
+@property(nonatomic, strong) NSMapTable<UIView *, NSHashTable<id<NEEventTracingClickObserver>> *> *viewTargetObservers;
 
-- (void)_doAddTargetObserver:(id<EventTracingClickObserver>)observer forView:(UIView *)view isOnlyView:(BOOL)isOnlyView;
-- (void)_doRemoveTargetObserver:(id<EventTracingClickObserver>)observer forView:(UIView *)view isOnlyView:(BOOL)isOnlyView;
+- (void)_doAddTargetObserver:(id<NEEventTracingClickObserver>)observer forView:(UIView *)view isOnlyView:(BOOL)isOnlyView;
+- (void)_doRemoveTargetObserver:(id<NEEventTracingClickObserver>)observer forView:(UIView *)view isOnlyView:(BOOL)isOnlyView;
 @end
 
-@implementation EventTracingClickMonitor
+@implementation NEEventTracingClickMonitor
 
 - (instancetype)init {
     self = [super init];
@@ -39,21 +39,21 @@
 }
 
 + (instancetype)sharedInstance {
-    static EventTracingClickMonitor *instance;
+    static NEEventTracingClickMonitor *instance;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [[EventTracingClickMonitor alloc] init];
+        instance = [[NEEventTracingClickMonitor alloc] init];
     });
     return instance;
 }
 
-- (void)addGlobalObserver:(id<EventTracingClickObserver>)observer {
+- (void)addGlobalObserver:(id<NEEventTracingClickObserver>)observer {
     WRLOCK {
         [_globalObservers addObject:observer];
     } UNLOCK
 }
 
-- (void)removeGlobalObserver:(id<EventTracingClickObserver>)observer {
+- (void)removeGlobalObserver:(id<NEEventTracingClickObserver>)observer {
     WRLOCK {
         [_globalObservers removeObject:observer];
     } UNLOCK
@@ -70,17 +70,17 @@
     return observedViews.copy;
 }
 
-- (NSArray<EventTracingClickObserver> *)allObservers {
-    NSMutableArray<EventTracingClickObserver> *observers = @[].mutableCopy;
+- (NSArray<NEEventTracingClickObserver> *)allObservers {
+    NSMutableArray<NEEventTracingClickObserver> *observers = @[].mutableCopy;
     
     RDLOCK {
         [observers addObjectsFromArray:self.globalObservers.allObjects];
 
-        [self.targetObservers.objectEnumerator.allObjects enumerateObjectsUsingBlock:^(NSHashTable<id<EventTracingClickObserver>> * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.targetObservers.objectEnumerator.allObjects enumerateObjectsUsingBlock:^(NSHashTable<id<NEEventTracingClickObserver>> * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [observers addObjectsFromArray:obj.allObjects];
         }];
 
-        [self.viewTargetObservers.objectEnumerator.allObjects enumerateObjectsUsingBlock:^(NSHashTable<id<EventTracingClickObserver>> * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.viewTargetObservers.objectEnumerator.allObjects enumerateObjectsUsingBlock:^(NSHashTable<id<NEEventTracingClickObserver>> * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [observers addObjectsFromArray:obj.allObjects];
         }];
     } UNLOCK
@@ -88,8 +88,8 @@
     return observers.copy;
 }
 
-- (NSArray<EventTracingClickObserver> *)allGlobalObservers {
-    NSMutableArray<EventTracingClickObserver> *observers = @[].mutableCopy;
+- (NSArray<NEEventTracingClickObserver> *)allGlobalObservers {
+    NSMutableArray<NEEventTracingClickObserver> *observers = @[].mutableCopy;
     
     RDLOCK {
         [observers addObjectsFromArray:self.globalObservers.allObjects];
@@ -98,8 +98,8 @@
     return observers.copy;
 }
 
-- (NSArray<id<EventTracingClickObserver>> *)observersForView:(UIView *)view {
-    NSMutableArray<id<EventTracingClickObserver>> *observers = @[].mutableCopy;
+- (NSArray<id<NEEventTracingClickObserver>> *)observersForView:(UIView *)view {
+    NSMutableArray<id<NEEventTracingClickObserver>> *observers = @[].mutableCopy;
     
     RDLOCK {
         if ([view isKindOfClass:UIControl.class] || [view isKindOfClass:UITableView.class] || [view isKindOfClass:UICollectionView.class]) {
@@ -114,9 +114,9 @@
     return observers;
 }
 
-- (void)_doAddTargetObserver:(id<EventTracingClickObserver>)observer forView:(UIView *)view isOnlyView:(BOOL)isOnlyView {
+- (void)_doAddTargetObserver:(id<NEEventTracingClickObserver>)observer forView:(UIView *)view isOnlyView:(BOOL)isOnlyView {
     WRLOCK {
-        NSHashTable<id<EventTracingClickObserver>> *observers = nil;
+        NSHashTable<id<NEEventTracingClickObserver>> *observers = nil;
         observers = isOnlyView ? [self.viewTargetObservers objectForKey:view] : [self.targetObservers objectForKey:view];
         if (!observers) {
             observers = [NSHashTable weakObjectsHashTable];
@@ -127,9 +127,9 @@
     } UNLOCK
 }
 
-- (void)_doRemoveTargetObserver:(id<EventTracingClickObserver>)observer forView:(UIView *)view isOnlyView:(BOOL)isOnlyView {
+- (void)_doRemoveTargetObserver:(id<NEEventTracingClickObserver>)observer forView:(UIView *)view isOnlyView:(BOOL)isOnlyView {
     WRLOCK {
-        NSHashTable<id<EventTracingClickObserver>> *observers = isOnlyView ? [self.viewTargetObservers objectForKey:view] : [self.targetObservers objectForKey:view];        
+        NSHashTable<id<NEEventTracingClickObserver>> *observers = isOnlyView ? [self.viewTargetObservers objectForKey:view] : [self.targetObservers objectForKey:view];        
         [observers addObject:observer];
     } UNLOCK
 }
@@ -161,7 +161,7 @@
             [observers addObjectsFromArray:obs.allObjects]; \
         }]; \
         \
-        [self.globalObservers.objectEnumerator.allObjects enumerateObjectsUsingBlock:^(id<EventTracingClickObserver>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) { \
+        [self.globalObservers.objectEnumerator.allObjects enumerateObjectsUsingBlock:^(id<NEEventTracingClickObserver>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) { \
             if ([obj conformsToProtocol:@protocol(Protocol)]) { \
                 [observers addObject:(id<Protocol>)obj]; \
             } \
@@ -182,28 +182,28 @@
     return nil; \
 }
 
-@implementation EventTracingClickMonitor (Control_TouchUpInside)
+@implementation NEEventTracingClickMonitor (Control_TouchUpInside)
 TargetObservedTargetsMethod(allTouchUpInsideObservedControls, UIControl, targetObservers)
-TargetObserversMethod(allControlTouchUpInsideObservers, EventTracingClickControlTouchUpInsideObserver, UIControl, targetObservers)
-TargetObserversForTargetMethod(controlTouchUpInsideObserversForControl, EventTracingClickControlTouchUpInsideObserver, UIControl, targetObservers)
+TargetObserversMethod(allControlTouchUpInsideObservers, NEEventTracingClickControlTouchUpInsideObserver, UIControl, targetObservers)
+TargetObserversForTargetMethod(controlTouchUpInsideObserversForControl, NEEventTracingClickControlTouchUpInsideObserver, UIControl, targetObservers)
 @end
 
-@implementation EventTracingClickMonitor (View_SingleTapGesture)
+@implementation NEEventTracingClickMonitor (View_SingleTapGesture)
 TargetObservedTargetsMethod(allSingleTapObservedViews, UIView, viewTargetObservers)
-TargetObserversMethod(allViewSingleTapObservers, EventTracingClickViewSingleTapObserver, UIView, viewTargetObservers)
-TargetObserversForTargetMethod(viewSingleTapObserversForView, EventTracingClickViewSingleTapObserver, UIView, viewTargetObservers)
+TargetObserversMethod(allViewSingleTapObservers, NEEventTracingClickViewSingleTapObserver, UIView, viewTargetObservers)
+TargetObserversForTargetMethod(viewSingleTapObserversForView, NEEventTracingClickViewSingleTapObserver, UIView, viewTargetObservers)
 @end
 
-@implementation EventTracingClickMonitor (TableView_CellDidSelected)
+@implementation NEEventTracingClickMonitor (TableView_CellDidSelected)
 TargetObservedTargetsMethod(allCellDidSelectedObservedTableViews, UITableView, targetObservers)
-TargetObserversMethod(allTableCellDidSelectedObservers, EventTracingClickTableCellDidSelectedObserver, UITableView, targetObservers)
-TargetObserversForTargetMethod(tableCellDidSelectedObserversForTableView, EventTracingClickTableCellDidSelectedObserver, UITableView, targetObservers)
+TargetObserversMethod(allTableCellDidSelectedObservers, NEEventTracingClickTableCellDidSelectedObserver, UITableView, targetObservers)
+TargetObserversForTargetMethod(tableCellDidSelectedObserversForTableView, NEEventTracingClickTableCellDidSelectedObserver, UITableView, targetObservers)
 @end
 
-@implementation EventTracingClickMonitor (Collection_CellDidSelected)
+@implementation NEEventTracingClickMonitor (Collection_CellDidSelected)
 TargetObservedTargetsMethod(allCellDidSelectedObservedCollectionViews, UICollectionView, targetObservers)
-TargetObserversMethod(allCollectionCellDidSelectedObservers, EventTracingClickControlTouchUpInsideObserver, UICollectionView, targetObservers)
-TargetObserversForTargetMethod(tableCellDidSelectedObserversForCollectionView, EventTracingClickControlTouchUpInsideObserver, UICollectionView, targetObservers)
+TargetObserversMethod(allCollectionCellDidSelectedObservers, NEEventTracingClickControlTouchUpInsideObserver, UICollectionView, targetObservers)
+TargetObserversForTargetMethod(tableCellDidSelectedObserversForCollectionView, NEEventTracingClickControlTouchUpInsideObserver, UICollectionView, targetObservers)
 @end
 
 #undef TargetObservedTargetsMethod
@@ -212,52 +212,52 @@ TargetObserversForTargetMethod(tableCellDidSelectedObserversForCollectionView, E
 
 
 @implementation UIControl (AOP_Observer_TouchUpInside)
-- (NSArray<id<EventTracingClickControlTouchUpInsideObserver>> *)et_clickObservers {
-    return (NSArray<id<EventTracingClickControlTouchUpInsideObserver>> *)[[EventTracingClickMonitor sharedInstance] observersForView:self];
+- (NSArray<id<NEEventTracingClickControlTouchUpInsideObserver>> *)ne_et_clickObservers {
+    return (NSArray<id<NEEventTracingClickControlTouchUpInsideObserver>> *)[[NEEventTracingClickMonitor sharedInstance] observersForView:self];
 }
 
-- (void)et_addClickObserver:(id<EventTracingClickControlTouchUpInsideObserver>)observer {
-    [[EventTracingClickMonitor sharedInstance] _doAddTargetObserver:observer forView:self isOnlyView:NO];
+- (void)ne_et_addClickObserver:(id<NEEventTracingClickControlTouchUpInsideObserver>)observer {
+    [[NEEventTracingClickMonitor sharedInstance] _doAddTargetObserver:observer forView:self isOnlyView:NO];
 }
-- (void)et_removeClickObserver:(id<EventTracingClickControlTouchUpInsideObserver>)observer {
-    [[EventTracingClickMonitor sharedInstance] _doRemoveTargetObserver:observer forView:self isOnlyView:NO];
+- (void)ne_et_removeClickObserver:(id<NEEventTracingClickControlTouchUpInsideObserver>)observer {
+    [[NEEventTracingClickMonitor sharedInstance] _doRemoveTargetObserver:observer forView:self isOnlyView:NO];
 }
 @end
 
 @implementation UIView (AOP_Observer_SingleTapGesture)
-- (NSArray<id<EventTracingClickViewSingleTapObserver>> *)et_clickObservers {
-    return (NSArray<id<EventTracingClickViewSingleTapObserver>> *)[[EventTracingClickMonitor sharedInstance] observersForView:self];
+- (NSArray<id<NEEventTracingClickViewSingleTapObserver>> *)ne_et_clickObservers {
+    return (NSArray<id<NEEventTracingClickViewSingleTapObserver>> *)[[NEEventTracingClickMonitor sharedInstance] observersForView:self];
 }
-- (void)et_addClickObserver:(id<EventTracingClickViewSingleTapObserver>)observer {
-    [[EventTracingClickMonitor sharedInstance] _doAddTargetObserver:observer forView:self isOnlyView:YES];
+- (void)ne_et_addClickObserver:(id<NEEventTracingClickViewSingleTapObserver>)observer {
+    [[NEEventTracingClickMonitor sharedInstance] _doAddTargetObserver:observer forView:self isOnlyView:YES];
 }
-- (void)et_removeClickObserver:(id<EventTracingClickViewSingleTapObserver>)observer {
-    [[EventTracingClickMonitor sharedInstance] _doRemoveTargetObserver:observer forView:self isOnlyView:YES];
+- (void)ne_et_removeClickObserver:(id<NEEventTracingClickViewSingleTapObserver>)observer {
+    [[NEEventTracingClickMonitor sharedInstance] _doRemoveTargetObserver:observer forView:self isOnlyView:YES];
 }
 @end
 
 @implementation UITableView (AOP_Observer_CellDidSelected)
-- (NSArray<id<EventTracingClickTableCellDidSelectedObserver>> *)et_clickObservers {
-    return (NSArray<id<EventTracingClickTableCellDidSelectedObserver>> *)[[EventTracingClickMonitor sharedInstance] observersForView:self];
+- (NSArray<id<NEEventTracingClickTableCellDidSelectedObserver>> *)ne_et_clickObservers {
+    return (NSArray<id<NEEventTracingClickTableCellDidSelectedObserver>> *)[[NEEventTracingClickMonitor sharedInstance] observersForView:self];
 }
 
-- (void)et_addClickObserver:(id<EventTracingClickTableCellDidSelectedObserver>)observer {
-    [[EventTracingClickMonitor sharedInstance] _doAddTargetObserver:observer forView:self isOnlyView:NO];
+- (void)ne_et_addClickObserver:(id<NEEventTracingClickTableCellDidSelectedObserver>)observer {
+    [[NEEventTracingClickMonitor sharedInstance] _doAddTargetObserver:observer forView:self isOnlyView:NO];
 }
-- (void)et_removeClickObserver:(id<EventTracingClickTableCellDidSelectedObserver>)observer {
-    [[EventTracingClickMonitor sharedInstance] _doRemoveTargetObserver:observer forView:self isOnlyView:NO];
+- (void)ne_et_removeClickObserver:(id<NEEventTracingClickTableCellDidSelectedObserver>)observer {
+    [[NEEventTracingClickMonitor sharedInstance] _doRemoveTargetObserver:observer forView:self isOnlyView:NO];
 }
 @end
 
 @implementation UICollectionView (AOP_Observer_CellDidSelected)
-- (NSArray<id<EventTracingClickCollectionCellDidSelectedObserver>> *)et_clickObservers {
-    return (NSArray<id<EventTracingClickCollectionCellDidSelectedObserver>> *)[[EventTracingClickMonitor sharedInstance] observersForView:self];
+- (NSArray<id<NEEventTracingClickCollectionCellDidSelectedObserver>> *)ne_et_clickObservers {
+    return (NSArray<id<NEEventTracingClickCollectionCellDidSelectedObserver>> *)[[NEEventTracingClickMonitor sharedInstance] observersForView:self];
 }
 
-- (void)et_addClickObserver:(id<EventTracingClickCollectionCellDidSelectedObserver>)observer {
-    [[EventTracingClickMonitor sharedInstance] _doAddTargetObserver:observer forView:self isOnlyView:NO];
+- (void)ne_et_addClickObserver:(id<NEEventTracingClickCollectionCellDidSelectedObserver>)observer {
+    [[NEEventTracingClickMonitor sharedInstance] _doAddTargetObserver:observer forView:self isOnlyView:NO];
 }
-- (void)et_removeClickObserver:(id<EventTracingClickCollectionCellDidSelectedObserver>)observer {
-    [[EventTracingClickMonitor sharedInstance] _doRemoveTargetObserver:observer forView:self isOnlyView:NO];
+- (void)ne_et_removeClickObserver:(id<NEEventTracingClickCollectionCellDidSelectedObserver>)observer {
+    [[NEEventTracingClickMonitor sharedInstance] _doRemoveTargetObserver:observer forView:self isOnlyView:NO];
 }
 @end

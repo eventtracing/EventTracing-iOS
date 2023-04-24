@@ -1,24 +1,24 @@
 //
-//  EventTracingVTreeNode.m
-//  EventTracing
+//  NEEventTracingVTreeNode.m
+//  NEEventTracing
 //
 //  Created by dl on 2021/2/26.
 //
 
-#import "EventTracingVTreeNode.h"
-#import "EventTracingVTreeNode+Private.h"
+#import "NEEventTracingVTreeNode.h"
+#import "NEEventTracingVTreeNode+Private.h"
 
 #import "NSArray+ETEnumerator.h"
-#import "EventTracingTraverser.h"
-#import "EventTracingEngine+Private.h"
+#import "NEEventTracingTraverser.h"
+#import "NEEventTracingEngine+Private.h"
 #import "UIView+EventTracingPrivate.h"
-#import "EventTracingEventRefer+Private.h"
+#import "NEEventTracingEventRefer+Private.h"
 
 #import <BlocksKit/BlocksKit.h>
 
-NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
+NSString * const kNEETAddParamCallbackObjectkey = @"__OBJECT__";
 
-@implementation EventTracingVTreeNode
+@implementation NEEventTracingVTreeNode
 @synthesize VTree = _VTree;
 @synthesize root = _root;
 @synthesize virtualNode = _virtualNode;
@@ -68,26 +68,26 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 }
 
 + (instancetype)buildWithView:(UIView *)view {
-    EventTracingVTreeNode *node = [[EventTracingVTreeNode alloc] init];
+    NEEventTracingVTreeNode *node = [[NEEventTracingVTreeNode alloc] init];
     node->_view = view;
-    node.viewVisibleRectOnScreen = [view convertRect:ET_viewVisibleRectOnSelf(view) toView:nil];
-    node->_visibleRectCalculateStrategy = view.et_visibleRectCalculateStrategy;
-    node->_buildinEventLogDisableStrategy = view.et_buildinEventLogDisableStrategy;
+    node.viewVisibleRectOnScreen = [view convertRect:NE_ET_viewVisibleRectOnSelf(view) toView:nil];
+    node->_visibleRectCalculateStrategy = view.ne_et_visibleRectCalculateStrategy;
+    node->_buildinEventLogDisableStrategy = view.ne_et_buildinEventLogDisableStrategy;
     node->_impressMaxRatio = 0.f;
-    node->_identifier = view.et_reuseIdentifier;
-    node->_isPageNode = ET_isPage(view);
-    node->_oid = ET_isPage(view) ? view.et_pageId : view.et_elementId;
-    node.position = view.et_position;
+    node->_identifier = view.ne_et_reuseIdentifier;
+    node->_isPageNode = NE_ET_isPage(view);
+    node->_oid = NE_ET_isPage(view) ? view.ne_et_pageId : view.ne_et_elementId;
+    node.position = view.ne_et_position;
     node->_depth = 0;
-    node->_pageOcclusionEnable = view.et_pageOcclusionEnable;
-    node->_psreferMute = view.et_props.isPsreferMuted;
+    node->_pageOcclusionEnable = view.ne_et_pageOcclusionEnable;
+    node->_psreferMute = view.ne_et_props.isPsreferMuted;
     
-    node->_subpagePvToReferEnable = view.et_props.subpagePvToReferEnable;
-    node->_pageReferConsumeOption = view.et_props.pageReferConsumeOption;
+    node->_subpagePvToReferEnable = view.ne_et_props.subpagePvToReferEnable;
+    node->_pageReferConsumeOption = view.ne_et_props.pageReferConsumeOption;
     
-    node.hasBindData = view.et_props.bizLeafIdentifier.length > 0;
+    node.hasBindData = view.ne_et_props.bizLeafIdentifier.length > 0;
     if (node->_isPageNode) {
-        node->_pageNodeMarkAsRootPage = view.et_isRootPage;
+        node->_pageNodeMarkAsRootPage = view.ne_et_isRootPage;
     }
     
     return node;
@@ -97,9 +97,9 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
                                  isPage:(BOOL)isPage
                              identifier:(NSString *)identifier
                                position:(NSUInteger)position
-         buildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
+         buildinEventLogDisableStrategy:(NEETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
                                  params:(NSDictionary * _Nullable)params {
-    EventTracingVTreeNode *node = [[EventTracingVTreeNode alloc] init];
+    NEEventTracingVTreeNode *node = [[NEEventTracingVTreeNode alloc] init];
     node->_oid = oid;
     node->_identifier = identifier;
     node->_isPageNode = isPage;
@@ -113,7 +113,7 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
     return node;
 }
 
-- (void)associateToVTree:(EventTracingVTree *)VTree {
+- (void)associateToVTree:(NEEventTracingVTree *)VTree {
     _VTree = VTree;
 }
 
@@ -141,16 +141,16 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 }
 
 - (void)refreshDynsmicParamsIfNeeded {
-    [self refreshDynsmicParamsIfNeededForEvent:kETAddParamCallbackObjectkey];
+    [self refreshDynsmicParamsIfNeededForEvent:kNEETAddParamCallbackObjectkey];
 }
 
 - (void)refreshDynsmicParamsIfNeededForEvent:(NSString *)event {
-    if (!self.view && ![self.view.et_reuseIdentifier isEqualToString:self.identifier]) {
+    if (!self.view && ![self.view.ne_et_reuseIdentifier isEqualToString:self.identifier]) {
         return;
     }
     
     // 当前view被再次使用了，但是所关联的节点不是当前节点，则不应该再被更新参数
-    if (self.view.et_currentVTreeNode && self.view.et_currentVTreeNode != self) {
+    if (self.view.ne_et_currentVTreeNode && self.view.ne_et_currentVTreeNode != self) {
         return;
     }
     
@@ -161,18 +161,18 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 - (void)doUpdateDynamicParams {
     // dynamic params
     NSDictionary *params = nil;
-    UIViewController *vc = self.view.et_currentViewController;
-    if (vc && [vc respondsToSelector:@selector(et_dynamicParams)]) {
-        params = [(id<EventTracingVTreeNodeDynamicParamsProtocol>)vc et_dynamicParams];
-    } else if ([self.view respondsToSelector:@selector(et_dynamicParams)]) {
-        params = [(id<EventTracingVTreeNodeDynamicParamsProtocol>)self.view et_dynamicParams];
+    UIViewController *vc = self.view.ne_et_currentViewController;
+    if (vc && [vc respondsToSelector:@selector(ne_et_dynamicParams)]) {
+        params = [(id<NEEventTracingVTreeNodeDynamicParamsProtocol>)vc ne_et_dynamicParams];
+    } else if ([self.view respondsToSelector:@selector(ne_et_dynamicParams)]) {
+        params = [(id<NEEventTracingVTreeNodeDynamicParamsProtocol>)self.view ne_et_dynamicParams];
     }
     
     LOCK {
         _dynamicParams = params ?: @{};
     } UNLOCK
     
-    [self doUpdateCallbackParamsForEvent:kETAddParamCallbackObjectkey];
+    [self doUpdateCallbackParamsForEvent:kNEETAddParamCallbackObjectkey];
 }
 
 - (void)doUpdateCallbackParamsForEvent:(NSString *)event {
@@ -183,7 +183,7 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
     } UNLOCK
     
     
-    [self.view.et_props.paramCallbacks enumerateObjectsUsingBlock:^(EventTracingAssociatedProsParamsCallback * _Nonnull callbackObj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.view.ne_et_props.paramCallbacks enumerateObjectsUsingBlock:^(NEEventTracingAssociatedProsParamsCallback * _Nonnull callbackObj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSArray<NSString *> *events = callbackObj.events;
         if (![events containsObject:event]) {
             return;
@@ -212,20 +212,20 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
     } UNLOCK
 }
 
-- (void)setupParentNode:(EventTracingVTreeNode * _Nullable)parentNode {
+- (void)setupParentNode:(NEEventTracingVTreeNode * _Nullable)parentNode {
     _parentNode = parentNode;
     
     [self _setDiffIdentifierNeedsUpdate];
 }
 
-- (void)pushSubNode:(EventTracingVTreeNode *)subNode {
+- (void)pushSubNode:(NEEventTracingVTreeNode *)subNode {
     [subNode setupParentNode:self];
     [self.innerSubNodes addObject:subNode];
     
     subNode->_depth = self.depth + 1;
 }
 
-- (void)removeSubNode:(EventTracingVTreeNode *)subNode {
+- (void)removeSubNode:(NEEventTracingVTreeNode *)subNode {
     [subNode setupParentNode:nil];
     [self.innerSubNodes removeObject:subNode];
 }
@@ -235,7 +235,7 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
         return;
     }
     
-    [self.parentNode enumerateAncestorNodeWithBlock:^(EventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
+    [self.parentNode enumerateAncestorNodeWithBlock:^(NEEventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
         if (ancestorNode.isPageNode) {
             ancestorNode.hasSubPageNodeMarkAsRootPage = YES;
         }
@@ -249,32 +249,32 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
         return;
     }
     
-    _pgstep = [[EventTracingEngine sharedInstance] pgstepIncreased];
+    _pgstep = [[NEEventTracingEngine sharedInstance] pgstepIncreased];
     
     // MARK: page曝光，需要增加actseq
-    EventTracingVTreeNode *toppestNode = [self findToppestNode:NO];
+    NEEventTracingVTreeNode *toppestNode = [self findToppestNode:NO];
     [toppestNode _doIncreaseActseq];
     
     if (self == toppestNode) {
-        _rootPagePVFormattedRefer = ET_formattedReferForNode(self, NO);
+        _rootPagePVFormattedRefer = NE_ET_formattedReferForNode(self, NO);
     }
 }
 
 - (NSUInteger)doIncreaseActseq {
     // actseq的自增，发生在顶层page node上
     // 如果找不到顶层page node，则取顶层element node
-    EventTracingVTreeNode *toppestNode = [self findToppestNode:NO];
+    NEEventTracingVTreeNode *toppestNode = [self findToppestNode:NO];
     return [toppestNode _doIncreaseActseq];
 }
 
-- (void)syncToNode:(EventTracingVTreeNode *)node {
+- (void)syncToNode:(NEEventTracingVTreeNode *)node {
     node.beginTime = self.beginTime;
     
     node->_pgstep = self.pgstep;
     node->_pgrefer = self.pgrefer;
     node->_psrefer = self.psrefer;
     if (self.actseqSentinel) {
-        node.actseqSentinel = [EventTracingSentinel sentinelWithInitialValue:self.actseqSentinel.value];
+        node.actseqSentinel = [NEEventTracingSentinel sentinelWithInitialValue:self.actseqSentinel.value];
     }
     
     node->_rootPagePVFormattedRefer = self.rootPagePVFormattedRefer;
@@ -290,10 +290,10 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
     _psrefer = psrefer;
 }
 
-- (EventTracingVTreeNode * _Nullable)findToppestNode:(BOOL)onlyPageNode {
-    __block EventTracingVTreeNode *rootPageNode;
-    __block EventTracingVTreeNode *rootNode;
-    [self enumerateAncestorNodeWithBlock:^(EventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
+- (NEEventTracingVTreeNode * _Nullable)findToppestNode:(BOOL)onlyPageNode {
+    __block NEEventTracingVTreeNode *rootPageNode;
+    __block NEEventTracingVTreeNode *rootNode;
+    [self enumerateAncestorNodeWithBlock:^(NEEventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
         if (ancestorNode.isPageNode) {
             rootPageNode = ancestorNode;
             
@@ -314,7 +314,7 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 #pragma mark - Private methods
 - (int32_t) _doIncreaseActseq {
     if (!_actseqSentinel) {
-        _actseqSentinel = [EventTracingSentinel sentinel];
+        _actseqSentinel = [NEEventTracingSentinel sentinel];
     }
     [_actseqSentinel increase];
     
@@ -325,14 +325,14 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
     _diffIdentifiershouldUpdate = YES;
     _diffIdentifier = nil;
     
-    [self.subNodes enumerateObjectsUsingBlock:^(EventTracingVTreeNode * _Nonnull subNode, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.subNodes enumerateObjectsUsingBlock:^(NEEventTracingVTreeNode * _Nonnull subNode, NSUInteger idx, BOOL * _Nonnull stop) {
         [subNode _setDiffIdentifierNeedsUpdate];
     }];
 }
 
 #pragma mark - NSCopying
 - (id)copyWithZone:(nullable NSZone *)zone {
-    EventTracingVTreeNode *node = [[EventTracingVTreeNode alloc] init];
+    NEEventTracingVTreeNode *node = [[NEEventTracingVTreeNode alloc] init];
     node->_root = self.root;
     node->_virtualNode = self.isVirtualNode;
     node->_depth = self.depth;
@@ -351,7 +351,7 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
     node->_pgrefer = self.pgrefer;
     node->_psrefer = self.psrefer;
     node->_pgstep = self.pgstep;
-    node.actseqSentinel = [EventTracingSentinel sentinelWithInitialValue:self.actseqSentinel.value];
+    node.actseqSentinel = [NEEventTracingSentinel sentinelWithInitialValue:self.actseqSentinel.value];
     node.beginTime = self.beginTime;
     
     node->_isPageNode = self.isPageNode;
@@ -368,8 +368,8 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
     node.pageNodeMarkAsRootPage = self.pageNodeMarkAsRootPage;
     node.hasSubPageNodeMarkAsRootPage = self.hasSubPageNodeMarkAsRootPage;
     
-    [self.innerSubNodes enumerateObjectsUsingBlock:^(EventTracingVTreeNode * _Nonnull subNode, NSUInteger idx, BOOL * _Nonnull stop) {
-        EventTracingVTreeNode *copySubNode = subNode.copy;
+    [self.innerSubNodes enumerateObjectsUsingBlock:^(NEEventTracingVTreeNode * _Nonnull subNode, NSUInteger idx, BOOL * _Nonnull stop) {
+        NEEventTracingVTreeNode *copySubNode = subNode.copy;
         [node pushSubNode:copySubNode];
     }];
     node->_innerStaticParams = self.innerStaticParams.copy;
@@ -379,11 +379,11 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
     return node;
 }
 
-#pragma mark - EventTracingDiffable
-- (nonnull id<NSObject>)et_diffIdentifier {
+#pragma mark - NEEventTracingDiffable
+- (nonnull id<NSObject>)ne_et_diffIdentifier {
     if (!_diffIdentifier || _diffIdentifiershouldUpdate) {
         NSMutableString *result = [@"" mutableCopy];
-        [self enumerateAncestorNodeWithBlock:^(EventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
+        [self enumerateAncestorNodeWithBlock:^(NEEventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
             if (result.length > 0) {
                 [result appendString:@"|"];
             }
@@ -399,12 +399,12 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
     return _diffIdentifier;
 }
 
-- (BOOL)et_isEqualToDiffableObject:(nullable id<EventTracingDiffable>)object {
+- (BOOL)ne_et_isEqualToDiffableObject:(nullable id<NEEventTracingDiffable>)object {
     if (self == object) {
         return YES;
     }
     
-    NSString *objectIdentifier = [(EventTracingVTreeNode *)object identifier];
+    NSString *objectIdentifier = [(NEEventTracingVTreeNode *)object identifier];
     if ([object isKindOfClass:self.class] && [objectIdentifier isEqualToString:self.identifier]) {
         return YES;
     }
@@ -413,11 +413,11 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 
 #pragma mark - getters
 - (NSUInteger)actseq {
-    EventTracingVTreeNode *toppestNode = [self findToppestNode:NO];
+    NEEventTracingVTreeNode *toppestNode = [self findToppestNode:NO];
     return toppestNode.actseqSentinel.value;
 }
 
-- (NSArray<EventTracingVTreeNode *> *)subNodes {
+- (NSArray<NEEventTracingVTreeNode *> *)subNodes {
     return self.innerSubNodes.copy;
 }
 
@@ -434,7 +434,7 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
         [params addEntriesFromDictionary:dynamicParams.copy];
     }
     
-    NSDictionary *callbackParams = [self nodeCallbackParamsForEvent:kETAddParamCallbackObjectkey];
+    NSDictionary *callbackParams = [self nodeCallbackParamsForEvent:kNEETAddParamCallbackObjectkey];
     if (callbackParams.count) {
         [params addEntriesFromDictionary:callbackParams.copy];
     }
@@ -462,6 +462,37 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
     return params;
 }
 
+- (NSDictionary<NSString *,NSString *> *)innerValidationParams {
+    if (![NEEventTracingEngine sharedInstance].context.isNodeInfoValidationEnable) {
+        return @{};
+    }
+    NSMutableDictionary<NSString *, NSString *> *validationParams = @{}.mutableCopy;
+    
+    // 1. _valid_page_type
+    if (self.isPageNode) {
+        NSString *pageType = self.VTree.rootPageNode == self ? @"rootpage" : @"subpage";
+        [validationParams setObject:pageType forKey:NE_ET_CONST_VALIDATION_PAGE_TYPE];
+    }
+    
+    // 2. _valid_logical_mount
+    if (self.validMountType != NEEventTracingNodeValidMountTypeNone) {
+        NSString *mountType = self.validMountType == NEEventTracingNodeValidMountTypeAuto ? @"auto" : @"mannul";
+        [validationParams setObject:mountType forKey:NE_ET_CONST_VALIDATION_LOGICAL_MOUNT];
+    }
+    
+    // 3. _valid_ignore_refer_cascade
+    if (self.ignoreRefer) {
+        [validationParams setObject:@YES.stringValue forKey:NE_ET_CONST_VALIDATION_IGNORE_REFER_CASCADE];
+    }
+    
+    // 4._valid_psrefer_muted
+    if (self.psreferMute) {
+        [validationParams setObject:@YES.stringValue forKey:NE_ET_CONST_VALIDATION_PSREFER_MUTED];
+    }
+    
+    return validationParams.copy;
+}
+
 - (NSDictionary<NSString *, NSString *> *)nodeCallbackParamsForEvent:(NSString *)event {
     NSDictionary *callbackParams = nil;
     
@@ -475,12 +506,15 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 - (NSDictionary<NSString *, NSString *> *)nodeParamsForEvent:(NSString *)event {
     NSMutableDictionary *params = [self nodeParams].mutableCopy;
     [params addEntriesFromDictionary:[self nodeCallbackParamsForEvent:event]];
+    /// MARK: validation 功能
+    [params addEntriesFromDictionary:self.innerValidationParams];
+    
     return params;
 }
 
 - (NSString *)spm {
     NSMutableString *result = [@"" mutableCopy];
-    [self enumerateAncestorNodeWithBlock:^(EventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
+    [self enumerateAncestorNodeWithBlock:^(NEEventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
         if (result.length > 0) {
             [result appendString:@"|"];
         }
@@ -496,11 +530,11 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 
 - (NSString *)scm {
     NSMutableString *result = [@"" mutableCopy];
-    [self enumerateAncestorNodeWithBlock:^(EventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
+    [self enumerateAncestorNodeWithBlock:^(NEEventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
         if (result.length > 0) {
             [result appendString:@"|"];
         }
-        NSString *scm = [[EventTracingEngine sharedInstance].ctx.referNodeSCMFormatter nodeSCMWithView:self.view node:ancestorNode inVTree:ancestorNode.VTree];
+        NSString *scm = [[NEEventTracingEngine sharedInstance].ctx.referNodeSCMFormatter nodeSCMWithView:self.view node:ancestorNode inVTree:ancestorNode.VTree];
         [result appendString:scm];
     }];
     
@@ -509,8 +543,8 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 
 - (BOOL)isSCMNeedsER {
     __block BOOL needsER = NO;
-    [self enumerateAncestorNodeWithBlock:^(EventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
-        if ([[EventTracingEngine sharedInstance].ctx.referNodeSCMFormatter needsEncodeSCMForNode:ancestorNode]) {
+    [self enumerateAncestorNodeWithBlock:^(NEEventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
+        if ([[NEEventTracingEngine sharedInstance].ctx.referNodeSCMFormatter needsEncodeSCMForNode:ancestorNode]) {
             needsER = YES;
             *stop = YES;
         }
@@ -529,7 +563,7 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 
 - (BOOL)isVisible {
     if (self.isVirtualNode) {
-        return [self.subNodes bk_any:^BOOL(EventTracingVTreeNode *obj) {
+        return [self.subNodes bk_any:^BOOL(NEEventTracingVTreeNode *obj) {
             return obj.visible;
         }];
     }
@@ -540,7 +574,7 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
     // 虚拟父节点的可见区域，是所有子节点的可见区域的合集
     if (self.isVirtualNode) {
         __block CGRect visibleRect = CGRectZero;
-        [self.subNodes enumerateObjectsUsingBlock:^(EventTracingVTreeNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.subNodes enumerateObjectsUsingBlock:^(NEEventTracingVTreeNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             visibleRect = CGRectEqualToRect(visibleRect, CGRectZero) ? obj.visibleRect : CGRectUnion(visibleRect, obj.visibleRect);
         }];
         
@@ -554,7 +588,7 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
     // 虚拟父节点的可见区域，是所有子节点的可见区域的合集
     if (self.isVirtualNode) {
         __block CGRect viewVisibleRectOnScreen = CGRectZero;
-        [self.subNodes enumerateObjectsUsingBlock:^(EventTracingVTreeNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.subNodes enumerateObjectsUsingBlock:^(NEEventTracingVTreeNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             viewVisibleRectOnScreen = CGRectEqualToRect(viewVisibleRectOnScreen, CGRectZero) ? obj.viewVisibleRectOnScreen : CGRectUnion(viewVisibleRectOnScreen, obj.viewVisibleRectOnScreen);
         }];
         
@@ -568,31 +602,32 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 - (NSDictionary *)debugJson {
     NSMutableDictionary *json = [@{} mutableCopy];
     [json addEntriesFromDictionary:self.nodeParams];
+    [json addEntriesFromDictionary:self.innerValidationParams];
     
-    [json setObject:_oid forKey:ET_CONST_KEY_OID];
+    [json setObject:_oid forKey:NE_ET_CONST_KEY_OID];
     if (self.position > 0) {
-        [json setObject:@(self.position).stringValue forKey:ET_REFER_KEY_POSITION];
+        [json setObject:@(self.position).stringValue forKey:NE_ET_REFER_KEY_POSITION];
     }
     
     if (self.isPageNode) {
-        [json setObject:@(_pgstep) forKey:ET_REFER_KEY_PGSTEP];
+        [json setObject:@(_pgstep) forKey:NE_ET_REFER_KEY_PGSTEP];
         
         if (_pgrefer) {
-            [json setObject:_pgrefer forKey:ET_REFER_KEY_PGREFER];
+            [json setObject:_pgrefer forKey:NE_ET_REFER_KEY_PGREFER];
         }
         
         if (_psrefer) {
-            [json setObject:_psrefer forKey:ET_REFER_KEY_PSREFER];
+            [json setObject:_psrefer forKey:NE_ET_REFER_KEY_PSREFER];
         }
     }
     
     NSMutableDictionary *debugJson = [self debugSelfJson].mutableCopy;
-    [debugJson setObject:self.spm forKey:ET_REFER_KEY_SPM];
-    [debugJson setObject:self.scm forKey:ET_REFER_KEY_SCM];
+    [debugJson setObject:self.spm forKey:NE_ET_REFER_KEY_SPM];
+    [debugJson setObject:self.scm forKey:NE_ET_REFER_KEY_SCM];
     [json setObject:debugJson.copy forKey:@"__debug"];
     
     if (self.subNodes.count) {
-        [json setObject:[self.subNodes bk_map:^id(EventTracingVTreeNode *obj) {
+        [json setObject:[self.subNodes bk_map:^id(NEEventTracingVTreeNode *obj) {
             return obj.debugJson;
         }] forKey:@"nodes"];
     }
@@ -628,24 +663,27 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 
 - (NSString *)description {
     NSMutableString *description = [@"" mutableCopy];
-    [description appendFormat:@"%@: %@", ET_CONST_KEY_OID, (self.oid ?: @"")];
-    [description appendFormat:@", %@: %@", ET_REFER_KEY_SPM, self.spm];
-    [description appendFormat:@", %@: %@", ET_REFER_KEY_SCM, self.scm];
-    [description appendFormat:@", %@: %@", ET_REFER_KEY_PGREFER, self.pgrefer];
-    [description appendFormat:@", %@: %@", ET_REFER_KEY_PSREFER, self.psrefer];
+    [description appendFormat:@"%@: %@", NE_ET_CONST_KEY_OID, (self.oid ?: @"")];
+    [description appendFormat:@", %@: %@", NE_ET_REFER_KEY_SPM, self.spm];
+    [description appendFormat:@", %@: %@", NE_ET_REFER_KEY_SCM, self.scm];
+    [description appendFormat:@", %@: %@", NE_ET_REFER_KEY_PGREFER, self.pgrefer];
+    [description appendFormat:@", %@: %@", NE_ET_REFER_KEY_PSREFER, self.psrefer];
     if (self.isPageNode) {
-        [description appendFormat:@", %@: %ld", ET_REFER_KEY_PGSTEP, self.pgstep];
+        [description appendFormat:@", %@: %ld", NE_ET_REFER_KEY_PGSTEP, self.pgstep];
     }
     [description appendFormat:@", _visible[%@-%@]:{%.1f,%.1f,%.1f,%.1f}", @(self.visible).stringValue, @(self.impressMaxRatio).stringValue, _visibleRect.origin.x, _visibleRect.origin.y, _visibleRect.size.width, _visibleRect.size.height];
     
     [description appendString:@", sub: ["];
-    [self.subNodes enumerateObjectsUsingBlock:^(EventTracingVTreeNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [description appendFormat:@"%@: %@,", ET_CONST_KEY_OID, obj.oid];
+    [self.subNodes enumerateObjectsUsingBlock:^(NEEventTracingVTreeNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [description appendFormat:@"%@: %@,", NE_ET_CONST_KEY_OID, obj.oid];
     }];
     [description appendString:@"]"];
     
     [description appendString:@", {"];
     [self.nodeParams enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
+        [description appendFormat:@"%@: %@, ", key, obj];
+    }];
+    [self.innerValidationParams enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
         [description appendFormat:@"%@: %@, ", key, obj];
     }];
     [description appendString:@"}"];
@@ -655,18 +693,18 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 
 @end
 
-@implementation EventTracingVTreeNode (Geometry)
-- (EventTracingVTreeNode * _Nullable)hitTest:(CGPoint)point {
+@implementation NEEventTracingVTreeNode (Geometry)
+- (NEEventTracingVTreeNode * _Nullable)hitTest:(CGPoint)point {
     return [self hitTest:point pageOnly:NO];
 }
 
-- (EventTracingVTreeNode * _Nullable)hitTest:(CGPoint)point pageOnly:(BOOL)pageOnly {
-    BOOL(^nodeVisible)(EventTracingVTreeNode *) = ^BOOL(EventTracingVTreeNode *node) {
+- (NEEventTracingVTreeNode * _Nullable)hitTest:(CGPoint)point pageOnly:(BOOL)pageOnly {
+    BOOL(^nodeVisible)(NEEventTracingVTreeNode *) = ^BOOL(NEEventTracingVTreeNode *node) {
         return !node.isRoot && (!pageOnly || ( pageOnly && node.isPageNode)) && CGRectContainsPoint(node.visibleRect, point);
     };
     
-    __block EventTracingVTreeNode *foundedNode = nil;
-    [self.subNodes enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(EventTracingVTreeNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    __block NEEventTracingVTreeNode *foundedNode = nil;
+    [self.subNodes enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NEEventTracingVTreeNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if (nodeVisible(obj)) {
             foundedNode = obj;
             *stop = YES;
@@ -686,11 +724,11 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 
 @end
 
-@implementation EventTracingVTreeNode (Enumerater)
+@implementation NEEventTracingVTreeNode (Enumerater)
 
-- (EventTracingVTreeNode * _Nullable)firstAncestorPageNode {
-    __block EventTracingVTreeNode *pageNode = nil;
-    [self enumerateAncestorNodeWithBlock:^(EventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
+- (NEEventTracingVTreeNode * _Nullable)firstAncestorPageNode {
+    __block NEEventTracingVTreeNode *pageNode = nil;
+    [self enumerateAncestorNodeWithBlock:^(NEEventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
         if (ancestorNode.isPageNode) {
             pageNode = ancestorNode;
             *stop = YES;
@@ -700,8 +738,8 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
     return pageNode;
 }
 
-- (void)enumerateAncestorNodeWithBlock:(void (NS_NOESCAPE ^ _Nonnull)(EventTracingVTreeNode * _Nonnull, BOOL * _Nonnull))block {
-    [@[self] et_enumerateObjectsUsingBlock:^NSArray * _Nonnull(EventTracingVTreeNode *node, BOOL * _Nonnull stop) {
+- (void)enumerateAncestorNodeWithBlock:(void (NS_NOESCAPE ^ _Nonnull)(NEEventTracingVTreeNode * _Nonnull, BOOL * _Nonnull))block {
+    [@[self] ne_et_enumerateObjectsUsingBlock:^NSArray * _Nonnull(NEEventTracingVTreeNode *node, BOOL * _Nonnull stop) {
         block(node, stop);
         return (node.parentNode && !node.parentNode.isRoot) ? @[node.parentNode] : nil;
     }];
@@ -709,3 +747,14 @@ NSString * const kETAddParamCallbackObjectkey = @"__OBJECT__";
 
 @end
 
+@implementation NEEventTracingVTreeNode (Deprecated)
+- (BOOL)isAutoMountParentWaring {
+    return NO;
+}
+- (CGFloat)impressRatioThreshold {
+    return 0.f;
+}
+- (NSTimeInterval)impressIntervalThreshold {
+    return 0;
+}
+@end

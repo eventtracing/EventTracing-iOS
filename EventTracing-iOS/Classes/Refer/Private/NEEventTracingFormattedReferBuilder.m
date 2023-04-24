@@ -1,17 +1,17 @@
 //
-//  EventTracingFormattedReferBuilder.m
-//  EventTracing
+//  NEEventTracingFormattedReferBuilder.m
+//  NEEventTracing
 //
 //  Created by dl on 2022/2/23.
 //
 
-#import "EventTracingFormattedReferBuilder.h"
-#import "EventTracingEngine.h"
+#import "NEEventTracingFormattedReferBuilder.h"
+#import "NEEventTracingEngine.h"
 #import "NSString+EventTracingUtil.h"
 #import <BlocksKit/BlocksKit.h>
 
-@interface EventTracingFormattedReferInstance : NSObject <EventTracingFormattedRefer>
-@property(nonatomic, assign, readwrite) EventTracingFormattedReferComponentOptions options;
+@interface NEEventTracingFormattedReferInstance : NSObject <NEEventTracingFormattedRefer>
+@property(nonatomic, assign, readwrite) NEEventTracingFormattedReferComponentOptions options;
 
 /// MARK: 第 [0-10) 位，是用来保留的，作为存在真实 component 的位
 @property(nonatomic, copy, readwrite) NSString *sessid;
@@ -27,7 +27,7 @@
 @property(nonatomic, assign, readwrite, getter=isH5) BOOL h5;
 @end
 
-@implementation EventTracingFormattedReferInstance
+@implementation NEEventTracingFormattedReferInstance
 @synthesize options = _options;
 @synthesize sessid = _sessid;
 @synthesize type = _type;
@@ -52,7 +52,7 @@
     return [self _valueForceWithSessid:withSessid undefinedXpath:undefinedXpath];
 }
 
-+ (id<EventTracingFormattedRefer>)_doParse:(NSString *)value error:(NSError ** _Nullable)error {
++ (id<NEEventTracingFormattedRefer>)_doParse:(NSString *)value error:(NSError ** _Nullable)error {
     BOOL firstAndEndCharValid = [value hasPrefix:@"["] && [value hasSuffix:@"]"];
     if (!firstAndEndCharValid) {
         if (error) {
@@ -78,7 +78,7 @@
     }
     
     // 2. _F
-    EventTracingFormattedReferComponentOptions options = 0;
+    NEEventTracingFormattedReferComponentOptions options = 0;
     NSString *optionsPrefix = @"F:";
     if ([comps.firstObject hasPrefix:optionsPrefix]) {
         NSRange range = NSMakeRange(optionsPrefix.length, comps.firstObject.length - optionsPrefix.length);
@@ -119,14 +119,14 @@
     /// MARK: components
     // 3. sessid
     NSString *sessid;
-    if (options & EventTracingFormattedReferComponentSessid) {
+    if (options & NEEventTracingFormattedReferComponentSessid) {
         sessid = comps.firstObject;
         RemoveFirstObjectIfNeeded
     }
     
     // 4. type
     NSString *type;
-    if (options & EventTracingFormattedReferComponentType) {
+    if (options & NEEventTracingFormattedReferComponentType) {
         type = comps.firstObject;
         if (type.length == 0) {
             if (error) {
@@ -142,33 +142,33 @@
     
     // 5. actseq
     NSInteger actseq = 0;
-    if (options & EventTracingFormattedReferComponentActseq) {
+    if (options & NEEventTracingFormattedReferComponentActseq) {
         actseq = [comps.firstObject integerValue];
         RemoveFirstObjectIfNeeded
     }
     
     // 6. pgstep
     NSInteger pgstep = 0;
-    if (options & EventTracingFormattedReferComponentPgstep) {
+    if (options & NEEventTracingFormattedReferComponentPgstep) {
         pgstep = [comps.firstObject integerValue];
         RemoveFirstObjectIfNeeded
     }
     
     // 7. spm
     NSString *spm;
-    if (options & EventTracingFormattedReferComponentSPM) {
+    if (options & NEEventTracingFormattedReferComponentSPM) {
         spm = comps.firstObject;
         RemoveFirstObjectIfNeeded
     }
     
     // 8. scm
     NSString *scm;
-    if (options & EventTracingFormattedReferComponentSCM) {
+    if (options & NEEventTracingFormattedReferComponentSCM) {
         scm = comps.firstObject;
         RemoveFirstObjectIfNeeded
     }
     
-    EventTracingFormattedReferInstance *refer = [[EventTracingFormattedReferInstance alloc] init];
+    NEEventTracingFormattedReferInstance *refer = [[NEEventTracingFormattedReferInstance alloc] init];
     refer.options = options;
     refer.sessid = sessid;
     refer.type = type;
@@ -177,9 +177,9 @@
     refer.spm = spm;
     refer.scm = scm;
     
-    refer.er = options & EventTracingFormattedReferComponentFlagER;
-    refer.undefinedXpath = options & EventTracingFormattedReferComponentFlagUndefinedXpath;
-    refer.h5 = options & EventTracingFormattedReferComponentFlagH5;
+    refer.er = options & NEEventTracingFormattedReferComponentFlagER;
+    refer.undefinedXpath = options & NEEventTracingFormattedReferComponentFlagUndefinedXpath;
+    refer.h5 = options & NEEventTracingFormattedReferComponentFlagH5;
     
     return refer;
 }
@@ -188,15 +188,15 @@
     NSMutableString *value = [@"" mutableCopy];
     
     /// MARK: _dkey, F
-    EventTracingFormattedReferComponentOptions options = self.options;
+    NEEventTracingFormattedReferComponentOptions options = self.options;
     if (forceWithSessid) {
-        options |= EventTracingFormattedReferComponentSessid;
+        options |= NEEventTracingFormattedReferComponentSessid;
     }
     if (undefinedXpath) {
-        options |= EventTracingFormattedReferComponentFlagUndefinedXpath;
+        options |= NEEventTracingFormattedReferComponentFlagUndefinedXpath;
     }
     
-    if ([EventTracingEngine sharedInstance].context.referFormatHasDKeyComponent) {
+    if ([NEEventTracingEngine sharedInstance].context.referFormatHasDKeyComponent) {
         [value appendFormat:@"[_dkey:%@]", [self.class _dkeyFromOptions:options]];
     }
     
@@ -204,31 +204,31 @@
     
     /// MARK: component s
     // 1. sessid
-    if (options & EventTracingFormattedReferComponentSessid) {
+    if (options & NEEventTracingFormattedReferComponentSessid) {
         [value appendFormat:@"[%@]", self.sessid];
     }
     // 2. type
-    if (options & EventTracingFormattedReferComponentType) {
+    if (options & NEEventTracingFormattedReferComponentType) {
         [value appendFormat:@"[%@]", self.type];
     }
     
     // 3. actseq
-    if (options & EventTracingFormattedReferComponentActseq) {
+    if (options & NEEventTracingFormattedReferComponentActseq) {
         [value appendFormat:@"[%@]", @(self.actseq).stringValue];
     }
     
     // 4. pgstep
-    if (options & EventTracingFormattedReferComponentPgstep) {
+    if (options & NEEventTracingFormattedReferComponentPgstep) {
         [value appendFormat:@"[%@]", @(self.pgstep).stringValue];
     }
     
     // 5. spm
-    if (options & EventTracingFormattedReferComponentSPM) {
+    if (options & NEEventTracingFormattedReferComponentSPM) {
         [value appendFormat:@"[%@]", self.spm];
     }
     
     // 6. scm
-    if (options & EventTracingFormattedReferComponentSCM) {
+    if (options & NEEventTracingFormattedReferComponentSCM) {
         [value appendFormat:@"[%@]", self.scm];
     }
     
@@ -236,24 +236,24 @@
 }
 
 #pragma mark - private methods
-+ (NSString *)_dkeyFromOptions:(EventTracingFormattedReferComponentOptions)options {
++ (NSString *)_dkeyFromOptions:(NEEventTracingFormattedReferComponentOptions)options {
     NSMutableArray<NSString *> *dkeys = [NSMutableArray array];
     
     NSArray<NSDictionary *> *mapValues = @[
-        @{@(EventTracingFormattedReferComponentFlagER): @"er"},
-        @{@(EventTracingFormattedReferComponentFlagUndefinedXpath): @"undefined-xpath"},
-        @{@(EventTracingFormattedReferComponentFlagH5): @"h5"},
+        @{@(NEEventTracingFormattedReferComponentFlagER): @"er"},
+        @{@(NEEventTracingFormattedReferComponentFlagUndefinedXpath): @"undefined-xpath"},
+        @{@(NEEventTracingFormattedReferComponentFlagH5): @"h5"},
         
-        @{@(EventTracingFormattedReferComponentSessid): @"sessid"},
-        @{@(EventTracingFormattedReferComponentType): @"type"},
-        @{@(EventTracingFormattedReferComponentActseq): @"actseq"},
-        @{@(EventTracingFormattedReferComponentPgstep): @"pgstep"},
-        @{@(EventTracingFormattedReferComponentSPM): @"spm"},
-        @{@(EventTracingFormattedReferComponentSCM): @"scm"}
+        @{@(NEEventTracingFormattedReferComponentSessid): @"sessid"},
+        @{@(NEEventTracingFormattedReferComponentType): @"type"},
+        @{@(NEEventTracingFormattedReferComponentActseq): @"actseq"},
+        @{@(NEEventTracingFormattedReferComponentPgstep): @"pgstep"},
+        @{@(NEEventTracingFormattedReferComponentSPM): @"spm"},
+        @{@(NEEventTracingFormattedReferComponentSCM): @"scm"}
     ];
 
     [mapValues enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        EventTracingFormattedReferComponentOptions option = [obj.allKeys.firstObject integerValue];
+        NEEventTracingFormattedReferComponentOptions option = [obj.allKeys.firstObject integerValue];
         if (options & option) {
             [dkeys addObject:obj.allValues.firstObject];
         }
@@ -268,81 +268,81 @@
 
 @end
 
-@interface EventTracingFormattedReferBuilder () <EventTracingFormattedReferComponentBuilder>
-@property(nonatomic, strong) EventTracingFormattedReferInstance *referInstance;
+@interface NEEventTracingFormattedReferBuilder () <NEEventTracingFormattedReferComponentBuilder>
+@property(nonatomic, strong) NEEventTracingFormattedReferInstance *referInstance;
 @end
 
-@implementation EventTracingFormattedReferBuilder
+@implementation NEEventTracingFormattedReferBuilder
 
-+ (EventTracingFormattedReferBuilder *)build:(void (^)(id<EventTracingFormattedReferComponentBuilder> _Nonnull))block {
-    EventTracingFormattedReferBuilder *builder = [[EventTracingFormattedReferBuilder alloc] init];
-    builder.referInstance = [[EventTracingFormattedReferInstance alloc] init];
-    builder.referInstance.sessid = [EventTracingEngine sharedInstance].context.sessid;
++ (NEEventTracingFormattedReferBuilder *)build:(void (^)(id<NEEventTracingFormattedReferComponentBuilder> _Nonnull))block {
+    NEEventTracingFormattedReferBuilder *builder = [[NEEventTracingFormattedReferBuilder alloc] init];
+    builder.referInstance = [[NEEventTracingFormattedReferInstance alloc] init];
+    builder.referInstance.sessid = [NEEventTracingEngine sharedInstance].context.sessid;
     block(builder);
     return builder;
 }
 
-- (id<EventTracingFormattedRefer>)generateRefer {
+- (id<NEEventTracingFormattedRefer>)generateRefer {
     return self.referInstance;
 }
 
-#pragma mark - EventTracingFormattedReferComponentBuilder
+#pragma mark - NEEventTracingFormattedReferComponentBuilder
 
-#define EventTracingFormattedReferComponentBuilderMethod(TYPE, name, option)              \
-- (id<EventTracingFormattedReferComponentBuilder> _Nonnull (^)(TYPE))name {               \
-    return ^id<EventTracingFormattedReferComponentBuilder>(TYPE value) {                  \
+#define NEEventTracingFormattedReferComponentBuilderMethod(TYPE, name, option)              \
+- (id<NEEventTracingFormattedReferComponentBuilder> _Nonnull (^)(TYPE))name {               \
+    return ^id<NEEventTracingFormattedReferComponentBuilder>(TYPE value) {                  \
         self.referInstance.name = value;                                                    \
         self.referInstance.options |= option;                                               \
         return self;                                                                        \
     };                                                                                      \
 }
 
-- (id<EventTracingFormattedReferComponentBuilder> _Nonnull (^)(void))withSesid {
-    return ^id<EventTracingFormattedReferComponentBuilder>(void) {
-        self.referInstance.options |= EventTracingFormattedReferComponentSessid;
+- (id<NEEventTracingFormattedReferComponentBuilder> _Nonnull (^)(void))withSesid {
+    return ^id<NEEventTracingFormattedReferComponentBuilder>(void) {
+        self.referInstance.options |= NEEventTracingFormattedReferComponentSessid;
         return self;
     };
 }
 
-EventTracingFormattedReferComponentBuilderMethod(NSString * _Nonnull, type, EventTracingFormattedReferComponentType)
+NEEventTracingFormattedReferComponentBuilderMethod(NSString * _Nonnull, type, NEEventTracingFormattedReferComponentType)
 
-- (id<EventTracingFormattedReferComponentBuilder>  _Nonnull (^)(void))typeE {
-    return ^id<EventTracingFormattedReferComponentBuilder>(void) {
-        self.type(ET_REFER_KEY_E);
+- (id<NEEventTracingFormattedReferComponentBuilder>  _Nonnull (^)(void))typeE {
+    return ^id<NEEventTracingFormattedReferComponentBuilder>(void) {
+        self.type(NE_ET_REFER_KEY_E);
         return self;
     };
 }
-- (id<EventTracingFormattedReferComponentBuilder>  _Nonnull (^)(void))typeP {
-    return ^id<EventTracingFormattedReferComponentBuilder>(void) {
-        self.type(ET_REFER_KEY_P);
+- (id<NEEventTracingFormattedReferComponentBuilder>  _Nonnull (^)(void))typeP {
+    return ^id<NEEventTracingFormattedReferComponentBuilder>(void) {
+        self.type(NE_ET_REFER_KEY_P);
         return self;
     };
 }
 
-EventTracingFormattedReferComponentBuilderMethod(NSInteger, actseq, EventTracingFormattedReferComponentActseq)
-EventTracingFormattedReferComponentBuilderMethod(NSInteger, pgstep, EventTracingFormattedReferComponentPgstep)
-EventTracingFormattedReferComponentBuilderMethod(NSString * _Nonnull, spm, EventTracingFormattedReferComponentSPM)
-EventTracingFormattedReferComponentBuilderMethod(NSString * _Nonnull, scm, EventTracingFormattedReferComponentSCM)
+NEEventTracingFormattedReferComponentBuilderMethod(NSInteger, actseq, NEEventTracingFormattedReferComponentActseq)
+NEEventTracingFormattedReferComponentBuilderMethod(NSInteger, pgstep, NEEventTracingFormattedReferComponentPgstep)
+NEEventTracingFormattedReferComponentBuilderMethod(NSString * _Nonnull, spm, NEEventTracingFormattedReferComponentSPM)
+NEEventTracingFormattedReferComponentBuilderMethod(NSString * _Nonnull, scm, NEEventTracingFormattedReferComponentSCM)
 
-#define EventTracingFormattedReferComponentBuilderMethodVoidBollean(name, option)         \
-- (id<EventTracingFormattedReferComponentBuilder> _Nonnull (^)(void))name {               \
-    return ^id<EventTracingFormattedReferComponentBuilder>(void) {                        \
+#define NEEventTracingFormattedReferComponentBuilderMethodVoidBollean(name, option)         \
+- (id<NEEventTracingFormattedReferComponentBuilder> _Nonnull (^)(void))name {               \
+    return ^id<NEEventTracingFormattedReferComponentBuilder>(void) {                        \
         self.referInstance.name = YES;                                                      \
         self.referInstance.options |= option;                                               \
         return self;                                                                        \
     };                                                                                      \
 }
 
-EventTracingFormattedReferComponentBuilderMethodVoidBollean(undefinedXpath, EventTracingFormattedReferComponentFlagUndefinedXpath)
-EventTracingFormattedReferComponentBuilderMethodVoidBollean(er, EventTracingFormattedReferComponentFlagER)
-EventTracingFormattedReferComponentBuilderMethodVoidBollean(h5, EventTracingFormattedReferComponentFlagH5)
+NEEventTracingFormattedReferComponentBuilderMethodVoidBollean(undefinedXpath, NEEventTracingFormattedReferComponentFlagUndefinedXpath)
+NEEventTracingFormattedReferComponentBuilderMethodVoidBollean(er, NEEventTracingFormattedReferComponentFlagER)
+NEEventTracingFormattedReferComponentBuilderMethodVoidBollean(h5, NEEventTracingFormattedReferComponentFlagH5)
 
 @end
 
-id<EventTracingFormattedRefer> _Nullable ET_FormattedReferParseFromReferString(NSString *referString) {
-    return ET_FormattedReferParseFromReferStringWithError(referString, nil);
+id<NEEventTracingFormattedRefer> _Nullable NE_ET_FormattedReferParseFromReferString(NSString *referString) {
+    return NE_ET_FormattedReferParseFromReferStringWithError(referString, nil);
 }
 
-id<EventTracingFormattedRefer> _Nullable ET_FormattedReferParseFromReferStringWithError(NSString *referString, NSError ** _Nullable error) {
-    return [EventTracingFormattedReferInstance _doParse:referString error:error];
+id<NEEventTracingFormattedRefer> _Nullable NE_ET_FormattedReferParseFromReferStringWithError(NSString *referString, NSError ** _Nullable error) {
+    return [NEEventTracingFormattedReferInstance _doParse:referString error:error];
 }

@@ -1,20 +1,20 @@
 //
-//  EventTracingEventReferQueue.m
-//  EventTracing
+//  NEEventTracingEventReferQueue.m
+//  NEEventTracing
 //
 //  Created by dl on 2021/4/1.
 //
 
-#import "EventTracingEventReferQueue.h"
-#import "EventTracingEventReferQueue+Query.h"
-#import "EventTracingDefines.h"
-#import "EventTracingVTree+Private.h"
-#import "EventTracingVTreeNode+Private.h"
-#import "EventTracingEventRefer+Private.h"
-#import "EventTracingFormattedReferBuilder.h"
-#import "EventTracingTraverser.h"
+#import "NEEventTracingEventReferQueue.h"
+#import "NEEventTracingEventReferQueue+Query.h"
+#import "NEEventTracingDefines.h"
+#import "NEEventTracingVTree+Private.h"
+#import "NEEventTracingVTreeNode+Private.h"
+#import "NEEventTracingEventRefer+Private.h"
+#import "NEEventTracingFormattedReferBuilder.h"
+#import "NEEventTracingTraverser.h"
 #import "UIView+EventTracingPrivate.h"
-#import "EventTracingEngine+Private.h"
+#import "NEEventTracingEngine+Private.h"
 #import "NSArray+ETEnumerator.h"
 
 #import <BlocksKit/BlocksKit.h>
@@ -22,17 +22,17 @@
 #define LOCK        dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
 #define UNLOCK      dispatch_semaphore_signal(_lock);
 
-@interface EventTracingEventReferQueue () {
+@interface NEEventTracingEventReferQueue () {
     dispatch_semaphore_t _lock;
     
-    NSMutableArray<EventTracingFormattedEventRefer *> *_innerRefers;
-    EventTracingUndefinedXpathEventRefer *_lastestUndefinedXPathRefer;
-    NSMutableArray<EventTracingUndefinedXpathEventRefer *> *_innerUndefinedXpathRefers;
+    NSMutableArray<NEEventTracingFormattedEventRefer *> *_innerRefers;
+    NEEventTracingUndefinedXpathEventRefer *_lastestUndefinedXPathRefer;
+    NSMutableArray<NEEventTracingUndefinedXpathEventRefer *> *_innerUndefinedXpathRefers;
     NSString *_hsrefer;
 }
 @end
 
-@implementation EventTracingEventReferQueue
+@implementation NEEventTracingEventReferQueue
 
 - (instancetype)init {
     self = [super init];
@@ -45,22 +45,22 @@
 }
 
 + (instancetype)queue {
-    static EventTracingEventReferQueue *_queue;
+    static NEEventTracingEventReferQueue *_queue;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _queue = [[EventTracingEventReferQueue alloc] init];
+        _queue = [[NEEventTracingEventReferQueue alloc] init];
     });
     return _queue;
 }
 
-- (void)pushEventRefer:(EventTracingFormattedEventRefer *)refer {
+- (void)pushEventRefer:(NEEventTracingFormattedEventRefer *)refer {
     LOCK {
         [_innerRefers addObject:refer];
     } UNLOCK
 }
 
-- (void)pushEventRefer:(EventTracingFormattedEventRefer *)refer
-                  node:(EventTracingVTreeNode * _Nullable)node
+- (void)pushEventRefer:(NEEventTracingFormattedEventRefer *)refer
+                  node:(NEEventTracingVTreeNode * _Nullable)node
              isSubPage:(BOOL)isSubPage {
     if (!node) {
         if (!isSubPage) {
@@ -69,8 +69,8 @@
         return;
     }
     
-    EventTracingFormattedEventRefer *rootPagePVRefer = [[EventTracingEventReferQueue queue] fetchLastestRootPagePVRefer];
-    EventTracingVTreeNode *rootPageNode = [node findToppestNode:YES];
+    NEEventTracingFormattedEventRefer *rootPagePVRefer = [[NEEventTracingEventReferQueue queue] fetchLastestRootPagePVRefer];
+    NEEventTracingVTreeNode *rootPageNode = [node findToppestNode:YES];
     if ([rootPageNode.rootPagePVFormattedRefer.value isEqualToString:rootPagePVRefer.formattedRefer.value]) {
         [rootPagePVRefer addSubRefer:refer];
     }
@@ -79,7 +79,7 @@
     }
 }
 
-- (void)removeEventRefer:(EventTracingFormattedEventRefer *)refer {
+- (void)removeEventRefer:(NEEventTracingFormattedEventRefer *)refer {
     LOCK {
         [_innerRefers removeObject:refer];
     } UNLOCK
@@ -91,8 +91,8 @@
     } UNLOCK
 }
 
-- (NSArray<EventTracingFormattedEventRefer *> *)allRefers {
-    NSArray<EventTracingFormattedEventRefer *> *allRefers = nil;
+- (NSArray<NEEventTracingFormattedEventRefer *> *)allRefers {
+    NSArray<NEEventTracingFormattedEventRefer *> *allRefers = nil;
     LOCK {
         allRefers = _innerRefers.copy;
     } UNLOCK
@@ -102,15 +102,15 @@
 
 @end
 
-@implementation EventTracingEventReferQueue (EventRefer)
+@implementation NEEventTracingEventReferQueue (EventRefer)
 
 - (BOOL)pushEventReferForEvent:(NSString *)event
                           view:(UIView *)view
-                          node:(EventTracingVTreeNode * _Nullable)node
+                          node:(NEEventTracingVTreeNode * _Nullable)node
                    useForRefer:(BOOL)useForRefer
                  useNextActseq:(BOOL)useNextActseq {
-    if (!ET_isPageOrElement(view)) {
-        if (!ET_isIgnoreRefer(view)) {
+    if (!NE_ET_isPageOrElement(view)) {
+        if (!NE_ET_isIgnoreRefer(view)) {
             [self undefinedXpath_pushEventReferForEvent:event view:view];
         }
         
@@ -118,7 +118,7 @@
     }
     
     if (!node) {
-        /// MARK: 这里能出现，都是因为 `[view et_isSimpleVisible] == NO`
+        /// MARK: 这里能出现，都是因为 `[view ne_et_isSimpleVisible] == NO`
         /// MARK: 仅可能发生在自定义事件埋点；因为AOP埋点可以执行，该view一定可见
         return NO;
     }
@@ -126,14 +126,14 @@
     return [self _doPushEventReferForEvent:event node:node useForRefer:useForRefer useNextActseq:useNextActseq];
 }
 - (BOOL)_doPushEventReferForEvent:(NSString *)event
-                             node:(EventTracingVTreeNode *)node
+                             node:(NEEventTracingVTreeNode *)node
                       useForRefer:(BOOL)useForRefer
                     useNextActseq:(BOOL)useNextActseq {
     return [self _doPushEventReferForEvent:event node:node useForRefer:useForRefer useNextActseq:useNextActseq isSubPage:NO];
 }
 
 - (BOOL)_doPushEventReferForEvent:(NSString *)event
-                             node:(EventTracingVTreeNode *)node
+                             node:(NEEventTracingVTreeNode *)node
                       useForRefer:(BOOL)useForRefer
                     useNextActseq:(BOOL)useNextActseq
                         isSubPage:(BOOL)isSubPage {
@@ -156,75 +156,75 @@
         return NO;
     }
     
-    id<EventTracingFormattedRefer> formattedRefer = ET_formattedReferForNode(node, NO);
-    EventTracingVTreeNode *rootPageNode = [node findToppestNode:YES];
+    id<NEEventTracingFormattedRefer> formattedRefer = NE_ET_formattedReferForNode(node, NO);
+    NEEventTracingVTreeNode *rootPageNode = [node findToppestNode:YES];
     BOOL rootPagePV = rootPageNode == node;
     
     __block BOOL shouldStartHsrefer = NO;
-    NSArray<NSString *> *needStartHsreferOids = [EventTracingEngine sharedInstance].ctx.needStartHsreferOids;
-    [node enumerateAncestorNodeWithBlock:^(EventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
+    NSArray<NSString *> *needStartHsreferOids = [NEEventTracingEngine sharedInstance].ctx.needStartHsreferOids;
+    [node enumerateAncestorNodeWithBlock:^(NEEventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
         if ([needStartHsreferOids containsObject:ancestorNode.oid]) {
             shouldStartHsrefer = YES;
             *stop = YES;
         }
     }];
     
-    EventTracingFormattedEventRefer *refer = [EventTracingFormattedEventRefer referWithEvent:event
-                                                                              formattedRefer:formattedRefer
-                                                                                  rootPagePV:rootPagePV
-                                                                          shouldStartHsrefer:shouldStartHsrefer
-                                                                          isNodePsreferMuted:node.psreferMute];
+    NEEventTracingFormattedEventRefer *refer = [NEEventTracingFormattedEventRefer referWithEvent:event
+                                                                                  formattedRefer:formattedRefer
+                                                                                      rootPagePV:rootPagePV
+                                                                              shouldStartHsrefer:shouldStartHsrefer
+                                                                              isNodePsreferMuted:node.psreferMute];
     
     [self pushEventRefer:refer node:node isSubPage:isSubPage];
     
     return YES;
 }
 
-- (void)rootPageNodeDidImpress:(EventTracingVTreeNode * _Nullable)node
-                       inVTree:(EventTracingVTree * _Nullable)VTree {
+- (void)rootPageNodeDidImpress:(NEEventTracingVTreeNode * _Nullable)node
+                       inVTree:(NEEventTracingVTree * _Nullable)VTree {
     if (!node.isPageNode || !VTree) {
         return;
     }
 
-    [self _doPushEventReferForEvent:ET_EVENT_ID_P_VIEW node:node useForRefer:YES useNextActseq:NO];
+    [self _doPushEventReferForEvent:NE_ET_EVENT_ID_P_VIEW node:node useForRefer:YES useNextActseq:NO];
 }
 
-- (void)subPageNodeDidImpress:(EventTracingVTreeNode * _Nullable)node
-                      inVTree:(EventTracingVTree * _Nullable)VTree {
+- (void)subPageNodeDidImpress:(NEEventTracingVTreeNode * _Nullable)node
+                      inVTree:(NEEventTracingVTree * _Nullable)VTree {
     if (!node.isPageNode || !VTree) {
         return;
     }
-    [self _doPushEventReferForEvent:ET_EVENT_ID_P_VIEW node:node useForRefer:YES useNextActseq:YES isSubPage:YES];
+    [self _doPushEventReferForEvent:NE_ET_EVENT_ID_P_VIEW node:node useForRefer:YES useNextActseq:YES isSubPage:YES];
 }
 
-- (EventTracingFormattedEventRefer *)fetchLastestRootPagePVRefer {
-    NSArray<EventTracingFormattedEventRefer *> *innerRefers = nil;
+- (NEEventTracingFormattedEventRefer *)fetchLastestRootPagePVRefer {
+    NSArray<NEEventTracingFormattedEventRefer *> *innerRefers = nil;
     
     LOCK {
         innerRefers = _innerRefers.copy;
     } UNLOCK
     
-    return [innerRefers.reverseObjectEnumerator.allObjects bk_match:^BOOL(EventTracingFormattedEventRefer *obj) {
+    return [innerRefers.reverseObjectEnumerator.allObjects bk_match:^BOOL(NEEventTracingFormattedEventRefer *obj) {
         return obj.isRootPagePV;
     }];
 }
 
 @end
 
-@implementation EventTracingEventReferQueue (UndefinedXpathEventRefer)
+@implementation NEEventTracingEventReferQueue (UndefinedXpathEventRefer)
 
 - (void)undefinedXpath_pushEventReferForEvent:(NSString *)event view:(UIView *)view {
-    EventTracingUndefinedXpathEventRefer *undefinedXpathRefer =
-    [EventTracingUndefinedXpathEventRefer referWithEvent:event
-                                     undefinedXpathRefer:ET_undefinedXpathReferForView(view)];
-    
+    NEEventTracingUndefinedXpathEventRefer *undefinedXpathRefer =
+    [NEEventTracingUndefinedXpathEventRefer referWithEvent:event
+                                       undefinedXpathRefer:NE_ET_undefinedXpathReferForView(view)];
+
     LOCK {
         [_innerUndefinedXpathRefers addObject:undefinedXpathRefer];
     } UNLOCK
 }
 
-- (EventTracingUndefinedXpathEventRefer * _Nullable)undefinedXpath_fetchLastestEventRefer {
-    NSArray<EventTracingUndefinedXpathEventRefer *> *innerUndefinedXpathRefers = nil;
+- (NEEventTracingUndefinedXpathEventRefer * _Nullable)undefinedXpath_fetchLastestEventRefer {
+    NSArray<NEEventTracingUndefinedXpathEventRefer *> *innerUndefinedXpathRefers = nil;
     
     LOCK {
         innerUndefinedXpathRefers = _innerUndefinedXpathRefers;
@@ -233,21 +233,21 @@
     return innerUndefinedXpathRefers.lastObject;
 }
 
-- (EventTracingUndefinedXpathEventRefer * _Nullable)undefinedXpath_fetchLastestEventReferForEvent:(NSString *)event {
-    NSArray<EventTracingUndefinedXpathEventRefer *> *innerUndefinedXpathRefers = nil;
+- (NEEventTracingUndefinedXpathEventRefer * _Nullable)undefinedXpath_fetchLastestEventReferForEvent:(NSString *)event {
+    NSArray<NEEventTracingUndefinedXpathEventRefer *> *innerUndefinedXpathRefers = nil;
     
     LOCK {
         innerUndefinedXpathRefers = _innerUndefinedXpathRefers;
     } UNLOCK
     
-    return [innerUndefinedXpathRefers.reverseObjectEnumerator.allObjects bk_match:^BOOL(EventTracingUndefinedXpathEventRefer *obj) {
+    return [innerUndefinedXpathRefers.reverseObjectEnumerator.allObjects bk_match:^BOOL(NEEventTracingUndefinedXpathEventRefer *obj) {
         return [obj.event isEqualToString:event];
     }];
 }
 
 @end
 
-@implementation EventTracingEventReferQueue (FormattedHsrefer)
+@implementation NEEventTracingEventReferQueue (FormattedHsrefer)
 
 - (NSString * _Nullable)hsrefer {
     NSString *hsrefer = nil;

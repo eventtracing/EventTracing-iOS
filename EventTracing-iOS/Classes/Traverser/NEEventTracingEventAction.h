@@ -1,16 +1,16 @@
 //
-//  EventTracingEventAction.h
-//  EventTracing
+//  NEEventTracingEventAction.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/4/8.
 //
 
 #import <Foundation/Foundation.h>
-#import "EventTracingVTree.h"
+#import "NEEventTracingVTree.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingEventAction : NSObject
+@interface NEEventTracingEventAction : NSObject
 
 @property(nonatomic, assign) BOOL increaseActseq;
 @property(nonatomic, assign) BOOL useForRefer;
@@ -21,13 +21,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy) NSString *event;
 @property(nonatomic, weak) UIView *view;
 
-@property(nonatomic, strong) EventTracingVTreeNode *node;
-@property(nonatomic, strong) EventTracingVTree *VTree;
+@property(nonatomic, strong) NEEventTracingVTreeNode *node;
+@property(nonatomic, strong) NEEventTracingVTree *VTree;
 
 + (instancetype)actionWithEvent:(NSString *)event view:(UIView *)view;
-- (void)syncFromActionConfig:(EventTracingEventActionConfig *)config;
+- (void)syncFromActionConfig:(NEEventTracingEventActionConfig *)config;
 
-- (void)setupNode:(EventTracingVTreeNode *)node VTree:(EventTracingVTree *)VTree;
+- (void)setupNode:(NEEventTracingVTreeNode *)node VTree:(NEEventTracingVTree *)VTree;
 
 @end
 

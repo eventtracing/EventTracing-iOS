@@ -1,66 +1,63 @@
 //
-//  EventTracingContext+Private.h
-//  EventTracing
+//  NEEventTracingContext+Private.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/2/25.
 //
 
-#import "EventTracingContext.h"
-#import "EventTracingTraversalRunner.h"
-#import "EventTracingVTree.h"
-#import "EventTracingAppLifecycleProcotol.h"
-#import "EventTracingEngine+Action.h"
-#import "EventTracingSentinel.h"
+#import "NEEventTracingContext.h"
+#import "NEEventTracingTraversalRunner.h"
+#import "NEEventTracingVTree.h"
+#import "NEEventTracingAppLifecycleProcotol.h"
+#import "NEEventTracingEngine+Action.h"
+#import "NEEventTracingSentinel.h"
 
-#import "EventTracingTraverser.h"
-#import "EventTracingTraversalRunner.h"
-#import "EventTracingEventEmitter.h"
-#import "EventTracingEventOutput.h"
-#import "EventTracingParamGuardExector.h"
-#import "EventTracingReferFuncs.h"
+#import "NEEventTracingTraverser.h"
+#import "NEEventTracingTraversalRunner.h"
+#import "NEEventTracingEventEmitter.h"
+#import "NEEventTracingEventOutput.h"
+#import "NEEventTracingParamGuardExector.h"
+#import "NEEventTracingReferFuncs.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class EventTracingEngine;
-@interface EventTracingContext : NSObject<EventTracingContextBuilder, EventTracingContext, EventTracingAppLifecycleProcotol> {
+@class NEEventTracingEngine;
+@interface NEEventTracingContext : NSObject<NEEventTracingContextBuilder, NEEventTracingContext, NEEventTracingAppLifecycleProcotol> {
     BOOL _started;
-    EventTracingSentinel *_pgstepSentinel;
-    EventTracingSentinel *_actseqSentinel;
+    NEEventTracingSentinel *_pgstepSentinel;
+    NEEventTracingSentinel *_actseqSentinel;
     
     NSTimeInterval _appStartedTime;
     NSTimeInterval _appLastAtForegroundTime;
     NSTimeInterval _appLastEnterBackgroundTime;
     
-    __weak id<EventTracingExtraConfigurationProvider> _extraConfigurationProvider;
-    NSHashTable<id<EventTracingReferObserver>> *_innerReferObservers;
+    __weak id<NEEventTracingExtraConfigurationProvider> _extraConfigurationProvider;
+    NSHashTable<id<NEEventTracingReferObserver>> *_innerReferObservers;
 }
 
-@property(nonatomic, weak) EventTracingEngine *engine;
+@property(nonatomic, weak) NEEventTracingEngine *engine;
 
 @property(nonatomic, copy) dispatch_semaphore_t lock;
 
 @property(nonatomic, assign, getter=isFirstViewControllerAppeared) BOOL firstViewControllerAppeared;
 @property(nonatomic, assign, readonly) NSInteger appEnterBackgroundSeq;
 
-@property(nonatomic, strong) EventTracingTraverser *traverser;
-@property(nonatomic, strong) EventTracingTraversalRunner *traversalRunner;
-@property(nonatomic, strong) EventTracingEventEmitter *eventEmitter;
-@property(nonatomic, strong) EventTracingEventOutput *eventOutput;
-@property(nonatomic, strong, readonly) EventTracingParamGuardExector *paramGuardExector;
+@property(nonatomic, strong) NEEventTracingTraverser *traverser;
+@property(nonatomic, strong) NEEventTracingTraversalRunner *traversalRunner;
+@property(nonatomic, strong) NEEventTracingEventEmitter *eventEmitter;
+@property(nonatomic, strong) NEEventTracingEventOutput *eventOutput;
+@property(nonatomic, strong, readonly) NEEventTracingParamGuardExector *paramGuardExector;
 
 @property(nonatomic, strong) NSArray<NSString *> *needIncreaseActseqLogEvents;
-@property(nonatomic, strong) NSMutableArray<EventTracingEventAction *> *stockedEventActions;
+@property(nonatomic, strong) NSMutableArray<NEEventTracingEventAction *> *stockedEventActions;
 @property(nonatomic, strong) NSArray<NSString *> *needStartHsreferOids;
-
-@property(nonatomic, copy) NSString *multiReferAppliedEventList;
-@property(nonatomic, assign) NSInteger multiReferMaxItemCount;
 
 - (void)refreshAppInActiveState;
 - (void)markRunState:(BOOL)started;
 
 @end
 
-@interface EventTracingContext (Refer)
+@interface NEEventTracingContext (Refer)
 
 // pgstep
 - (NSUInteger)pgstepIncreased;

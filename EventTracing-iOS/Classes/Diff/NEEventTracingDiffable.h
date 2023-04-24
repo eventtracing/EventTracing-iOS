@@ -1,5 +1,5 @@
 //
-//  EventTracingDiffable.h
+//  NEEventTracingDiffable.h
 //  BlocksKit
 //
 //  Created by dl on 2021/3/16.
@@ -9,13 +9,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol EventTracingDiffable <NSObject>
+@protocol NEEventTracingDiffable <NSObject>
 
 // 节点的id
-- (nonnull id<NSObject>)et_diffIdentifier;
+- (nonnull id<NSObject>)ne_et_diffIdentifier;
 
 // 节点是否相等
-- (BOOL)et_isEqualToDiffableObject:(nullable id<EventTracingDiffable>)object;
+- (BOOL)ne_et_isEqualToDiffableObject:(nullable id<NEEventTracingDiffable>)object;
 
 @end
 

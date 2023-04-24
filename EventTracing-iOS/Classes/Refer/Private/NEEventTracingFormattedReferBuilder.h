@@ -1,40 +1,40 @@
 //
-//  EventTracingFormattedReferBuilder.h
-//  EventTracing
+//  NEEventTracingFormattedReferBuilder.h
+//  NEEventTracing
 //
 //  Created by dl on 2022/2/23.
 //
 
 #import <Foundation/Foundation.h>
-#import "EventTracingFormattedRefer.h"
+#import "NEEventTracingFormattedRefer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol EventTracingFormattedReferComponentBuilder <NSObject>
+@protocol NEEventTracingFormattedReferComponentBuilder <NSObject>
 
 /// MARK: component s
-@property(nonatomic, readonly) id<EventTracingFormattedReferComponentBuilder> (^withSesid)(void);
+@property(nonatomic, readonly) id<NEEventTracingFormattedReferComponentBuilder> (^withSesid)(void);
 
-@property(nonatomic, readonly) id<EventTracingFormattedReferComponentBuilder> (^type)(NSString *value);
-@property(nonatomic, readonly) id<EventTracingFormattedReferComponentBuilder> (^typeE)(void);
-@property(nonatomic, readonly) id<EventTracingFormattedReferComponentBuilder> (^typeP)(void);
+@property(nonatomic, readonly) id<NEEventTracingFormattedReferComponentBuilder> (^type)(NSString *value);
+@property(nonatomic, readonly) id<NEEventTracingFormattedReferComponentBuilder> (^typeE)(void);
+@property(nonatomic, readonly) id<NEEventTracingFormattedReferComponentBuilder> (^typeP)(void);
 
-@property(nonatomic, readonly) id<EventTracingFormattedReferComponentBuilder> (^actseq)(NSInteger value);
-@property(nonatomic, readonly) id<EventTracingFormattedReferComponentBuilder> (^pgstep)(NSInteger value);
-@property(nonatomic, readonly) id<EventTracingFormattedReferComponentBuilder> (^spm)(NSString *value);
-@property(nonatomic, readonly) id<EventTracingFormattedReferComponentBuilder> (^scm)(NSString *value);
+@property(nonatomic, readonly) id<NEEventTracingFormattedReferComponentBuilder> (^actseq)(NSInteger value);
+@property(nonatomic, readonly) id<NEEventTracingFormattedReferComponentBuilder> (^pgstep)(NSInteger value);
+@property(nonatomic, readonly) id<NEEventTracingFormattedReferComponentBuilder> (^spm)(NSString *value);
+@property(nonatomic, readonly) id<NEEventTracingFormattedReferComponentBuilder> (^scm)(NSString *value);
 
 /// MARK: mark s
-@property(nonatomic, readonly) id<EventTracingFormattedReferComponentBuilder> (^undefinedXpath)(void);
-@property(nonatomic, readonly) id<EventTracingFormattedReferComponentBuilder> (^er)(void);
-@property(nonatomic, readonly) id<EventTracingFormattedReferComponentBuilder> (^h5)(void);
+@property(nonatomic, readonly) id<NEEventTracingFormattedReferComponentBuilder> (^undefinedXpath)(void);
+@property(nonatomic, readonly) id<NEEventTracingFormattedReferComponentBuilder> (^er)(void);
+@property(nonatomic, readonly) id<NEEventTracingFormattedReferComponentBuilder> (^h5)(void);
 
 @end
 
-@interface EventTracingFormattedReferBuilder : NSObject
+@interface NEEventTracingFormattedReferBuilder : NSObject
 
-+ (EventTracingFormattedReferBuilder *)build:(void(^)(id<EventTracingFormattedReferComponentBuilder> builder))block;
-- (id<EventTracingFormattedRefer>)generateRefer;
++ (NEEventTracingFormattedReferBuilder *)build:(void(^)(id<NEEventTracingFormattedReferComponentBuilder> builder))block;
+- (id<NEEventTracingFormattedRefer>)generateRefer;
 
 @end
 

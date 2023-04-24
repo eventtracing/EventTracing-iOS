@@ -1,21 +1,21 @@
 //
-//  EventTracingReferObserver.h
-//  EventTracing
+//  NEEventTracingReferObserver.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/11/8.
 //
 
 #import <Foundation/Foundation.h>
-#import "EventTracingVTree.h"
+#import "NEEventTracingVTree.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSInteger, ETReferUpdateOption) {
-    ETReferUpdateOptionNone = 0,
-    ETReferUpdateOptionPsreferMute = 1 << 0L,
+typedef NS_ENUM(NSInteger, NEETReferUpdateOption) {
+    NEETReferUpdateOptionNone = 0,
+    NEETReferUpdateOptionPsreferMute = 1 << 0L,
 };
 
-@protocol EventTracingReferObserver <NSObject>
+@protocol NEEventTracingReferObserver <NSObject>
 
 @optional
 
@@ -31,8 +31,8 @@ typedef NS_ENUM(NSInteger, ETReferUpdateOption) {
 ///   - VTree: 节点对应的 VTree
 - (void)pgreferNeedsUpdatedTo:(NSString *)pgrefer
                       psrefer:(NSString *)psrefer
-                         node:(EventTracingVTreeNode *)node
-                      inVTree:(EventTracingVTree *)VTree;
+                         node:(NEEventTracingVTreeNode *)node
+                      inVTree:(NEEventTracingVTree *)VTree;
 
 /// page 的pgrefer & psrefer 更新的时候，会调用该方法
 /// - Parameters:
@@ -43,9 +43,9 @@ typedef NS_ENUM(NSInteger, ETReferUpdateOption) {
 ///   - option: option，如果是 ETReferUpdateOptionPsreferMute 的话，监听者应该忽略
 - (void)pgreferNeedsUpdatedTo:(NSString *)pgrefer
                       psrefer:(NSString *)psrefer
-                         node:(EventTracingVTreeNode *)node
-                      inVTree:(EventTracingVTree *)VTree
-                       option:(ETReferUpdateOption)option;
+                         node:(NEEventTracingVTreeNode *)node
+                      inVTree:(NEEventTracingVTree *)VTree
+                       option:(NEETReferUpdateOption)option;
 
 @end
 

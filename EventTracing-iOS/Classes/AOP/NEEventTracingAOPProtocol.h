@@ -1,5 +1,5 @@
 //
-//  EventTracingAOPProtocol.h
+//  NEEventTracingAOPProtocol.h
 //  BlocksKit
 //
 //  Created by dl on 2021/2/24.
@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define EventTracingAOPInstanceImp \
+#define NEEventTracingAOPInstanceImp \
 + (instancetype)AOPInstance {\
     static id sharedInstance = nil;\
     static dispatch_once_t onceToken;\
@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
     return sharedInstance;\
 }
 
-@protocol EventTracingAOPProtocol <NSObject>
+@protocol NEEventTracingAOPProtocol <NSObject>
 
 + (instancetype) AOPInstance;
 

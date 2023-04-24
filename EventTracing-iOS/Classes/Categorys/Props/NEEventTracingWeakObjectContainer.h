@@ -1,6 +1,6 @@
 //
-//  EventTracingWeakObjectContainer.h
-//  EventTracing
+//  NEEventTracingWeakObjectContainer.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/7/27.
 //
@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingWeakObjectContainer<__covariant ObjectType> : NSObject
+@interface NEEventTracingWeakObjectContainer<__covariant ObjectType> : NSObject
 @property(nonatomic, readonly, weak, nullable) ObjectType target;
 @property(nonatomic, readonly, weak) ObjectType object;
 

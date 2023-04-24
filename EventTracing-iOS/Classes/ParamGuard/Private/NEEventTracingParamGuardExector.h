@@ -1,17 +1,17 @@
 //
-//  EventTracingParamGuardExector.h
+//  NEEventTracingParamGuardExector.h
 //  BlocksKit
 //
 //  Created by dl on 2021/5/20.
 //
 
 #import <Foundation/Foundation.h>
-#import "EventTracingParamGuardConfiguration.h"
-#import "EventTracingDefines.h"
+#import "NEEventTracingParamGuardConfiguration.h"
+#import "NEEventTracingDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingParamGuardExector : NSObject <EventTracingParamGuardConfiguration>
+@interface NEEventTracingParamGuardExector : NSObject <NEEventTracingParamGuardConfiguration>
 
 - (void)asyncDoDispatchCheckTask:(void(^)(void))block;
 

@@ -1,6 +1,6 @@
 //
-//  EventTracingConstData.h
-//  EventTracing
+//  NEEventTracingConstData.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/5/20.
 //
@@ -9,8 +9,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#ifndef EventTracingConstData_H
-#define EventTracingConstData_H
+#ifndef NEEventTracingConstData_H
+#define NEEventTracingConstData_H
 
 #define kETConstKeyTypeEvent "EVENT"
 #define kETConstKeyTypeRefer "REFER"
@@ -25,7 +25,7 @@ static char * _ETConst_ ## key ## _Private_ ETConstKeyValueSecDATA(ETConstDataSe
 
 #endif
 
-@interface EventTracingConstData : NSObject
+@interface NEEventTracingConstData : NSObject
 
 @property(nonatomic, copy, readonly) NSArray<NSString *> *allConstKeys;
 

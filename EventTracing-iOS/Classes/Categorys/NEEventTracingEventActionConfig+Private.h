@@ -1,15 +1,15 @@
 //
-//  EventTracingEventActionConfig+Private.h
-//  EventTracing
+//  NEEventTracingEventActionConfig+Private.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/4/25.
 //
 
-#import "EventTracingEventActionConfig.h"
+#import "NEEventTracingEventActionConfig.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingEventActionConfig ()
+@interface NEEventTracingEventActionConfig ()
 
 + (instancetype)configWithEvent:(NSString *)event;
 

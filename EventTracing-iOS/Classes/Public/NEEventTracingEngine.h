@@ -1,19 +1,18 @@
 //
-//  EventTracing.h
+//  NEEventTracing.h
 //  BlocksKit
 //
 //  Created by dl on 2021/2/4.
 //
 
 #import <Foundation/Foundation.h>
-#import "EventTracingContext.h"
-#import "EventTracingEventActionConfig.h"
-#import "EventTracingAppLifecycleProcotol.h"
+#import "NEEventTracingContext.h"
+#import "NEEventTracingEventActionConfig.h"
+#import "NEEventTracingAppLifecycleProcotol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-/// SDK 引擎
-@interface EventTracingEngine : NSObject
+@interface NEEventTracingEngine : NSObject
 
 /// 是否启动
 @property(nonatomic, assign, readonly) BOOL started;
@@ -21,20 +20,18 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否启用 列表滚动过程中曝光
 /// Default: NO
 @property(nonatomic, assign, readonly) BOOL incrementalVTreeWhenScrollEnable;
-
-/// 上下文信息
-@property(nonatomic, strong, readonly) id<EventTracingContext> context;
+@property(nonatomic, strong, readonly) id<NEEventTracingContext> context;
 
 - (instancetype)init UNAVAILABLE_ATTRIBUTE;
 + (instancetype)new UNAVAILABLE_ATTRIBUTE;
 + (instancetype)sharedInstance;
 
-- (void)startWithContextBuilder:(void(^NS_NOESCAPE)(id<EventTracingContextBuilder> builder))block;
+- (void)startWithContextBuilder:(void(^NS_NOESCAPE)(id<NEEventTracingContextBuilder> builder))block;
 - (void)stop;
 
 @end
 
-@interface EventTracingEngine (Traverse)
+@interface NEEventTracingEngine (Traverse)
 
 /// 打一个遍历标识，在合适的时候会进行遍历
 - (void)traverse;
@@ -45,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EventTracingEngine (ActionSimple)
+@interface NEEventTracingEngine (ActionSimple)
 
 /*!
  直接打事件点，并且该事件点跟VTree无关，仅仅对接SDK内部的公参
@@ -58,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EventTracingEngine (ReferEventWithNode)
+@interface NEEventTracingEngine (ReferEventWithNode)
 
 /// 自定义事件，不挂载节点，也可以参与链路追踪（使用context级别的 actseq & pgstep ）
 /// - Parameters:
@@ -84,7 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@interface EventTracingEngine (ActionStructured)
+@interface NEEventTracingEngine (ActionStructured)
 
 /*!
  业务方可以自定义事件
@@ -127,10 +124,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)logWithEvent:(NSString *)event
                 view:(UIView *)view
               params:(NSDictionary<NSString *, NSString *> * _Nullable)params
-         eventAction:(void(^ NS_NOESCAPE _Nullable)(EventTracingEventActionConfig *config))block;
+         eventAction:(void(^ NS_NOESCAPE _Nullable)(NEEventTracingEventActionConfig *config))block;
 @end
 
-@interface EventTracingEngine (MergeLogForH5)
+@interface NEEventTracingEngine (MergeLogForH5)
 
 /*!
  业务方可以自定义事件
@@ -146,16 +143,16 @@ NS_ASSUME_NONNULL_BEGIN
  @discussion 典型使用场景，跟站内H5结合使用，H5内有局部虚拟树，根native树结合起来使用
  */
 - (void)logWithEvent:(NSString *)event
-            baseNode:(EventTracingVTreeNode *)baseNode
+            baseNode:(NEEventTracingVTreeNode *)baseNode
                elist:(NSArray<NSDictionary<NSString *, NSString *> *> * _Nullable)elist
                plist:(NSArray<NSDictionary<NSString *, NSString *> *> * _Nullable)plist
          positionKey:(NSString *)positionKey
               params:(NSDictionary<NSString *, NSString *> * _Nullable)params
-         eventAction:(void(^ NS_NOESCAPE _Nullable)(EventTracingEventActionConfig *config))block;
+         eventAction:(void(^ NS_NOESCAPE _Nullable)(NEEventTracingEventActionConfig *config))block;
 
 @end
 
-@interface EventTracingEngine (Params)
+@interface NEEventTracingEngine (Params)
 
 /// MARK: 只为本次 active 所使用的公参列表
 /// MARK: 典型使用场景，dp 方式打开app，则应该本次app出于active周期内，公参都包含这里的参数
@@ -174,13 +171,9 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 // Engine Add/Remove VTreeObserver
-@interface EventTracingEngine (VTreeObserver)
-- (void)addVTreeObserver:(id<EventTracingVTreeObserver>)observer;
-- (void)removeVTreeObserver:(id<EventTracingVTreeObserver>)observer;
-@end
-
-// AppLifeCycle
-@interface EventTracingEngine (InnerLifecycle) <EventTracingAppLifecycleProcotol>
+@interface NEEventTracingEngine (VTreeObserver) <NEEventTracingAppLifecycleProcotol>
+- (void)addVTreeObserver:(id<NEEventTracingVTreeObserver>)observer;
+- (void)removeVTreeObserver:(id<NEEventTracingVTreeObserver>)observer;
 @end
 
 NS_ASSUME_NONNULL_END

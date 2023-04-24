@@ -1,23 +1,23 @@
 //
-//  EventTracingEngine+Action.h
+//  NEEventTracingEngine+Action.h
 //  BlocksKit
 //
 //  Created by dl on 2021/3/23.
 //
 
-#import "EventTracingEngine.h"
-#import "EventTracingEventEmitter.h"
+#import "NEEventTracingEngine.h"
+#import "NEEventTracingEventEmitter.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingEngine (ActionPrivate) <EventTracingEventEmitterDelegate>
+@interface NEEventTracingEngine (ActionPrivate) <NEEventTracingEventEmitterDelegate>
 
-- (void)flushStockedActionsIfNeeded:(EventTracingVTree *)VTree;
+- (void)flushStockedActionsIfNeeded:(NEEventTracingVTree *)VTree;
 
 - (void)AOP_preLogWithEvent:(NSString *)event view:(UIView *)view;
 - (void)AOP_preLogWithEvent:(NSString *)event
                        view:(UIView *)view
-                eventAction:(void(^ NS_NOESCAPE _Nullable)(EventTracingEventActionConfig *config))block;
+                eventAction:(void(^ NS_NOESCAPE _Nullable)(NEEventTracingEventActionConfig *config))block;
 
 - (void)AOP_logWithEvent:(NSString *)event
                     view:(UIView *)view
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)AOP_logWithEvent:(NSString *)event
                     view:(UIView *)view
                   params:(NSDictionary<NSString *, NSString *> * _Nullable)params
-             eventAction:(void(^ NS_NOESCAPE _Nullable)(EventTracingEventActionConfig *config))block;
+             eventAction:(void(^ NS_NOESCAPE _Nullable)(NEEventTracingEventActionConfig *config))block;
 
 @end
 

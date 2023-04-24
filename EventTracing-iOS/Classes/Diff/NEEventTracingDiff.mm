@@ -1,28 +1,28 @@
 //
-//  EventTracingDiff.m
+//  NEEventTracingDiff.m
 //  BlocksKit
 //
 //  Created by dl on 2021/3/16.
 //
 
-#import "EventTracingDiff.h"
+#import "NEEventTracingDiff.h"
 
 #import <stack>
 #import <unordered_map>
 #import <vector>
 
-@interface EventTracingDiffResults ()
-@property(nonatomic, strong, readwrite) NSArray<id<EventTracingDiffable>> *inserts;
-@property(nonatomic, strong, readwrite) NSArray<id<EventTracingDiffable>> *deletes;
+@interface NEEventTracingDiffResults ()
+@property(nonatomic, strong, readwrite) NSArray<id<NEEventTracingDiffable>> *inserts;
+@property(nonatomic, strong, readwrite) NSArray<id<NEEventTracingDiffable>> *deletes;
 
-- (instancetype)initWithInserts:(NSArray<id<EventTracingDiffable>> *)inserts
-                        deletes:(NSArray<id<EventTracingDiffable>> *)deletes;
+- (instancetype)initWithInserts:(NSArray<id<NEEventTracingDiffable>> *)inserts
+                        deletes:(NSArray<id<NEEventTracingDiffable>> *)deletes;
 @end
 
-@implementation EventTracingDiffResults
+@implementation NEEventTracingDiffResults
 
-- (instancetype)initWithInserts:(NSArray<id<EventTracingDiffable>> *)inserts
-                        deletes:(NSArray<id<EventTracingDiffable>> *)deletes {
+- (instancetype)initWithInserts:(NSArray<id<NEEventTracingDiffable>> *)inserts
+                        deletes:(NSArray<id<NEEventTracingDiffable>> *)deletes {
     self = [super init];
     if (self) {
         _inserts = inserts;
@@ -45,8 +45,8 @@ struct ETDiffEntry {
     NSInteger oldCounter = 0;
 };
 
-static id<NSObject> ETDiffTableKey(__unsafe_unretained id<EventTracingDiffable> object) {
-    id<NSObject> key = [object et_diffIdentifier];
+static id<NSObject> ETDiffTableKey(__unsafe_unretained id<NEEventTracingDiffable> object) {
+    id<NSObject> key = [object ne_et_diffIdentifier];
     NSCAssert(key != nil, @"Cannot use a nil key for the diffIdentifier of object %@", object);
     return key;
 }
@@ -63,20 +63,20 @@ struct ETDiffEqualID {
     }
 };
 
-EventTracingDiffResults *ET_DiffBetweenArray(NSArray<id<EventTracingDiffable>> *_Nullable newArray,
-                                             NSArray<id<EventTracingDiffable>> *_Nullable oldArray) {
+NEEventTracingDiffResults *NE_ET_DiffBetweenArray(NSArray<id<NEEventTracingDiffable>> *_Nullable newArray,
+                                             NSArray<id<NEEventTracingDiffable>> *_Nullable oldArray) {
     
     const NSInteger newCount = newArray.count;
     const NSInteger oldCount = oldArray.count;
     
     // 如果 newArray 个数为空，则 oldArray 的所有元素都当做delete
     if (newCount == 0) {
-        return [[EventTracingDiffResults alloc] initWithInserts:@[] deletes:[NSArray arrayWithArray:oldArray]];
+        return [[NEEventTracingDiffResults alloc] initWithInserts:@[] deletes:[NSArray arrayWithArray:oldArray]];
     }
     
     // 如果 oldArray 个数为空，则 newArray 的所有元素都当做insert
     if (oldCount == 0) {
-        return [[EventTracingDiffResults alloc] initWithInserts:[NSArray arrayWithArray:newArray] deletes:@[]];
+        return [[NEEventTracingDiffResults alloc] initWithInserts:[NSArray arrayWithArray:newArray] deletes:@[]];
     }
     
     unordered_map<id<NSObject>, ETDiffEntry, ETDiffHashID, ETDiffEqualID> table;
@@ -93,7 +93,7 @@ EventTracingDiffResults *ET_DiffBetweenArray(NSArray<id<EventTracingDiffable>> *
     
     // step 2
     // 可直接找出 deletes 数组
-    NSMutableArray<id<EventTracingDiffable>> *deletes = [@[] mutableCopy];
+    NSMutableArray<id<NEEventTracingDiffable>> *deletes = [@[] mutableCopy];
     vector<ETDiffEntry *> oldResultsArray(oldCount);
     for (NSInteger i=0; i<oldCount; i++) {
         id<NSObject> key = ETDiffTableKey(oldArray[i]);
@@ -109,7 +109,7 @@ EventTracingDiffResults *ET_DiffBetweenArray(NSArray<id<EventTracingDiffable>> *
     
     // step 3
     // 遍历 new 数组，找出 inserts 的集合
-    NSMutableArray<id<EventTracingDiffable>> *inserts = [@[] mutableCopy];
+    NSMutableArray<id<NEEventTracingDiffable>> *inserts = [@[] mutableCopy];
     for (NSInteger i=0; i<newCount; i++) {
         ETDiffEntry *entry = newResultsArray[i];
         
@@ -121,5 +121,5 @@ EventTracingDiffResults *ET_DiffBetweenArray(NSArray<id<EventTracingDiffable>> *
         }
     }
     
-    return [[EventTracingDiffResults alloc] initWithInserts:inserts.copy deletes:deletes.copy];
+    return [[NEEventTracingDiffResults alloc] initWithInserts:inserts.copy deletes:deletes.copy];
 }

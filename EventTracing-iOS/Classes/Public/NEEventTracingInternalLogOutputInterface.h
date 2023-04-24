@@ -1,16 +1,16 @@
 //
-//  EventTracingInternalLogOutputInterface.h
-//  EventTracing
+//  NEEventTracingInternalLogOutputInterface.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/5/19.
 //
 
 #import <Foundation/Foundation.h>
-#import "EventTracingDefines.h"
+#import "NEEventTracingDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol EventTracingInternalLogOutputInterface <NSObject>
+@protocol NEEventTracingInternalLogOutputInterface <NSObject>
 
 - (void)logLevel:(ETLogLevel)level content:(NSString *)content;
 

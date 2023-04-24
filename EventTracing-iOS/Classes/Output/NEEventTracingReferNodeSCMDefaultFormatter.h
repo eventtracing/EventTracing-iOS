@@ -1,16 +1,16 @@
 //
-//  EventTracingReferNodeSCMDefaultFormatter.h
-//  EventTracing
+//  NEEventTracingReferNodeSCMDefaultFormatter.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/9/2.
 //
 
 #import <Foundation/Foundation.h>
-#import "EventTracingOutputFormatter.h"
+#import "NEEventTracingOutputFormatter.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingReferNodeSCMDefaultFormatter : NSObject <EventTracingReferNodeSCMFormatter>
+@interface NEEventTracingReferNodeSCMDefaultFormatter : NSObject <NEEventTracingReferNodeSCMFormatter>
 
 @end
 

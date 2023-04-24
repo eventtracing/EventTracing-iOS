@@ -6,11 +6,11 @@
 //
 
 #import "UIView+EventTracing.h"
-#import "EventTracingReferFuncs.h"
-#import "EventTracingEventReferQueue.h"
-#import "EventTracingContext+Private.h"
-#import "EventTracingVTreeNode+Private.h"
-#import "EventTracingEngine+Private.h"
+#import "NEEventTracingReferFuncs.h"
+#import "NEEventTracingEventReferQueue.h"
+#import "NEEventTracingContext+Private.h"
+#import "NEEventTracingVTreeNode+Private.h"
+#import "NEEventTracingEngine+Private.h"
 #import "UIView+EventTracingPipEvent.h"
 #import "UIView+EventTracingPrivate.h"
 
@@ -21,10 +21,10 @@
 #define kETUnvisibleAlpha 0.0001
 #define kETUnvisibleWH 0.0001
 
-@implementation EventTracingEventActionConfig
+@implementation NEEventTracingEventActionConfig
 + (instancetype)configWithEvent:(NSString *)event {
-    EventTracingEventActionConfig *config = [[EventTracingEventActionConfig alloc] init];
-    if ([[EventTracingEngine sharedInstance].ctx.needIncreaseActseqLogEvents containsObject:event]) {
+    NEEventTracingEventActionConfig *config = [[NEEventTracingEventActionConfig alloc] init];
+    if ([[NEEventTracingEngine sharedInstance].ctx.needIncreaseActseqLogEvents containsObject:event]) {
         config.increaseActseq = YES;
         config.useForRefer = YES;
     }
@@ -34,121 +34,121 @@
 
 @implementation UIViewController (EventTracingParams_Page)
 
-- (void)et_setPageId:(NSString *)pageId params:(NSDictionary<NSString *,NSString *> *)params {
-    [self.p_et_view et_setPageId:pageId params:params];
+- (void)ne_et_setPageId:(NSString *)pageId params:(NSDictionary<NSString *,NSString *> *)params {
+    [self.p_ne_et_view ne_et_setPageId:pageId params:params];
 }
-- (void)et_addParams:(NSDictionary<NSString *,NSString *> *)params {
-    [self.p_et_view et_addParams:params];
+- (void)ne_et_addParams:(NSDictionary<NSString *,NSString *> *)params {
+    [self.p_ne_et_view ne_et_addParams:params];
 }
-- (void)et_setParamValue:(NSString *)value forKey:(NSString *)key {
-    [self.p_et_view et_setParamValue:value forKey:key];
+- (void)ne_et_setParamValue:(NSString *)value forKey:(NSString *)key {
+    [self.p_ne_et_view ne_et_setParamValue:value forKey:key];
 }
-- (void)et_removeParamForKey:(NSString *)key {
-    [self.p_et_view et_removeParamForKey:key];
+- (void)ne_et_removeParamForKey:(NSString *)key {
+    [self.p_ne_et_view ne_et_removeParamForKey:key];
 }
-- (void)et_removeAllParams {
-    [self.p_et_view et_removeAllParams];
-}
-
-- (void)et_addParamsCallback:(ET_AddParamsCallback NS_NOESCAPE)callback {
-    [self.p_et_view et_addParamsCallback:callback];
-}
-- (void)et_addParamsCallback:(ET_AddParamsCallback NS_NOESCAPE)callback forEvent:(NSString *)event {
-    [self.p_et_view et_addParamsCallback:callback forEvent:event];
-}
-- (void)et_addParamsCallback:(ET_AddParamsCallback NS_NOESCAPE)callback forEvents:(NSArray<NSString *> *)events {
-    [self.p_et_view et_addParamsCallback:callback forEvents:events];
-}
-- (void)et_addParamsCarryEventCallback:(ET_AddParamsCarryEventCallback NS_NOESCAPE)callback forEvents:(NSArray<NSString *> *)events {
-    [self.p_et_view et_addParamsCarryEventCallback:callback forEvents:events];
+- (void)ne_et_removeAllParams {
+    [self.p_ne_et_view ne_et_removeAllParams];
 }
 
+- (void)ne_et_addParamsCallback:(NE_ET_AddParamsCallback NS_NOESCAPE)callback {
+    [self.p_ne_et_view ne_et_addParamsCallback:callback];
+}
+- (void)ne_et_addParamsCallback:(NE_ET_AddParamsCallback NS_NOESCAPE)callback forEvent:(NSString *)event {
+    [self.p_ne_et_view ne_et_addParamsCallback:callback forEvent:event];
+}
+- (void)ne_et_addParamsCallback:(NE_ET_AddParamsCallback NS_NOESCAPE)callback forEvents:(NSArray<NSString *> *)events {
+    [self.p_ne_et_view ne_et_addParamsCallback:callback forEvents:events];
+}
+- (void)ne_et_addParamsCarryEventCallback:(NE_ET_AddParamsCarryEventCallback NS_NOESCAPE)callback forEvents:(NSArray<NSString *> *)events {
+    [self.p_ne_et_view ne_et_addParamsCarryEventCallback:callback forEvents:events];
+}
+- (void)ne_et_removeParamsCallback:(NE_ET_AddParamsCallback)callback {}
+- (void)ne_et_removeParamsCallback:(NE_ET_AddParamsCallback)callback forEvent:(NSString *)event {}
 
-
-- (NSUInteger)et_position {
-    return self.p_et_view.et_position;
+- (NSUInteger)ne_et_position {
+    return self.p_ne_et_view.ne_et_position;
 }
-- (void)et_setPosition:(NSUInteger)et_position {
-    [self.p_et_view et_setPosition:et_position];
+- (void)ne_et_setPosition:(NSUInteger)ne_et_position {
+    [self.p_ne_et_view ne_et_setPosition:ne_et_position];
 }
-- (void)et_clear {
-    [self.p_et_view et_clear];
+- (void)ne_et_clear {
+    [self.p_ne_et_view ne_et_clear];
 }
-- (NSDictionary *)et_params {
-    return [self.p_et_view et_params];
-}
-
-- (ETNodeBuildinEventLogDisableStrategy)et_buildinEventLogDisableStrategy {
-    return [self.p_et_view et_buildinEventLogDisableStrategy];
-}
-- (void)et_setBuildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)et_buildinEventLogDisableStrategy {
-    [self.p_et_view et_setBuildinEventLogDisableStrategy:et_buildinEventLogDisableStrategy];
-}
-
-- (BOOL)et_isRootPage {
-    return [self.p_et_view et_isRootPage];
-}
-- (void)et_setRootPage:(BOOL)et_rootPage {
-    [self.p_et_view et_setRootPage:et_rootPage];
-}
-
-- (BOOL)et_pageOcclusionEnable {
-    return self.p_et_view.et_pageOcclusionEnable;
-}
-- (void)et_setPageOcclusitionEnable:(BOOL)et_pageOcclusionEnable {
-    [self.p_et_view et_setPageOcclusitionEnable:et_pageOcclusionEnable];
+- (NSDictionary *)ne_et_params {
+    return [self.p_ne_et_view ne_et_params];
 }
 
-- (BOOL)et_isIgnoreReferCascade {
-    return self.p_et_view.et_ignoreReferCascade;
+- (NEETNodeBuildinEventLogDisableStrategy)ne_et_buildinEventLogDisableStrategy {
+    return [self.p_ne_et_view ne_et_buildinEventLogDisableStrategy];
 }
-- (void)et_setIgnoreReferCascade:(BOOL)et_ignoreReferCascade {
-    self.p_et_view.et_ignoreReferCascade = et_ignoreReferCascade;
-}
-
-- (BOOL)et_psreferMute {
-    return self.p_et_view.et_psreferMute;
-}
-- (void)et_setPsreferMute:(BOOL)et_psreferMute {
-    self.p_et_view.et_psreferMute = et_psreferMute;
+- (void)ne_et_setBuildinEventLogDisableStrategy:(NEETNodeBuildinEventLogDisableStrategy)ne_et_buildinEventLogDisableStrategy {
+    [self.p_ne_et_view ne_et_setBuildinEventLogDisableStrategy:ne_et_buildinEventLogDisableStrategy];
 }
 
-- (BOOL)et_subpagePvToReferEnable {
-    return self.p_et_view.et_subpagePvToReferEnable;
+- (BOOL)ne_et_isRootPage {
+    return [self.p_ne_et_view ne_et_isRootPage];
 }
-- (void)et_setSubpagePvToReferEnable:(BOOL)et_subpagePvToReferEnable {
-    self.p_et_view.et_subpagePvToReferEnable = et_subpagePvToReferEnable;
+- (void)ne_et_setRootPage:(BOOL)ne_et_rootPage {
+    [self.p_ne_et_view ne_et_setRootPage:ne_et_rootPage];
 }
-- (EventTracingPageReferConsumeOption)et_subpageConsumeOption {
-    return self.p_et_view.et_subpageConsumeOption;
+
+- (BOOL)ne_et_pageOcclusionEnable {
+    return self.p_ne_et_view.ne_et_pageOcclusionEnable;
 }
-- (void)et_setSubpageConsumeOption:(EventTracingPageReferConsumeOption)et_subpageConsumeOption {
-    self.p_et_view.et_subpageConsumeOption = et_subpageConsumeOption;
+- (void)ne_et_setPageOcclusitionEnable:(BOOL)ne_et_pageOcclusionEnable {
+    [self.p_ne_et_view ne_et_setPageOcclusitionEnable:ne_et_pageOcclusionEnable];
 }
-- (void)et_clearSubpageConsumeReferOption {
-    [self.p_et_view et_clearSubpageConsumeReferOption];
+
+- (BOOL)ne_et_isIgnoreReferCascade {
+    return self.p_ne_et_view.ne_et_ignoreReferCascade;
 }
-- (void)et_makeSubpageConsumeAllRefer {
-    [self.p_et_view et_makeSubpageConsumeAllRefer];
+- (void)ne_et_setIgnoreReferCascade:(BOOL)ne_et_ignoreReferCascade {
+    self.p_ne_et_view.ne_et_ignoreReferCascade = ne_et_ignoreReferCascade;
 }
-- (void)et_makeSubpageConsumeEventRefer {
-    [self.p_et_view et_makeSubpageConsumeEventRefer];
+
+- (BOOL)ne_et_psreferMute {
+    return self.p_ne_et_view.ne_et_psreferMute;
+}
+- (void)ne_et_setPsreferMute:(BOOL)ne_et_psreferMute {
+    self.p_ne_et_view.ne_et_psreferMute = ne_et_psreferMute;
+}
+
+- (BOOL)ne_et_subpagePvToReferEnable {
+    return self.p_ne_et_view.ne_et_subpagePvToReferEnable;
+}
+- (void)ne_et_setSubpagePvToReferEnable:(BOOL)ne_et_subpagePvToReferEnable {
+    self.p_ne_et_view.ne_et_subpagePvToReferEnable = ne_et_subpagePvToReferEnable;
+}
+- (NEEventTracingPageReferConsumeOption)ne_et_subpageConsumeOption {
+    return self.p_ne_et_view.ne_et_subpageConsumeOption;
+}
+- (void)ne_et_setSubpageConsumeOption:(NEEventTracingPageReferConsumeOption)ne_et_subpageConsumeOption {
+    self.p_ne_et_view.ne_et_subpageConsumeOption = ne_et_subpageConsumeOption;
+}
+- (void)ne_et_clearSubpageConsumeReferOption {
+    [self.p_ne_et_view ne_et_clearSubpageConsumeReferOption];
+}
+- (void)ne_et_makeSubpageConsumeAllRefer {
+    [self.p_ne_et_view ne_et_makeSubpageConsumeAllRefer];
+}
+- (void)ne_et_makeSubpageConsumeEventRefer {
+    [self.p_ne_et_view ne_et_makeSubpageConsumeEventRefer];
 }
 
 #pragma mark - setters & getters
-- (NSString *)et_pageId {
-    return self.p_et_view.et_pageId;
+- (NSString *)ne_et_pageId {
+    return self.p_ne_et_view.ne_et_pageId;
 }
 
-- (BOOL)et_isPage {
-    return self.p_et_view.et_isPage;
+- (BOOL)ne_et_isPage {
+    return self.p_ne_et_view.ne_et_isPage;
 }
 
-- (EventTracingVTreeNode *)et_currentVTreeNode {
-    return self.p_et_view.et_currentVTreeNode;
+- (NEEventTracingVTreeNode *)ne_et_currentVTreeNode {
+    return self.p_ne_et_view.ne_et_currentVTreeNode;
 }
 
-- (UIView *)p_et_view {
+- (UIView *)p_ne_et_view {
     /// MARK: alert不做卡点
     if ([self isKindOfClass:[UIAlertController class]]) {
         return self.view;
@@ -157,106 +157,106 @@
     NSString *vcClassName = NSStringFromClass(self.class);
     NSString *message = [NSString stringWithFormat:@"[%@]\n view not loaded when call `self.view` in NEEvnetTracing", vcClassName];
     
-    if ([EventTracingEngine sharedInstance].ctx.viewControllerDidNotLoadViewExceptionTip == ETViewControllerDidNotLoadViewExceptionTipAssert) {
+    if ([NEEventTracingEngine sharedInstance].ctx.viewControllerDidNotLoadViewExceptionTip == NEETViewControllerDidNotLoadViewExceptionTipAssert) {
         NSAssert(self.isViewLoaded, message);
-    } else if (!self.isViewLoaded && [EventTracingEngine sharedInstance].ctx.viewControllerDidNotLoadViewExceptionTip == ETViewControllerDidNotLoadViewExceptionTipCostom) {
-        if ([[EventTracingEngine sharedInstance].ctx.exceptionInterface respondsToSelector:@selector(viewControllerDidNotLoadView:message:)]) {
-            [[EventTracingEngine sharedInstance].ctx.exceptionInterface viewControllerDidNotLoadView:self message:message];
+    } else if (!self.isViewLoaded && [NEEventTracingEngine sharedInstance].ctx.viewControllerDidNotLoadViewExceptionTip == NEETViewControllerDidNotLoadViewExceptionTipCostom) {
+        if ([[NEEventTracingEngine sharedInstance].ctx.exceptionInterface respondsToSelector:@selector(viewControllerDidNotLoadView:message:)]) {
+            [[NEEventTracingEngine sharedInstance].ctx.exceptionInterface viewControllerDidNotLoadView:self message:message];
         }
     }
     
     return self.view;
 }
 
-- (BOOL)et_isTransitioning {
+- (BOOL)ne_et_isTransitioning {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
 
-- (void)et_setTransitioning:(BOOL)et_transitioning {
-    objc_setAssociatedObject(self, @selector(et_isTransitioning), @(et_transitioning), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)ne_et_setTransitioning:(BOOL)ne_et_transitioning {
+    objc_setAssociatedObject(self, @selector(ne_et_isTransitioning), @(ne_et_transitioning), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end
 
 
 @implementation UIView (EventTracingParams_Page_Element)
-- (void)et_setPageId:(NSString *)pageId params:(NSDictionary<NSString *,NSString *> *)params {
+- (void)ne_et_setPageId:(NSString *)pageId params:(NSDictionary<NSString *,NSString *> *)params {
     [self _et_setIdStr:pageId isPage:YES params:params];
 }
-- (void)et_setElementId:(NSString *)elementId params:(NSDictionary<NSString *,NSString *> *)params {
+- (void)ne_et_setElementId:(NSString *)elementId params:(NSDictionary<NSString *,NSString *> *)params {
     [self _et_setIdStr:elementId isPage:NO params:params];
 }
 
-- (void)et_addParams:(NSDictionary<NSString *,NSString *> *)params {
+- (void)ne_et_addParams:(NSDictionary<NSString *,NSString *> *)params {
     if (![params isKindOfClass:NSDictionary.class] || params.count == 0) {
         return;
     }
     
-    [self.et_props.params addEntriesFromDictionary:params];
+    [self.ne_et_props.params addEntriesFromDictionary:params];
     [self _et_doSyncStaticParamsToNodeIfNeeded];
     [self _et_checkUserParamsKeyValidIfNeeded:params.allKeys];
 }
-- (void)et_setParamValue:(NSString *)value forKey:(NSString *)key {
+- (void)ne_et_setParamValue:(NSString *)value forKey:(NSString *)key {
     if (!key.length) {
         return;
     }
     
-    [self.et_props.params setObject:value forKey:key];
+    [self.ne_et_props.params setObject:value forKey:key];
     [self _et_doSyncStaticParamsToNodeIfNeeded];
     [self _et_checkUserParamsKeyValidIfNeeded:@[key]];
 }
-- (void)et_removeParamForKey:(NSString *)key {
-    [self.et_props.params removeObjectForKey:key];
+- (void)ne_et_removeParamForKey:(NSString *)key {
+    [self.ne_et_props.params removeObjectForKey:key];
     [self _et_doSyncStaticParamsToNodeIfNeeded];
-    [self.et_props.checkedGuardParamKeys removeObject:key];
+    [self.ne_et_props.checkedGuardParamKeys removeObject:key];
 }
-- (void)et_removeAllParams {
-    [self.et_props.params removeAllObjects];
+- (void)ne_et_removeAllParams {
+    [self.ne_et_props.params removeAllObjects];
     [self _et_doSyncStaticParamsToNodeIfNeeded];
-    [self.et_props.checkedGuardParamKeys removeAllObjects];
+    [self.ne_et_props.checkedGuardParamKeys removeAllObjects];
 }
 
-- (void)et_addParamsCallback:(ET_AddParamsCallback NS_NOESCAPE)callback {
-    [self.et_props addParamsCallback:callback forEvent:kETAddParamCallbackObjectkey];
+- (void)ne_et_addParamsCallback:(NE_ET_AddParamsCallback NS_NOESCAPE)callback {
+    [self.ne_et_props addParamsCallback:callback forEvent:kNEETAddParamCallbackObjectkey];
 }
-- (void)et_addParamsCallback:(ET_AddParamsCallback NS_NOESCAPE)callback forEvent:(NSString *)event {
-    [self.et_props addParamsCallback:callback forEvent:event];
+- (void)ne_et_addParamsCallback:(NE_ET_AddParamsCallback NS_NOESCAPE)callback forEvent:(NSString *)event {
+    [self.ne_et_props addParamsCallback:callback forEvent:event];
 }
-- (void)et_addParamsCallback:(ET_AddParamsCallback NS_NOESCAPE)callback forEvents:(NSArray<NSString *> *)events {
+- (void)ne_et_addParamsCallback:(NE_ET_AddParamsCallback NS_NOESCAPE)callback forEvents:(NSArray<NSString *> *)events {
     [events enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [self.et_props addParamsCallback:callback forEvent:obj];
+        [self.ne_et_props addParamsCallback:callback forEvent:obj];
     }];
 }
-- (void)et_addParamsCarryEventCallback:(ET_AddParamsCarryEventCallback NS_NOESCAPE)callback forEvents:(NSArray<NSString *> *)events {
-    [self.et_props addParamsCarryEventCallback:callback forEvents:events];
+- (void)ne_et_addParamsCarryEventCallback:(NE_ET_AddParamsCarryEventCallback NS_NOESCAPE)callback forEvents:(NSArray<NSString *> *)events {
+    [self.ne_et_props addParamsCarryEventCallback:callback forEvents:events];
 }
 
+- (void)ne_et_removeParamsCallback:(NE_ET_AddParamsCallback)callback {}
+- (void)ne_et_removeParamsCallback:(NE_ET_AddParamsCallback)callback forEvent:(NSString *)event {}
 
-
-
-- (NSUInteger)et_position {
-    return [self.et_props position];
+- (NSUInteger)ne_et_position {
+    return [self.ne_et_props position];
 }
 
-- (void)et_setPosition:(NSUInteger)et_position {
-    self.et_props.position = et_position;
+- (void)ne_et_setPosition:(NSUInteger)ne_et_position {
+    self.ne_et_props.position = ne_et_position;
     
-    EventTracingVTreeNode *VTreeNode = self.et_currentVTreeNode;
+    NEEventTracingVTreeNode *VTreeNode = self.ne_et_currentVTreeNode;
     // cell复用场景
-    if ([self.et_reuseIdentifier isEqualToString:VTreeNode.identifier]) {
-        [VTreeNode updatePosition:et_position];
+    if ([self.ne_et_reuseIdentifier isEqualToString:VTreeNode.identifier]) {
+        [VTreeNode updatePosition:ne_et_position];
     }
 }
 
-- (void)et_clear {
-    BOOL needsTraversel = self.et_isPage || self.et_isElement;
+- (void)ne_et_clear {
+    BOOL needsTraversel = self.ne_et_isPage || self.ne_et_isElement;
     
-    self.et_props = nil;
-    self.et_logicalParentView = nil;
-    self.et_ignoreReferCascade = NO;
+    self.ne_et_props = nil;
+    self.ne_et_logicalParentView = nil;
+    self.ne_et_ignoreReferCascade = NO;
 
     if (needsTraversel) {
-        [[EventTracingEngine sharedInstance] traverse];
+        [[NEEventTracingEngine sharedInstance] traverse];
     }
 }
 
@@ -265,167 +265,167 @@
         return;
     }
     
-    self.et_props = [EventTracingAssociatedPros associatedProsWithView:self];
-    [self.et_props setupOid:idStr isPage:isPage params:params];
+    self.ne_et_props = [NEEventTracingAssociatedPros associatedProsWithView:self];
+    [self.ne_et_props setupOid:idStr isPage:isPage params:params];
 
-    [self et_cancelPipEvent];
-    [[EventTracingEngine sharedInstance] traverse];
+    [self ne_et_cancelPipEvent];
+    [[NEEventTracingEngine sharedInstance] traverse];
 }
 
 - (void)_et_doSyncStaticParamsToNodeIfNeeded {
-    EventTracingVTreeNode *VTreeNode = self.et_currentVTreeNode;
+    NEEventTracingVTreeNode *VTreeNode = self.ne_et_currentVTreeNode;
     // cell复用场景
-    if ([self.et_reuseIdentifier isEqualToString:VTreeNode.identifier]) {
-        [VTreeNode updateStaticParams:self.et_params];
+    if ([self.ne_et_reuseIdentifier isEqualToString:VTreeNode.identifier]) {
+        [VTreeNode updateStaticParams:self.ne_et_params];
     }
 }
 
 - (void)_et_checkUserParamsKeyValidIfNeeded:(NSArray<NSString *> *)keys {
     NSArray<NSString *> *filteredKeys = [keys bk_reject:^BOOL(NSString *obj) {
-        return [self.et_props.checkedGuardParamKeys containsObject:obj];
+        return [self.ne_et_props.checkedGuardParamKeys containsObject:obj];
     }];
-    [[EventTracingEngine sharedInstance].ctx.paramGuardExector asyncDoDispatchCheckTask:^{
+    [[NEEventTracingEngine sharedInstance].ctx.paramGuardExector asyncDoDispatchCheckTask:^{
         [filteredKeys enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            ET_CheckUserParamKeyValid(obj);
+            NE_ET_CheckUserParamKeyValid(obj);
         }];
     }];
-    [self.et_props.checkedGuardParamKeys addObjectsFromArray:filteredKeys];
+    [self.ne_et_props.checkedGuardParamKeys addObjectsFromArray:filteredKeys];
 }
 
 #pragma mark - setters & getters
-- (NSString *)et_pageId {
-    return self.et_props.pageId;
+- (NSString *)ne_et_pageId {
+    return self.ne_et_props.pageId;
 }
-- (NSString *)et_elementId {
-    return self.et_props.elementId;
-}
-
-- (BOOL)et_isPage {
-    return self.et_props.isPage;
+- (NSString *)ne_et_elementId {
+    return self.ne_et_props.elementId;
 }
 
-- (BOOL)et_isElement {
-    return self.et_props.isElement;
+- (BOOL)ne_et_isPage {
+    return self.ne_et_props.isPage;
 }
 
-- (NSDictionary *)et_params {
-    return self.et_props.params;
+- (BOOL)ne_et_isElement {
+    return self.ne_et_props.isElement;
 }
 
-- (ETNodeBuildinEventLogDisableStrategy)et_buildinEventLogDisableStrategy {
-    return self.et_props.buildinEventLogDisableStrategy;
-}
-- (void)et_setBuildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)et_buildinEventLogDisableStrategy {
-    self.et_props.buildinEventLogDisableStrategy = et_buildinEventLogDisableStrategy;
+- (NSDictionary *)ne_et_params {
+    return self.ne_et_props.params;
 }
 
-- (BOOL)et_isRootPage {
-    return self.et_props.isRootPage;
+- (NEETNodeBuildinEventLogDisableStrategy)ne_et_buildinEventLogDisableStrategy {
+    return self.ne_et_props.buildinEventLogDisableStrategy;
 }
-- (void)et_setRootPage:(BOOL)et_rootPage {
-    self.et_props.rootPage = et_rootPage;
-}
-
-- (BOOL)et_pageOcclusionEnable {
-    return self.et_props.isPageOcclusionEnable;
-}
-- (void)et_setPageOcclusitionEnable:(BOOL)et_pageOcclusionEnable {
-    self.et_props.pageOcclusionEnable = et_pageOcclusionEnable;
+- (void)ne_et_setBuildinEventLogDisableStrategy:(NEETNodeBuildinEventLogDisableStrategy)ne_et_buildinEventLogDisableStrategy {
+    self.ne_et_props.buildinEventLogDisableStrategy = ne_et_buildinEventLogDisableStrategy;
 }
 
-- (BOOL)et_isIgnoreReferCascade {
+- (BOOL)ne_et_isRootPage {
+    return self.ne_et_props.isRootPage;
+}
+- (void)ne_et_setRootPage:(BOOL)ne_et_rootPage {
+    self.ne_et_props.rootPage = ne_et_rootPage;
+}
+
+- (BOOL)ne_et_pageOcclusionEnable {
+    return self.ne_et_props.isPageOcclusionEnable;
+}
+- (void)ne_et_setPageOcclusitionEnable:(BOOL)ne_et_pageOcclusionEnable {
+    self.ne_et_props.pageOcclusionEnable = ne_et_pageOcclusionEnable;
+}
+
+- (BOOL)ne_et_isIgnoreReferCascade {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
-- (void)et_setIgnoreReferCascade:(BOOL)et_ignoreReferCascade {
-    objc_setAssociatedObject(self, @selector(et_isIgnoreReferCascade), @(et_ignoreReferCascade), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)ne_et_setIgnoreReferCascade:(BOOL)ne_et_ignoreReferCascade {
+    objc_setAssociatedObject(self, @selector(ne_et_isIgnoreReferCascade), @(ne_et_ignoreReferCascade), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (BOOL)et_psreferMute {
-    return self.et_props.isPsreferMuted;
+- (BOOL)ne_et_psreferMute {
+    return self.ne_et_props.isPsreferMuted;
 }
-- (void)et_setPsreferMute:(BOOL)et_psreferMute {
-    self.et_props.psreferMute = et_psreferMute;
-}
-
-- (BOOL)et_subpagePvToReferEnable {
-    return self.et_props.isSubpagePvToReferEnable;
-}
-- (void)et_setSubpagePvToReferEnable:(BOOL)et_subpagePvToReferEnable {
-    self.et_props.subpagePvToReferEnable = et_subpagePvToReferEnable;
-}
-- (void)et_setSubpageConsumeOption:(EventTracingPageReferConsumeOption)option {
-    self.et_props.pageReferConsumeOption = option;
-}
-- (EventTracingPageReferConsumeOption)et_subpageConsumeOption {
-    return self.et_props.pageReferConsumeOption;
-}
-- (void)et_clearSubpageConsumeReferOption {
-    self.et_props.pageReferConsumeOption = EventTracingPageReferConsumeOptionNone;
-}
-- (void)et_makeSubpageConsumeAllRefer {
-    self.et_props.pageReferConsumeOption = EventTracingPageReferConsumeOptionAll;
-}
-- (void)et_makeSubpageConsumeEventRefer {
-    self.et_props.pageReferConsumeOption = EventTracingPageReferConsumeOptionExceptSubPagePV;
+- (void)ne_et_setPsreferMute:(BOOL)ne_et_psreferMute {
+    self.ne_et_props.psreferMute = ne_et_psreferMute;
 }
 
-- (EventTracingVTreeNode *)et_currentVTreeNode {
+- (BOOL)ne_et_subpagePvToReferEnable {
+    return self.ne_et_props.isSubpagePvToReferEnable;
+}
+- (void)ne_et_setSubpagePvToReferEnable:(BOOL)ne_et_subpagePvToReferEnable {
+    self.ne_et_props.subpagePvToReferEnable = ne_et_subpagePvToReferEnable;
+}
+- (void)ne_et_setSubpageConsumeOption:(NEEventTracingPageReferConsumeOption)option {
+    self.ne_et_props.pageReferConsumeOption = option;
+}
+- (NEEventTracingPageReferConsumeOption)ne_et_subpageConsumeOption {
+    return self.ne_et_props.pageReferConsumeOption;
+}
+- (void)ne_et_clearSubpageConsumeReferOption {
+    self.ne_et_props.pageReferConsumeOption = NEEventTracingPageReferConsumeOptionNone;
+}
+- (void)ne_et_makeSubpageConsumeAllRefer {
+    self.ne_et_props.pageReferConsumeOption = NEEventTracingPageReferConsumeOptionAll;
+}
+- (void)ne_et_makeSubpageConsumeEventRefer {
+    self.ne_et_props.pageReferConsumeOption = NEEventTracingPageReferConsumeOptionExceptSubPagePV;
+}
+
+- (NEEventTracingVTreeNode *)ne_et_currentVTreeNode {
     return objc_getAssociatedObject(self, _cmd);
 }
-- (void)et_setCurrentVTreeNode:(EventTracingVTreeNode *)et_currentVTreeNode {
-    objc_setAssociatedObject(self, @selector(et_currentVTreeNode), et_currentVTreeNode, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)ne_et_setCurrentVTreeNode:(NEEventTracingVTreeNode *)ne_et_currentVTreeNode {
+    objc_setAssociatedObject(self, @selector(ne_et_currentVTreeNode), ne_et_currentVTreeNode, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 @end
 
 
 @implementation UIView (EventTracingVTreeVirtualParentNode)
-- (BOOL)et_virtualParentIsPage {
-    return self.et_virtualParentProps.virtualParentNodePageId.length > 0;
+- (BOOL)ne_et_virtualParentIsPage {
+    return self.ne_et_virtualParentProps.virtualParentNodePageId.length > 0;
 }
-- (NSString *)et_virtualParentOid {
-    return self.et_virtualParentIsPage ?
-    self.et_virtualParentProps.virtualParentNodePageId :
-    self.et_virtualParentProps.virtualParentNodeElementId;
+- (NSString *)ne_et_virtualParentOid {
+    return self.ne_et_virtualParentIsPage ?
+    self.ne_et_virtualParentProps.virtualParentNodePageId :
+    self.ne_et_virtualParentProps.virtualParentNodeElementId;
 }
-- (NSString *)et_virtualParentElementId {
-    return self.et_virtualParentProps.virtualParentNodeElementId;
+- (NSString *)ne_et_virtualParentElementId {
+    return self.ne_et_virtualParentProps.virtualParentNodeElementId;
 }
-- (NSString *)et_virtualParentPageId {
-    return self.et_virtualParentProps.virtualParentNodePageId;
+- (NSString *)ne_et_virtualParentPageId {
+    return self.ne_et_virtualParentProps.virtualParentNodePageId;
+}
+- (NSString *)ne_et_virtualParentelEmentId {
+    return self.ne_et_virtualParentElementId;
+}
+- (void)ne_et_setVirtualParentElementId:(NSString *)elementId
+                         nodeIdentifier:(id)nodeIdentifier
+                                 params:(NSDictionary<NSString *,NSString *> *)params {
+    NEETNodeBuildinEventLogDisableStrategy buildinEventLogDisableStrategy = [NEEventTracingEngine sharedInstance].ctx.isElementAutoImpressendEnable ? NEETNodeBuildinEventLogDisableStrategyNone : NEETNodeBuildinEventLogDisableStrategyImpressend;
+    [self ne_et_setVirtualParentOid:elementId
+                             isPage:NO
+                     nodeIdentifier:nodeIdentifier
+                           position:0
+     buildinEventLogDisableStrategy:buildinEventLogDisableStrategy
+                             params:params];
 }
 
-
-
-- (void)et_setVirtualParentElementId:(NSString *)elementId
+- (void)ne_et_setVirtualParentPageId:(NSString *)pageId
                       nodeIdentifier:(id)nodeIdentifier
                               params:(NSDictionary<NSString *,NSString *> *)params {
-    ETNodeBuildinEventLogDisableStrategy buildinEventLogDisableStrategy = [EventTracingEngine sharedInstance].ctx.isElementAutoImpressendEnable ? ETNodeBuildinEventLogDisableStrategyNone : ETNodeBuildinEventLogDisableStrategyImpressend;
-    [self et_setVirtualParentOid:elementId
-                          isPage:NO
-                  nodeIdentifier:nodeIdentifier
-                        position:0
-  buildinEventLogDisableStrategy:buildinEventLogDisableStrategy
-                          params:params];
+    [self ne_et_setVirtualParentOid:pageId
+                             isPage:YES
+                     nodeIdentifier:nodeIdentifier
+                           position:0
+     buildinEventLogDisableStrategy:NEETNodeBuildinEventLogDisableStrategyNone
+                             params:params];
 }
 
-- (void)et_setVirtualParentPageId:(NSString *)pageId
+- (void)ne_et_setVirtualParentOid:(NSString *)oid
+                           isPage:(BOOL)isPage
                    nodeIdentifier:(id)nodeIdentifier
-                           params:(NSDictionary<NSString *,NSString *> *)params {
-    [self et_setVirtualParentOid:pageId
-                          isPage:YES
-                  nodeIdentifier:nodeIdentifier
-                        position:0
-  buildinEventLogDisableStrategy:ETNodeBuildinEventLogDisableStrategyNone
-                          params:params];
-}
-
-- (void)et_setVirtualParentOid:(NSString *)oid
-                        isPage:(BOOL)isPage
-                nodeIdentifier:(id)nodeIdentifier
-                      position:(NSUInteger)position
-buildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
-                        params:(NSDictionary<NSString *, NSString *> * _Nullable)params {
+                         position:(NSUInteger)position
+   buildinEventLogDisableStrategy:(NEETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
+                           params:(NSDictionary<NSString *, NSString *> * _Nullable)params {
     if (![oid isKindOfClass:NSString.class] || !oid.length) {
         return;
     }
@@ -441,48 +441,48 @@ buildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)buildinEven
         return;
     }
 
-    self.et_virtualParentProps = [EventTracingVirtualParentAssociatedPros associatedProsWithView:self];
+    self.ne_et_virtualParentProps = [NEEventTracingVirtualParentAssociatedPros associatedProsWithView:self];
     if (isPage) {
-        [self.et_virtualParentProps setupVirtualParentPageId:oid nodeIdentifier:identifierString params:params];
+        [self.ne_et_virtualParentProps setupVirtualParentPageId:oid nodeIdentifier:identifierString params:params];
     } else {
-        [self.et_virtualParentProps setupVirtualParentElementId:oid nodeIdentifier:identifierString params:params];
+        [self.ne_et_virtualParentProps setupVirtualParentElementId:oid nodeIdentifier:identifierString params:params];
     }
-    self.et_virtualParentProps.position = position;
-    self.et_virtualParentProps.buildinEventLogDisableStrategy = buildinEventLogDisableStrategy;
+    self.ne_et_virtualParentProps.position = position;
+    self.ne_et_virtualParentProps.buildinEventLogDisableStrategy = buildinEventLogDisableStrategy;
 
-    [[EventTracingEngine sharedInstance] traverse];
+    [[NEEventTracingEngine sharedInstance] traverse];
 }
 
-- (void)et_setVirtualParentElementId:(NSString *)elementId
-                      nodeIdentifier:(id)nodeIdentifier
-                            position:(NSUInteger)position
-      buildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
-                              params:(NSDictionary<NSString *, NSString *> * _Nullable)params
+- (void)ne_et_setVirtualParentElementId:(NSString *)elementId
+                         nodeIdentifier:(id)nodeIdentifier
+                               position:(NSUInteger)position
+         buildinEventLogDisableStrategy:(NEETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
+                                 params:(NSDictionary<NSString *, NSString *> * _Nullable)params
 {
-    [self et_setVirtualParentOid:elementId isPage:NO nodeIdentifier:nodeIdentifier position:position buildinEventLogDisableStrategy:buildinEventLogDisableStrategy params:params];
+    [self ne_et_setVirtualParentOid:elementId isPage:NO nodeIdentifier:nodeIdentifier position:position buildinEventLogDisableStrategy:buildinEventLogDisableStrategy params:params];
 }
 
 @end
 
 @implementation UIView (EventTracingPrivate_Direct)
 
-void *objc_key_et_props = &objc_key_et_props;
-- (EventTracingAssociatedPros *)et_props {
-    return objc_getAssociatedObject(self, objc_key_et_props);
+void *objc_key_ne_et_props = &objc_key_ne_et_props;
+- (NEEventTracingAssociatedPros *)ne_et_props {
+    return objc_getAssociatedObject(self, objc_key_ne_et_props);
 }
-- (void)et_setProps:(EventTracingAssociatedPros *)et_props {
-    objc_setAssociatedObject(self, objc_key_et_props, et_props, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-void *objc_key_et_virtualParentProps = &objc_key_et_virtualParentProps;
-- (EventTracingVirtualParentAssociatedPros *)et_virtualParentProps {
-    return objc_getAssociatedObject(self, objc_key_et_virtualParentProps);
-}
-- (void)et_setVirtualParentProps:(EventTracingVirtualParentAssociatedPros *)et_virtualParentProps {
-    objc_setAssociatedObject(self, objc_key_et_virtualParentProps, et_virtualParentProps, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)ne_et_setProps:(NEEventTracingAssociatedPros *)ne_et_props {
+    objc_setAssociatedObject(self, objc_key_ne_et_props, ne_et_props, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (BOOL)et_isSimpleVisible {
+void *objc_key_ne_et_virtualParentProps = &objc_key_ne_et_virtualParentProps;
+- (NEEventTracingVirtualParentAssociatedPros *)ne_et_virtualParentProps {
+    return objc_getAssociatedObject(self, objc_key_ne_et_virtualParentProps);
+}
+- (void)ne_et_setVirtualParentProps:(NEEventTracingVirtualParentAssociatedPros *)ne_et_virtualParentProps {
+    objc_setAssociatedObject(self, objc_key_ne_et_virtualParentProps, ne_et_virtualParentProps, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+- (BOOL)ne_et_isSimpleVisible {
     //当前是主window，自身没有window和superVie，但其应该要被判定为可见的。
     if (self == [UIApplication sharedApplication].delegate.window) { return YES; }
     if (self == [UIApplication sharedApplication].keyWindow) { return YES; }
@@ -495,19 +495,19 @@ void *objc_key_et_virtualParentProps = &objc_key_et_virtualParentProps;
     return YES;
 }
 
-void *objc_key_et_subLogicalViews = &objc_key_et_subLogicalViews;
-- (NSHashTable<EventTracingWeakObjectContainer<UIView *> *> *)et_subLogicalViews {
-    return objc_getAssociatedObject(self, objc_key_et_subLogicalViews);
+void *objc_key_ne_et_subLogicalViews = &objc_key_ne_et_subLogicalViews;
+- (NSHashTable<NEEventTracingWeakObjectContainer<UIView *> *> *)ne_et_subLogicalViews {
+    return objc_getAssociatedObject(self, objc_key_ne_et_subLogicalViews);
 }
-- (void)et_setSubLogicalViews:(NSHashTable<EventTracingWeakObjectContainer<UIView *> *> *)et_subLogicalViews {
-    objc_setAssociatedObject(self, objc_key_et_subLogicalViews, et_subLogicalViews, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (BOOL)et_hasSubNodes {
-    return ET_isHasSubNodes(self);
+- (void)ne_et_setSubLogicalViews:(NSHashTable<NEEventTracingWeakObjectContainer<UIView *> *> *)ne_et_subLogicalViews {
+    objc_setAssociatedObject(self, objc_key_ne_et_subLogicalViews, ne_et_subLogicalViews, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (UIViewController *)et_currentViewController {
+- (BOOL)ne_et_hasSubNodes {
+    return NE_ET_isHasSubNodes(self);
+}
+
+- (UIViewController *)ne_et_currentViewController {
     UIViewController *vc = (UIViewController *)self.nextResponder;
     if ([vc isKindOfClass:UIViewController.class]) {
         return vc;
@@ -515,10 +515,10 @@ void *objc_key_et_subLogicalViews = &objc_key_et_subLogicalViews;
     return nil;
 }
 
-- (void)et_tryRefreshDynamicParamsCascadeSubViews {
-    [@[self] et_enumerateObjectsUsingBlock:^NSArray<UIView *> * _Nonnull(UIView * _Nonnull view, BOOL * _Nonnull stop) {
-        if (ET_isPageOrElement(view)) {
-            [view.et_currentVTreeNode refreshDynsmicParamsIfNeeded];
+- (void)ne_et_tryRefreshDynamicParamsCascadeSubViews {
+    [@[self] ne_et_enumerateObjectsUsingBlock:^NSArray<UIView *> * _Nonnull(UIView * _Nonnull view, BOOL * _Nonnull stop) {
+        if (NE_ET_isPageOrElement(view)) {
+            [view.ne_et_currentVTreeNode refreshDynsmicParamsIfNeeded];
         }
         return view.subviews;
     }];

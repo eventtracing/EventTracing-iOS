@@ -1,30 +1,30 @@
 //
-//  EventTracingAOPManager.m
+//  NEEventTracingAOPManager.m
 //  BlocksKit
 //
 //  Created by dl on 2021/2/24.
 //
 
-#import "EventTracingAOPManager.h"
+#import "NEEventTracingAOPManager.h"
 
-@interface EventTracingAOPManager ()
-@property (nonatomic, strong) NSMutableArray<Class<EventTracingAOPProtocol>> *AOPClses;
+@interface NEEventTracingAOPManager ()
+@property (nonatomic, strong) NSMutableArray<Class<NEEventTracingAOPProtocol>> *AOPClses;
 @end
 
-@implementation EventTracingAOPManager
+@implementation NEEventTracingAOPManager
 
 + (instancetype)defaultManager {
-    static EventTracingAOPManager *instance;
+    static NEEventTracingAOPManager *instance;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [[EventTracingAOPManager alloc] init];
+        instance = [[NEEventTracingAOPManager alloc] init];
         instance.AOPClses = [@[] mutableCopy];
     });
     return instance;
 }
 
-- (void)registeAOPCls:(Class<EventTracingAOPProtocol>)AOPCls {
-    if (![AOPCls conformsToProtocol:@protocol(EventTracingAOPProtocol)]) {
+- (void)registeAOPCls:(Class<NEEventTracingAOPProtocol>)AOPCls {
+    if (![AOPCls conformsToProtocol:@protocol(NEEventTracingAOPProtocol)]) {
         return;
     }
     [self.AOPClses addObject:AOPCls];
@@ -32,7 +32,7 @@
 
 - (void)fire {
     [self.AOPClses enumerateObjectsUsingBlock:^(Class clz, NSUInteger idx, BOOL * _Nonnull stop) {
-        id<EventTracingAOPProtocol> AOPInstance = [clz AOPInstance];
+        id<NEEventTracingAOPProtocol> AOPInstance = [clz AOPInstance];
         if ([AOPInstance respondsToSelector:@selector(inject)]) {
             [AOPInstance inject];
         }

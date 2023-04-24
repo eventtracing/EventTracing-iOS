@@ -1,15 +1,15 @@
 //
-//  EventTracingEngine+Traverse.h
-//  EventTracing
+//  NEEventTracingEngine+Traverse.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/4/13.
 //
 
-#import "EventTracingEngine.h"
+#import "NEEventTracingEngine.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingTraverseAction : NSObject
+@interface NEEventTracingTraverseAction : NSObject
 @property(nonatomic, weak, readonly) UIView *view;
 @property(nonatomic, assign, readonly) BOOL viewIsNil;
 
@@ -20,16 +20,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 // 1. 如果存在 action.view 为 nil 的UI变动事件，则直接表明需要 `traverse`，忽略后面的所有UI变动事件; 否则 => 2
 // 2. 将action添加进来，供后面CPU空闲时，判断是否需要真正的 `traverse` 使用
-@interface EventTracingStockedTraverseActionRecord : NSObject
+@interface NEEventTracingStockedTraverseActionRecord : NSObject
 @property(nonatomic, assign, readonly) BOOL passthrough;      // 如果存在 action.view 等于nil的，即为 yes
-@property(nonatomic, strong, readonly) NSArray<EventTracingTraverseAction *> *actions;
+@property(nonatomic, strong, readonly) NSArray<NEEventTracingTraverseAction *> *actions;
 
-- (void)actionDidOccured:(EventTracingTraverseAction *)action;
+- (void)actionDidOccured:(NEEventTracingTraverseAction *)action;
 - (void)reset;
 @end
 
-
-@interface EventTracingEngine (TraverseAction)
+@interface NEEventTracingEngine (TraverseAction)
 
 /*!
  打一个遍历标识，在合适的时候会进行遍历
@@ -39,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)traverse:(UIView * _Nullable)view;
 - (void)traverse:(UIView * _Nullable)view
-  traverseAction:(void(^ NS_NOESCAPE _Nullable)(EventTracingTraverseAction *action))block;
+  traverseAction:(void(^ NS_NOESCAPE _Nullable)(NEEventTracingTraverseAction *action))block;
 
 - (void)traverseForScrollView:(UIScrollView *)scrollView;
 

@@ -1,19 +1,19 @@
 //
-//  EventTracingUIAlertControllerAOP.m
+//  NEEventTracingUIAlertControllerAOP.m
 //  BlocksKit
 //
 //  Created by dl on 2021/4/7.
 //
 
-#import "EventTracingUIAlertControllerAOP.h"
-#import "EventTracingDelegateChain.h"
+#import "NEEventTracingUIAlertControllerAOP.h"
+#import "NEEventTracingDelegateChain.h"
 
-#import "EventTracingVTree+Sync.h"
-#import "EventTracingVTreeNode+Private.h"
-#import "EventTracingEngine+Private.h"
+#import "NEEventTracingVTree+Sync.h"
+#import "NEEventTracingVTreeNode+Private.h"
+#import "NEEventTracingEngine+Private.h"
 #import "UIAlertController+EventTracingParams.h"
 #import "UIView+EventTracingPrivate.h"
-#import "EventTracingEventReferQueue.h"
+#import "NEEventTracingEventReferQueue.h"
 #import "EventTracingConfuseMacro.h"
 
 #import "NSArray+ETEnumerator.h"
@@ -22,25 +22,25 @@
 #import <objc/runtime.h>
 
 @interface UIAlertAction (EventTracingAOP)
-@property (nonatomic, strong, setter=et_setVTreeNodeCopy:) EventTracingVTreeNode *et_VTreeNodeCopy;
-@property (nonatomic, weak, setter=et_setActionView:) UIView *et_actionView;
+@property (nonatomic, strong, setter=ne_et_setVTreeNodeCopy:) NEEventTracingVTreeNode *ne_et_VTreeNodeCopy;
+@property (nonatomic, weak, setter=ne_et_setActionView:) UIView *ne_et_actionView;
 @end
 
-@interface UIAlertController (EventTracingAOP) <EventTracingVTreeObserver>
+@interface UIAlertController (EventTracingAOP) <NEEventTracingVTreeObserver>
 @end
 @implementation UIAlertController (EventTracingAOP)
 
 /// MARK: AOP
-- (void)et_alertController_viewDidLoad {
-    [self et_alertController_viewDidLoad];
+- (void)ne_et_alertController_viewDidLoad {
+    [self ne_et_alertController_viewDidLoad];
     
-    [[EventTracingEngine sharedInstance] addVTreeObserver:self];
+    [[NEEventTracingEngine sharedInstance] addVTreeObserver:self];
     
-    self.view.et_ignoreReferCascade = YES;
+    self.view.ne_et_ignoreReferCascade = YES;
 }
 
-- (void)et_alertController_viewDidAppear:(BOOL)animated {
-    [self et_alertController_viewDidAppear:animated];
+- (void)ne_et_alertController_viewDidAppear:(BOOL)animated {
+    [self ne_et_alertController_viewDidAppear:animated];
     
     /// MARK: 通过在这个时机遍历系统Alert的子view，来设置元素oid
     NSMutableDictionary<NSString *, UIAlertAction *> *actionTitleOidMap = @{}.mutableCopy;
@@ -51,9 +51,9 @@
     }];
     
     NSMutableArray<UIView *> *actionViews = @[].mutableCopy;
-    // Alert || Actionsheet 中按钮，都处于 `UIStackView` 内，并且在 `_UIAlertControllerActionView` 内的label.text就是按钮文案
-    [self.view.subviews et_enumerateObjectsUsingBlock:^NSArray<__kindof UIView *> * _Nonnull(__kindof UIView * _Nonnull obj, BOOL * _Nonnull stop) {
-        if (ET_STR_MATCHES(NSStringFromClass([obj class]), ET_CONFUSED(_,U,I,A,l,e,r,t),@"Controller",@"Action",@"View")) {
+    // Alert || Actionsheet 中按钮，都处于 `UIStackView` 内，并且在 `` 内的label.text就是按钮文案
+    [self.view.subviews ne_et_enumerateObjectsUsingBlock:^NSArray<__kindof UIView *> * _Nonnull(__kindof UIView * _Nonnull obj, BOOL * _Nonnull stop) {
+        if (NE_STR_MATCHES(NSStringFromClass([obj class]), ET_MANGLED(_,U,I,A,l,e,r,t),@"Controller",@"Action",@"View")) {
             [actionViews addObject:obj];
             return nil;
         }
@@ -62,73 +62,73 @@
     
     /// MARK: _UIAlertControllerActionView 内的label文案来判断该是什么oid
     [actionViews enumerateObjectsUsingBlock:^(UIView * _Nonnull actionView, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSString *actionTitle = [self _et_alertActionTitleFromActionView:actionView];
+        NSString *actionTitle = [self _ne_et_alertActionTitleFromActionView:actionView];
         UIAlertAction *alertAction = [actionTitleOidMap objectForKey:actionTitle];
-        NSDictionary *params = alertAction.et_innerParams ?: @{};
-        [actionView et_setElementId:alertAction.et_elementId params:params];
-        actionView.et_position = alertAction.et_position;
-        actionView.et_buildinEventLogDisableStrategy = ETNodeBuildinEventLogDisableStrategyAll;
+        NSDictionary *params = alertAction.ne_et_innerParams ?: @{};
+        [actionView ne_et_setElementId:alertAction.ne_et_elementId params:params];
+        actionView.ne_et_position = alertAction.ne_et_position;
+        actionView.ne_et_buildinEventLogDisableStrategy = NEETNodeBuildinEventLogDisableStrategyAll;
         
-        alertAction.et_actionView = actionView;
+        alertAction.ne_et_actionView = actionView;
     }];
 }
 
-- (void)et_alertController_addAction:(UIAlertAction *)action {
-    [self et_alertController_addAction:action];
+- (void)ne_et_alertController_addAction:(UIAlertAction *)action {
+    [self ne_et_alertController_addAction:action];
     
-    action.et_alertController = self;
+    action.ne_et_alertController = self;
 }
 
-#pragma mark - EventTracingVTreeObserver
-- (void)didGenerateVTree:(EventTracingVTree *)VTree
-               lastVTree:(EventTracingVTree * _Nullable)lastVTree
+#pragma mark - NEEventTracingVTreeObserver
+- (void)didGenerateVTree:(NEEventTracingVTree *)VTree
+               lastVTree:(NEEventTracingVTree * _Nullable)lastVTree
               hasChanges:(BOOL)hasChanges {
-    EventTracingVTree *VTreeCopy = VTree.copy;
-    EventTracingVTreeNode *node = self.et_currentVTreeNode;
+    NEEventTracingVTree *VTreeCopy = VTree.copy;
+    NEEventTracingVTreeNode *node = self.ne_et_currentVTreeNode;
     if (!node) {
         return;
     }
     
-    self.et_VTreeCopy = VTreeCopy;
-    self.et_VTreeNodeCopy = [VTreeCopy nodeForSpm:node.spm];
+    self.ne_et_VTreeCopy = VTreeCopy;
+    self.ne_et_VTreeNodeCopy = [VTreeCopy nodeForSpm:node.spm];
     
     [[self.actions bk_reject:^BOOL(UIAlertAction *action) {
-        return !action.et_isElement;
+        return !action.ne_et_isElement;
     }] enumerateObjectsUsingBlock:^(UIAlertAction * _Nonnull action, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSString *actionSPM = action.et_elementId;
-        if (action.et_position > 0) {
-            actionSPM = [NSString stringWithFormat:@"%@:%@", action.et_elementId, @(action.et_position).stringValue];
+        NSString *actionSPM = action.ne_et_elementId;
+        if (action.ne_et_position > 0) {
+            actionSPM = [NSString stringWithFormat:@"%@:%@", action.ne_et_elementId, @(action.ne_et_position).stringValue];
         }
         actionSPM = [NSString stringWithFormat:@"%@|%@", actionSPM, node.spm];
         
-        action.et_VTreeNodeCopy = [VTreeCopy nodeForSpm:actionSPM];
+        action.ne_et_VTreeNodeCopy = [VTreeCopy nodeForSpm:actionSPM];
     }];
 }
 
 // 只此一处 overrite
-- (void)et_setPageId:(NSString *)pageId params:(NSDictionary<NSString *,NSString *> *)params {
-    [super et_setPageId:pageId params:params];
+- (void)ne_et_setPageId:(NSString *)pageId params:(NSDictionary<NSString *,NSString *> *)params {
+    [super ne_et_setPageId:pageId params:params];
     
-    [self et_autoMountOnCurrentRootPageWithPriority:ETAutoMountRootPageQueuePriorityVeryHigh];
+    [self ne_et_autoMountOnCurrentRootPageWithPriority:NEETAutoMountRootPageQueuePriorityVeryHigh];
 }
 
-- (EventTracingVTreeNode *)et_VTreeNodeCopy {
+- (NEEventTracingVTreeNode *)ne_et_VTreeNodeCopy {
     return objc_getAssociatedObject(self, _cmd);
 }
-- (void)et_setVTreeNodeCopy:(EventTracingVTreeNode *)et_VTreeNodeCopy {
-    objc_setAssociatedObject(self, @selector(et_VTreeNodeCopy), et_VTreeNodeCopy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)ne_et_setVTreeNodeCopy:(NEEventTracingVTreeNode *)ne_et_VTreeNodeCopy {
+    objc_setAssociatedObject(self, @selector(ne_et_VTreeNodeCopy), ne_et_VTreeNodeCopy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
-- (EventTracingVTree *)et_VTreeCopy {
+- (NEEventTracingVTree *)ne_et_VTreeCopy {
     return objc_getAssociatedObject(self, _cmd);
 }
-- (void)et_setVTreeCopy:(EventTracingVTree *)et_VTreeCopy {
-    objc_setAssociatedObject(self, @selector(et_VTreeCopy), et_VTreeCopy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)ne_et_setVTreeCopy:(NEEventTracingVTree *)ne_et_VTreeCopy {
+    objc_setAssociatedObject(self, @selector(ne_et_VTreeCopy), ne_et_VTreeCopy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 #pragma mark - private methods
-- (NSString *) _et_alertActionTitleFromActionView:(UIView *)actionView {
+- (NSString *) _ne_et_alertActionTitleFromActionView:(UIView *)actionView {
     __block NSString *title = nil;
-    [@[actionView] et_enumerateObjectsUsingBlock:^NSArray * _Nonnull(UIView * _Nonnull obj, BOOL * _Nonnull stop) {
+    [@[actionView] ne_et_enumerateObjectsUsingBlock:^NSArray * _Nonnull(UIView * _Nonnull obj, BOOL * _Nonnull stop) {
         if ([obj isKindOfClass:[UILabel class]]) {
             title = [(UILabel *)obj text];
             *stop = YES;
@@ -146,14 +146,14 @@
 // Alert样式的时候，点击OK按钮，是Alert dismiss finish的时候，才回调这里的hanler
 // 此时该AlertView已经不再view树中了
 // 而且在handler调用之前，VTree已经生成了新的版本，并且不包含AlertView
-+ (instancetype)et_alertAction_actionWithTitle:(NSString *)title style:(UIAlertActionStyle)style handler:(void (^)(UIAlertAction * _Nonnull alertAction))handler {
-    return [self et_alertAction_actionWithTitle:title style:style handler:^(UIAlertAction * _Nonnull alertAction) {
++ (instancetype)ne_et_alertAction_actionWithTitle:(NSString *)title style:(UIAlertActionStyle)style handler:(void (^)(UIAlertAction * _Nonnull alertAction))handler {
+    return [self ne_et_alertAction_actionWithTitle:title style:style handler:^(UIAlertAction * _Nonnull alertAction) {
         
-        if (!alertAction.et_isElement) {
+        if (!alertAction.ne_et_isElement) {
 
-            EventTracingVTreeNode *node = alertAction.et_VTreeNodeCopy;
-            [[EventTracingEventReferQueue queue] pushEventReferForEvent:ET_EVENT_ID_E_CLCK
-                                                                     view:alertAction.et_actionView
+            NEEventTracingVTreeNode *node = alertAction.ne_et_VTreeNodeCopy;
+            [[NEEventTracingEventReferQueue queue] pushEventReferForEvent:NE_ET_EVENT_ID_E_CLCK
+                                                                     view:alertAction.ne_et_actionView
                                                                      node:node
                                                               useForRefer:NO
                                                             useNextActseq:NO];
@@ -163,8 +163,8 @@
             return;
         }
         
-        EventTracingVTree *VTree = alertAction.et_alertController.et_VTreeCopy;
-        EventTracingVTreeNode *node = alertAction.et_VTreeNodeCopy;
+        NEEventTracingVTree *VTree = alertAction.ne_et_alertController.ne_et_VTreeCopy;
+        NEEventTracingVTreeNode *node = alertAction.ne_et_VTreeNodeCopy;
         if (!VTree || !node) {
             !handler ?: handler(alertAction);
             
@@ -172,65 +172,65 @@
         }
         
         // pre
-        [self et_doPreEventActionWithAlertAction:alertAction];
+        [self ne_et_doPreEventActionWithAlertAction:alertAction];
         
         // original
         !handler ?: handler(alertAction);
         
         // after
-        [self et_doAfterEventActionWithAlertAction:alertAction];
+        [self ne_et_doAfterEventActionWithAlertAction:alertAction];
     }];
 }
 
-+ (void)et_doPreEventActionWithAlertAction:(UIAlertAction *)alertAction {
-    EventTracingEventActionConfig *logEventActionConfig = alertAction.et_logEventActionConfig;
-    EventTracingVTreeNode *node = alertAction.et_VTreeNodeCopy;
-    [[EventTracingEventReferQueue queue] pushEventReferForEvent:ET_EVENT_ID_E_CLCK
-                                                             view:alertAction.et_actionView
++ (void)ne_et_doPreEventActionWithAlertAction:(UIAlertAction *)alertAction {
+    NEEventTracingEventActionConfig *logEventActionConfig = alertAction.ne_et_logEventActionConfig;
+    NEEventTracingVTreeNode *node = alertAction.ne_et_VTreeNodeCopy;
+    [[NEEventTracingEventReferQueue queue] pushEventReferForEvent:NE_ET_EVENT_ID_E_CLCK
+                                                             view:alertAction.ne_et_actionView
                                                              node:node
                                                       useForRefer:logEventActionConfig.useForRefer
                                                     useNextActseq:logEventActionConfig.increaseActseq];
 }
 
-+ (void)et_doAfterEventActionWithAlertAction:(UIAlertAction *)alertAction {
-    EventTracingVTree *VTree = alertAction.et_alertController.et_VTreeCopy;
-    EventTracingVTreeNode *node = alertAction.et_VTreeNodeCopy;
++ (void)ne_et_doAfterEventActionWithAlertAction:(UIAlertAction *)alertAction {
+    NEEventTracingVTree *VTree = alertAction.ne_et_alertController.ne_et_VTreeCopy;
+    NEEventTracingVTreeNode *node = alertAction.ne_et_VTreeNodeCopy;
     
-    UIView *actionView = alertAction.et_actionView;
-    EventTracingEventAction *action = [EventTracingEventAction actionWithEvent:ET_EVENT_ID_E_CLCK view:actionView];
-    [action syncFromActionConfig:alertAction.et_logEventActionConfig];
+    UIView *actionView = alertAction.ne_et_actionView;
+    NEEventTracingEventAction *action = [NEEventTracingEventAction actionWithEvent:NE_ET_EVENT_ID_E_CLCK view:actionView];
+    [action syncFromActionConfig:alertAction.ne_et_logEventActionConfig];
     [action setupNode:node VTree:VTree];
     
-    [[(EventTracingContext *)[EventTracingEngine sharedInstance].context eventEmitter] consumeEventAction:action forceInCurrentVTree:YES];
+    [[(NEEventTracingContext *)[NEEventTracingEngine sharedInstance].context eventEmitter] consumeEventAction:action forceInCurrentVTree:YES];
 }
 
-- (EventTracingVTreeNode *)et_VTreeNodeCopy {
+- (NEEventTracingVTreeNode *)ne_et_VTreeNodeCopy {
     return objc_getAssociatedObject(self, _cmd);
 }
-- (void)et_setVTreeNodeCopy:(EventTracingVTreeNode *)et_VTreeNodeCopy {
-    objc_setAssociatedObject(self, @selector(et_VTreeNodeCopy), et_VTreeNodeCopy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+- (void)ne_et_setVTreeNodeCopy:(NEEventTracingVTreeNode *)ne_et_VTreeNodeCopy {
+    objc_setAssociatedObject(self, @selector(ne_et_VTreeNodeCopy), ne_et_VTreeNodeCopy, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
-- (UIView *)et_actionView {
+- (UIView *)ne_et_actionView {
     return [self bk_associatedValueForKey:_cmd];
 }
-- (void)et_setActionView:(UIView *)et_actionView {
-    [self bk_weaklyAssociateValue:et_actionView withKey:@selector(et_actionView)];
+- (void)ne_et_setActionView:(UIView *)ne_et_actionView {
+    [self bk_weaklyAssociateValue:ne_et_actionView withKey:@selector(ne_et_actionView)];
 }
 
 @end
 
-@implementation EventTracingUIAlertControllerAOP
+@implementation NEEventTracingUIAlertControllerAOP
 
-EventTracingAOPInstanceImp
+NEEventTracingAOPInstanceImp
 
 - (void)asyncInject {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        [UIAlertController jr_swizzleMethod:@selector(addAction:) withMethod:@selector(et_alertController_addAction:) error:nil];
-        [UIAlertController jr_swizzleMethod:@selector(viewDidLoad) withMethod:@selector(et_alertController_viewDidLoad) error:nil];
-        [UIAlertController jr_swizzleMethod:@selector(viewDidAppear:) withMethod:@selector(et_alertController_viewDidAppear:) error:nil];
-        [UIAlertAction jr_swizzleClassMethod:@selector(actionWithTitle:style:handler:) withClassMethod:@selector(et_alertAction_actionWithTitle:style:handler:) error:nil];
+        [UIAlertController jr_swizzleMethod:@selector(addAction:) withMethod:@selector(ne_et_alertController_addAction:) error:nil];
+        [UIAlertController jr_swizzleMethod:@selector(viewDidLoad) withMethod:@selector(ne_et_alertController_viewDidLoad) error:nil];
+        [UIAlertController jr_swizzleMethod:@selector(viewDidAppear:) withMethod:@selector(ne_et_alertController_viewDidAppear:) error:nil];
+        [UIAlertAction jr_swizzleClassMethod:@selector(actionWithTitle:style:handler:) withClassMethod:@selector(ne_et_alertAction_actionWithTitle:style:handler:) error:nil];
     });
 }
 

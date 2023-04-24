@@ -1,20 +1,20 @@
 //
-//  EventTracingAOPManager.h
+//  NEEventTracingAOPManager.h
 //  BlocksKit
 //
 //  Created by dl on 2021/2/24.
 //
 
 #import <Foundation/Foundation.h>
-#import "EventTracingAOPProtocol.h"
+#import "NEEventTracingAOPProtocol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingAOPManager : NSObject
+@interface NEEventTracingAOPManager : NSObject
 
 + (instancetype) defaultManager;
 
-- (void) registeAOPCls:(Class<EventTracingAOPProtocol>)AOPCls;
+- (void) registeAOPCls:(Class<NEEventTracingAOPProtocol>)AOPCls;
 - (void) fire;
 
 @end

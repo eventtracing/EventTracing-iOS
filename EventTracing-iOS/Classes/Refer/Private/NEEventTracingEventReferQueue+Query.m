@@ -1,44 +1,44 @@
 //
-//  EventTracingEventReferQueue+Query.m
-//  EventTracing
+//  NEEventTracingEventReferQueue+Query.m
+//  NEEventTracing
 //
 //  Created by 熊勋泉 on 2023/2/22.
 //
 
-#import "EventTracingEventReferQueue+Query.h"
+#import "NEEventTracingEventReferQueue+Query.h"
 
-@interface EventTracingEventReferQueryParams()
+@interface NEEventTracingEventReferQueryParams()
 
 - (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
 @end
 
-@implementation EventTracingEventReferQueryParams
+@implementation NEEventTracingEventReferQueryParams
 + (instancetype)params {
-    EventTracingEventReferQueryParams *params = [[EventTracingEventReferQueryParams alloc] init];
-    params.referConsumeOption = EventTracingPageReferConsumeOptionExceptSubPagePV;
+    NEEventTracingEventReferQueryParams *params = [[NEEventTracingEventReferQueryParams alloc] init];
+    params.referConsumeOption = NEEventTracingPageReferConsumeOptionExceptSubPagePV;
     return params;
 }
 @end
 
 
-@interface EventTracingEventReferQueryResult()
-@property (nonatomic, strong) EventTracingEventReferQueryParams * params;
+@interface NEEventTracingEventReferQueryResult()
+@property (nonatomic, strong) NEEventTracingEventReferQueryParams * params;
 
 @property(nonatomic, assign, readwrite, getter=isValid) BOOL valid; //如果发生降级，则为 false，否则为 true
 
 /// 在 refer 查找过程中，以下refer可能都获取，从而得出最终该使用的refer
-@property(nonatomic, strong, readwrite, nullable) EventTracingFormattedEventRefer * latestRootPageRefer;
-@property(nonatomic, strong, readwrite, nullable) EventTracingFormattedEventRefer * latestSubPageRefer;
-@property(nonatomic, strong, readwrite, nullable) EventTracingFormattedEventRefer * latestEventRefer;
+@property(nonatomic, strong, readwrite, nullable) NEEventTracingFormattedEventRefer * latestRootPageRefer;
+@property(nonatomic, strong, readwrite, nullable) NEEventTracingFormattedEventRefer * latestSubPageRefer;
+@property(nonatomic, strong, readwrite, nullable) NEEventTracingFormattedEventRefer * latestEventRefer;
 @end
 
-@implementation EventTracingEventReferQueryResult
+@implementation NEEventTracingEventReferQueryResult
 
 @synthesize latestUndefinedXpathRefer = _latestUndefinedXpathRefer;
 
-- (instancetype)initWithParams:(EventTracingEventReferQueryParams *)params
-     latestUndefinedXpathRefer:(id<EventTracingEventRefer> _Nullable)latestUndefinedXpathRefer
+- (instancetype)initWithParams:(NEEventTracingEventReferQueryParams *)params
+     latestUndefinedXpathRefer:(id<NEEventTracingEventRefer> _Nullable)latestUndefinedXpathRefer
 {
     if (self = [super init]) {
         _params = params;
@@ -60,13 +60,13 @@
         // 需要匹配 event 时，没有正确的 event refer
         return NO;
     }
-    if ((self.params.referConsumeOption & EventTracingPageReferConsumeOptionSubPagePV)
+    if ((self.params.referConsumeOption & NEEventTracingPageReferConsumeOptionSubPagePV)
         && self.latestSubPageRefer == nil) {
         // 需要 subpage pv refer 却没有
         return NO;
     }
-    BOOL needEcEventRefer = self.params.referConsumeOption & EventTracingPageReferConsumeOptionEventEc;
-    BOOL needCustomEventRefer = self.params.referConsumeOption & EventTracingPageReferConsumeOptionCustom;
+    BOOL needEcEventRefer = self.params.referConsumeOption & NEEventTracingPageReferConsumeOptionEventEc;
+    BOOL needCustomEventRefer = self.params.referConsumeOption & NEEventTracingPageReferConsumeOptionCustom;
     if ((needEcEventRefer || needCustomEventRefer) && self.latestEventRefer == nil) {
         // 需要 event refer 却没有
         return NO;
@@ -74,7 +74,7 @@
     return YES;
 }
 
-- (void)updateForConsumeOptionWithRefer:(EventTracingFormattedEventRefer *)refer inCurrentRoot:(BOOL)inCurrentRoot
+- (void)updateForConsumeOptionWithRefer:(NEEventTracingFormattedEventRefer *)refer inCurrentRoot:(BOOL)inCurrentRoot
 {
     if (refer == nil) {
         return;
@@ -86,8 +86,8 @@
         }
     }
     // 当前 rootpage 名下的子节点
-    else if ([refer.event isEqualToString:ET_EVENT_ID_P_VIEW]) {
-        if (inCurrentRoot && (self.params.referConsumeOption & EventTracingPageReferConsumeOptionSubPagePV)) {
+    else if ([refer.event isEqualToString:NE_ET_EVENT_ID_P_VIEW]) {
+        if (inCurrentRoot && (self.params.referConsumeOption & NEEventTracingPageReferConsumeOptionSubPagePV)) {
             if (self->_latestSubPageRefer.eventTime < refer.eventTime) {
                 self->_latestSubPageRefer = refer;
             }
@@ -97,12 +97,12 @@
     else
     {
         // 是否是 ec 事件，如果不是 ec 事件，则一定是自定义事件
-        BOOL isEcEvent = ([refer.event isEqualToString:ET_EVENT_ID_E_CLCK]);
+        BOOL isEcEvent = ([refer.event isEqualToString:NE_ET_EVENT_ID_E_CLCK]);
         BOOL isEcEventRefer =
-        isEcEvent && (self.params.referConsumeOption & EventTracingPageReferConsumeOptionEventEc);
+        isEcEvent && (self.params.referConsumeOption & NEEventTracingPageReferConsumeOptionEventEc);
         
         BOOL isCustomEventRefer =
-        !isEcEvent && (self.params.referConsumeOption & EventTracingPageReferConsumeOptionCustom);
+        !isEcEvent && (self.params.referConsumeOption & NEEventTracingPageReferConsumeOptionCustom);
         
         if (isEcEventRefer || isCustomEventRefer) {
             if (self->_latestEventRefer.eventTime < refer.eventTime) {
@@ -112,13 +112,13 @@
     }
 }
 
-- (id<EventTracingEventRefer>)refer {
+- (id<NEEventTracingEventRefer>)refer {
     /// MARK: 1.兜底的 page refer，含 subpage refer 和 rootpage refer
     if (self->_latestRootPageRefer == nil) {
         /// root page refer 兜底
-        self->_latestRootPageRefer = [[EventTracingEventReferQueue queue] fetchLastestRootPagePVRefer];
+        self->_latestRootPageRefer = [[NEEventTracingEventReferQueue queue] fetchLastestRootPagePVRefer];
     }
-    EventTracingFormattedEventRefer *latestPageRefer =
+    NEEventTracingFormattedEventRefer *latestPageRefer =
     self.latestRootPageRefer.eventTime > self.latestSubPageRefer.eventTime ?
     self.latestRootPageRefer           : self.latestSubPageRefer;
     
@@ -146,42 +146,42 @@
 
 @end
 
-@implementation EventTracingEventReferQueue (Query)
+@implementation NEEventTracingEventReferQueue (Query)
 
-- (EventTracingEventReferQueryResult *)queryWithBuilder:(EventTracingReferQueryBuilder NS_NOESCAPE)block
+- (NEEventTracingEventReferQueryResult *)queryWithBuilder:(NEEventTracingReferQueryBuilder NS_NOESCAPE)block
 {
-    EventTracingEventReferQueryParams *params = [EventTracingEventReferQueryParams params];
+    NEEventTracingEventReferQueryParams *params = [NEEventTracingEventReferQueryParams params];
     !block ?: block(params);
     
-    EventTracingUndefinedXpathEventRefer *latestUndefinedXpathRefer;
+    NEEventTracingUndefinedXpathEventRefer *latestUndefinedXpathRefer;
     if (params.event.length > 0) {
         latestUndefinedXpathRefer = [self undefinedXpath_fetchLastestEventReferForEvent:params.event];
     } else {
         latestUndefinedXpathRefer = [self undefinedXpath_fetchLastestEventRefer];
     }
     
-    EventTracingEventReferQueryResult * result =
-    [[EventTracingEventReferQueryResult alloc] initWithParams:params
+    NEEventTracingEventReferQueryResult * result =
+    [[NEEventTracingEventReferQueryResult alloc] initWithParams:params
                                       latestUndefinedXpathRefer:latestUndefinedXpathRefer];
     
     [self _pickupPsreferForResult:result];
     return result;
 }
 
-- (void)_pickupPsreferForResult:(EventTracingEventReferQueryResult *)result {
+- (void)_pickupPsreferForResult:(NEEventTracingEventReferQueryResult *)result {
     if (!result.params) {
         // 参数错误
         NSParameterAssert(false);
         return;
     }
-    NSArray<EventTracingFormattedEventRefer *> * allRefers = self.allRefers;
-    [allRefers enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(EventTracingFormattedEventRefer * _Nonnull refer, NSUInteger idx, BOOL * _Nonnull stop) {
+    NSArray<NEEventTracingFormattedEventRefer *> * allRefers = self.allRefers;
+    [allRefers enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NEEventTracingFormattedEventRefer * _Nonnull refer, NSUInteger idx, BOOL * _Nonnull stop) {
         if (refer.isRootPagePV && ![result checkConsumeOptionReferOK]) {
             BOOL inCurrentRoot = (result.params.rootPageNode &&
                                   [refer.formattedRefer.spm isEqualToString:result.params.rootPageNode.spm] &&
                                   [refer.formattedRefer.scm isEqualToString:result.params.rootPageNode.scm]);
 
-            [refer.subRefers enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(EventTracingFormattedEventRefer * _Nonnull subrefer, NSUInteger idx, BOOL * _Nonnull stop) {
+            [refer.subRefers enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(NEEventTracingFormattedEventRefer * _Nonnull subrefer, NSUInteger idx, BOOL * _Nonnull stop) {
                 // `event refer` or `subpage pv refer`
                 [result updateForConsumeOptionWithRefer:subrefer inCurrentRoot:inCurrentRoot];
                 

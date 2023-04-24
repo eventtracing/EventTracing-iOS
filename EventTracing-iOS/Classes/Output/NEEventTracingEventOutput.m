@@ -1,22 +1,22 @@
 //
-//  EventTracingEventOutput.m
+//  NEEventTracingEventOutput.m
 //  BlocksKit
 //
 //  Created by dl on 2021/3/22.
 //
 
-#import "EventTracingEventOutput.h"
-#import "EventTracingEventOutput+Private.h"
+#import "NEEventTracingEventOutput.h"
+#import "NEEventTracingEventOutput+Private.h"
 #import "NSArray+ETEnumerator.h"
-#import "EventTracingEngine.h"
-#import "EventTracingDefines.h"
-#import "EventTracingParamGuardConfiguration.h"
-#import "EventTracingEngine+Private.h"
-#import "EventTracingVTreeNode+Private.h"
-#import "EventTracingFormattedReferBuilder.h"
-#import "EventTracingEventReferQueue.h"
+#import "NEEventTracingEngine.h"
+#import "NEEventTracingDefines.h"
+#import "NEEventTracingParamGuardConfiguration.h"
+#import "NEEventTracingEngine+Private.h"
+#import "NEEventTracingVTreeNode+Private.h"
+#import "NEEventTracingFormattedReferBuilder.h"
+#import "NEEventTracingEventReferQueue.h"
 
-@implementation EventTracingEventOutput
+@implementation NEEventTracingEventOutput
 @synthesize formatter = _formatter;
 @synthesize publicDynamicParamsProvider = _publicDynamicParamsProvider;
 
@@ -34,8 +34,8 @@
 - (void)outputEvent:(NSString *)event
       contextParams:(NSDictionary * _Nullable)contextParams
     logActionParams:(NSDictionary * _Nullable)logActionParams
-               node:(EventTracingVTreeNode *)node
-            inVTree:(EventTracingVTree *)VTree {
+               node:(NEEventTracingVTreeNode *)node
+            inVTree:(NEEventTracingVTree *)VTree {
     NSMutableDictionary *resultJson = [@{} mutableCopy];
     
     NSDictionary *nodeParams = [self fulllyParamsForEvent:event
@@ -62,14 +62,14 @@
         [resultJson addEntriesFromDictionary:nodeParams];
     }
     
-    ETDispatchMainAsyncSafe(^{
+    NEETDispatchMainAsyncSafe(^{
         [self _doOutputToChannels:event node:nil json:resultJson.copy];
     })
 }
 
 - (NSDictionary *)publicParamsForEvent:(NSString * _Nullable)event
-                                  node:(EventTracingVTreeNode * _Nullable)node
-                               inVTree:(EventTracingVTree * _Nullable)VTree  {
+                                  node:(NEEventTracingVTreeNode * _Nullable)node
+                               inVTree:(NEEventTracingVTree * _Nullable)VTree  {
     NSMutableDictionary *publicParams = [@{} mutableCopy];
     if (self.staticPublicParmas) {
         [publicParams addEntriesFromDictionary:self.staticPublicParmas];
@@ -80,9 +80,9 @@
     if ([self.publicDynamicParamsProvider respondsToSelector:@selector(outputPublicDynamicParamsForEvent:node:inVTree:)]) {
         NSDictionary *publicDynamicParams = [self.publicDynamicParamsProvider outputPublicDynamicParamsForEvent:event node:node inVTree:VTree];
         if (publicDynamicParams) {
-            [[EventTracingEngine sharedInstance].ctx.paramGuardExector asyncDoDispatchCheckTask:^{
+            [[NEEventTracingEngine sharedInstance].ctx.paramGuardExector asyncDoDispatchCheckTask:^{
                 [publicDynamicParams.allKeys enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                    ET_CheckPublicParamKeyValid(obj);
+                    NE_ET_CheckPublicParamKeyValid(obj);
                 }];
             }];
             
@@ -95,8 +95,8 @@
 - (NSDictionary *)fulllyParamsForEvent:(NSString * _Nullable)event
                          contextParams:(NSDictionary * _Nullable)contextParams
                        logActionParams:(NSDictionary * _Nullable)logActionParams
-                                  node:(EventTracingVTreeNode * _Nullable)node
-                               inVTree:(EventTracingVTree * _Nullable)VTree {
+                                  node:(NEEventTracingVTreeNode * _Nullable)node
+                               inVTree:(NEEventTracingVTree * _Nullable)VTree {
     NSMutableDictionary *resultJson = [@{} mutableCopy];
     
     NSDictionary *formatedJson = nil;
@@ -113,7 +113,7 @@
     [resultJson addEntriesFromDictionary:publicParams];
     
     /// MARK: 标识打出该埋点的时候是否是在后台
-    [resultJson setValue:@(![EventTracingEngine sharedInstance].context.isAppInActive).stringValue forKey:ET_CONST_KEY_IB];
+    [resultJson setValue:@(![NEEventTracingEngine sharedInstance].context.isAppInActive).stringValue forKey:NE_ET_CONST_KEY_IB];
     
     /// MARK: context params
     if (contextParams.count) {
@@ -127,10 +127,10 @@
 #pragma mark - private methods
 - (NSDictionary *)_filteredJsonWithEvent:(NSString *)event
                             originalJson:(NSDictionary *)originalJson
-                                    node:(EventTracingVTreeNode *)node
-                                 inVTree:(EventTracingVTree *)VTree {
+                                    node:(NEEventTracingVTreeNode *)node
+                                 inVTree:(NEEventTracingVTree *)VTree {
     __block NSDictionary *filteredJson = originalJson.copy;
-    [self.allParmasFilters enumerateObjectsUsingBlock:^(id<EventTracingOutputParamsFilter>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.allParmasFilters enumerateObjectsUsingBlock:^(id<NEEventTracingOutputParamsFilter>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if ([obj respondsToSelector:@selector(filteredJsonWithEvent:originalJson:node:inVTree:)]) {
             filteredJson = [obj filteredJsonWithEvent:event originalJson:filteredJson node:node inVTree:VTree];
         }
@@ -138,9 +138,9 @@
     return filteredJson;
 }
 
-- (void)_doOutputToChannels:(NSString *)event node:(EventTracingVTreeNode * _Nullable)node json:(NSDictionary *)json {
+- (void)_doOutputToChannels:(NSString *)event node:(NEEventTracingVTreeNode * _Nullable)node json:(NSDictionary *)json {
     void(^block)(void) = ^(void) {
-        [self.allOutputChannels enumerateObjectsUsingBlock:^(id<EventTracingEventOutputChannel>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.allOutputChannels enumerateObjectsUsingBlock:^(id<NEEventTracingEventOutputChannel>  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([obj respondsToSelector:@selector(eventOutput:didOutputEvent:json:)]) {
                 [obj eventOutput:self didOutputEvent:event json:json];
             }
@@ -150,15 +150,15 @@
             }
         }];
     };
-    ETDispatchMainAsyncSafe(block);
+    NEETDispatchMainAsyncSafe(block);
 }
 
-#pragma mark - EventTracingContextOutputFormatterBuilder
-- (void) registeFormatter:(id<EventTracingOutputFormatter>)formatter {
+#pragma mark - NEEventTracingContextOutputFormatterBuilder
+- (void) registeFormatter:(id<NEEventTracingOutputFormatter>)formatter {
     _formatter = formatter;
 }
 
-- (void)registePublicDynamicParamsProvider:(id<EventTracingOutputPublicDynamicParamsProvider>)publicDynamicParamsProvider {
+- (void)registePublicDynamicParamsProvider:(id<NEEventTracingOutputPublicDynamicParamsProvider>)publicDynamicParamsProvider {
     _publicDynamicParamsProvider = publicDynamicParamsProvider;
 }
 
@@ -169,9 +169,9 @@
     [self.innerStaticPublicParams addEntriesFromDictionary:params];
     
     if (withParamGuard) {
-        [[EventTracingEngine sharedInstance].ctx.paramGuardExector asyncDoDispatchCheckTask:^{
+        [[NEEventTracingEngine sharedInstance].ctx.paramGuardExector asyncDoDispatchCheckTask:^{
             [params.allKeys enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                ET_CheckPublicParamKeyValid(obj);
+                NE_ET_CheckPublicParamKeyValid(obj);
             }];
         }];
     }
@@ -181,9 +181,9 @@
     [self.innerCurrentActivePublicParams addEntriesFromDictionary:params];
     
     if (withParamGuard) {
-        [[EventTracingEngine sharedInstance].ctx.paramGuardExector asyncDoDispatchCheckTask:^{
+        [[NEEventTracingEngine sharedInstance].ctx.paramGuardExector asyncDoDispatchCheckTask:^{
             [params.allKeys enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-                ET_CheckPublicParamKeyValid(obj);
+                NE_ET_CheckPublicParamKeyValid(obj);
             }];
         }];
     }
@@ -197,11 +197,11 @@
     [self.innerStaticPublicParams removeObjectForKey:key];
 }
 
-- (void)addOutputChannel:(id<EventTracingEventOutputChannel>)outputChannel {
+- (void)addOutputChannel:(id<NEEventTracingEventOutputChannel>)outputChannel {
     [self.outputChannels addObject:outputChannel];
 }
 
-- (void)removeOutputChannel:(id<EventTracingEventOutputChannel>)outputChannel {
+- (void)removeOutputChannel:(id<NEEventTracingEventOutputChannel>)outputChannel {
     [self.outputChannels removeObject:outputChannel];
 }
 
@@ -210,12 +210,12 @@
 }
 
 
-#pragma mark - EventTracingContextOutputParamsFilterBuilder
-- (void)addParamsFilter:(id<EventTracingOutputParamsFilter>)paramsFilter {
+#pragma mark - NEEventTracingContextOutputParamsFilterBuilder
+- (void)addParamsFilter:(id<NEEventTracingOutputParamsFilter>)paramsFilter {
     [self.outputParamsFilters addObject:paramsFilter];
 }
 
-- (void)removeParamsFilter:(id<EventTracingOutputParamsFilter>)paramsFilter {
+- (void)removeParamsFilter:(id<NEEventTracingOutputParamsFilter>)paramsFilter {
     [self.outputParamsFilters removeObject:paramsFilter];
 }
 
@@ -224,11 +224,11 @@
 }
 
 #pragma mark - getters
-- (NSArray<id<EventTracingEventOutputChannel>> *)allOutputChannels {
+- (NSArray<id<NEEventTracingEventOutputChannel>> *)allOutputChannels {
     return self.outputChannels.allObjects;
 }
 
-- (NSArray<id<EventTracingOutputParamsFilter>> *)allParmasFilters {
+- (NSArray<id<NEEventTracingOutputParamsFilter>> *)allParmasFilters {
     return self.outputParamsFilters.allObjects;
 }
 
@@ -242,10 +242,10 @@
 
 @end
 
-@implementation EventTracingEventOutput (MergeLogForH5)
+@implementation NEEventTracingEventOutput (MergeLogForH5)
 
 - (void)outputEvent:(NSString *)event
-           baseNode:(EventTracingVTreeNode *)baseNode
+           baseNode:(NEEventTracingVTreeNode *)baseNode
         useForRefer:(BOOL)useForRefer
              fromH5:(BOOL)fromH5
               elist:(NSArray<NSDictionary<NSString *,NSString *> *> *)elist
@@ -253,9 +253,9 @@
         positionKey:(NSString *)positionKey
              params:(NSDictionary<NSString *,NSString *> *)params {
     
-    EventTracingVTreeNode *node = baseNode;
-    EventTracingVTree *VTree = node.VTree;
-    EventTracingVTreeNode *rootPageNode = [node findToppestNode:YES];
+    NEEventTracingVTreeNode *node = baseNode;
+    NEEventTracingVTree *VTree = node.VTree;
+    NEEventTracingVTreeNode *rootPageNode = [node findToppestNode:YES];
     BOOL needsIncreaseActseq = useForRefer;
     
     NSString *spm = [self _mergeLogH5_spmFromNode:node elist:elist plist:plist positionKey:positionKey];
@@ -265,12 +265,12 @@
     /// MARK: _pv 事件，需要plist第一个节点有 _pgstep, 并且需要 pgstep ++
     NSMutableArray<NSDictionary<NSString *,NSString *> *> *mutablePlist = (plist ?: @[]).mutableCopy;
     NSMutableArray<NSDictionary<NSString *,NSString *> *> *mutableElist = (elist ?: @[]).mutableCopy;
-    if ([event isEqualToString:ET_EVENT_ID_P_VIEW] && plist.count > 0) {
+    if ([event isEqualToString:NE_ET_EVENT_ID_P_VIEW] && plist.count > 0) {
         NSMutableDictionary *firstPDict = [mutablePlist.firstObject mutableCopy];
         
         /// MARK: _pgstep
-        NSInteger pgstep = [[EventTracingEngine sharedInstance] pgstepIncreased];
-        [firstPDict setObject:@(pgstep) forKey:ET_REFER_KEY_PGSTEP];
+        NSInteger pgstep = [[NEEventTracingEngine sharedInstance] pgstepIncreased];
+        [firstPDict setObject:@(pgstep) forKey:NE_ET_REFER_KEY_PGSTEP];
         
         [mutablePlist replaceObjectAtIndex:0 withObject:firstPDict.copy];
         
@@ -286,10 +286,10 @@
     
     /// MARK: make json
     NSMutableDictionary *json = [formatedJson ?: @{} mutableCopy];
-    if (![json.allKeys containsObject:ET_REFER_KEY_HSREFER]) {
-        NSString *hsrefer = [EventTracingEngine sharedInstance].context.hsrefer;
+    if (![json.allKeys containsObject:NE_ET_REFER_KEY_HSREFER]) {
+        NSString *hsrefer = [NEEventTracingEngine sharedInstance].context.hsrefer;
         if (hsrefer.length) {
-            [json setObject:hsrefer forKey:ET_REFER_KEY_HSREFER];
+            [json setObject:hsrefer forKey:NE_ET_REFER_KEY_HSREFER];
         }
     }
     
@@ -299,26 +299,26 @@
     [mutableElist addObjectsFromArray:nodeElist];
     [mutablePlist addObjectsFromArray:nodePlist];
     
-    [json setObject:mutableElist.copy forKey:ET_CONST_KEY_ELIST];
-    [json setObject:mutablePlist.copy forKey:ET_CONST_KEY_PLIST];
+    [json setObject:mutableElist.copy forKey:NE_ET_CONST_KEY_ELIST];
+    [json setObject:mutablePlist.copy forKey:NE_ET_CONST_KEY_PLIST];
     
-    [json setObject:spm forKey:ET_REFER_KEY_SPM];
-    [json setObject:scm forKey:ET_REFER_KEY_SCM];
+    [json setObject:spm forKey:NE_ET_REFER_KEY_SPM];
+    [json setObject:scm forKey:NE_ET_REFER_KEY_SCM];
     if (scmNeedsEncode) {
-        [json setObject:@"1" forKey:ET_REFER_KEY_SCM_ER];
+        [json setObject:@"1" forKey:NE_ET_REFER_KEY_SCM_ER];
     }
     
     NSDictionary *publicParams = [self publicParamsForEvent:event node:node inVTree:VTree];
     [json addEntriesFromDictionary:publicParams];
     
     /// MARK: 标识打出该埋点的时候是否是在后台
-    [json setValue:@(![EventTracingEngine sharedInstance].context.isAppInActive).stringValue forKey:ET_CONST_KEY_IB];
+    [json setValue:@(![NEEventTracingEngine sharedInstance].context.isAppInActive).stringValue forKey:NE_ET_CONST_KEY_IB];
     
     /// MARK: _actseq
     NSInteger actseq = 0;
     if (needsIncreaseActseq) {
         actseq = [rootPageNode doIncreaseActseq];
-        [json setObject:@(actseq) forKey:ET_REFER_KEY_ACTSEQ];
+        [json setObject:@(actseq) forKey:NE_ET_REFER_KEY_ACTSEQ];
     }
     
     /// 整体的一个filter过滤
@@ -330,9 +330,9 @@
         return;
     }
     
-    id<EventTracingFormattedRefer> formattedRefer = [EventTracingFormattedReferBuilder build:^(id<EventTracingFormattedReferComponentBuilder>  _Nonnull builder) {
+    id<NEEventTracingFormattedRefer> formattedRefer = [NEEventTracingFormattedReferBuilder build:^(id<NEEventTracingFormattedReferComponentBuilder>  _Nonnull builder) {
         builder
-        .type(elist.count > 0 ? ET_REFER_KEY_E : ET_REFER_KEY_P)
+        .type(elist.count > 0 ? NE_ET_REFER_KEY_E : NE_ET_REFER_KEY_P)
         .actseq(actseq)
         .pgstep(rootPageNode.pgstep)
         .spm(spm)
@@ -347,15 +347,15 @@
         }
     }].generateRefer;
     
-    EventTracingFormattedEventRefer *refer = [EventTracingFormattedEventRefer referWithEvent:event
+    NEEventTracingFormattedEventRefer *refer = [NEEventTracingFormattedEventRefer referWithEvent:event
                                                                                   formattedRefer:formattedRefer
                                                                                       rootPagePV:NO
                                                                               shouldStartHsrefer:NO
                                                                               isNodePsreferMuted:NO];
-    [[EventTracingEventReferQueue queue] pushEventRefer:refer node:node isSubPage:NO];
+    [[NEEventTracingEventReferQueue queue] pushEventRefer:refer node:node isSubPage:NO];
 }
 
-- (NSString *)_mergeLogH5_spmFromNode:(EventTracingVTreeNode *)node
+- (NSString *)_mergeLogH5_spmFromNode:(NEEventTracingVTreeNode *)node
                                 elist:(NSArray<NSDictionary<NSString *,NSString *> *> *)elist
                                 plist:(NSArray<NSDictionary<NSString *,NSString *> *> *)plist
                           positionKey:(NSString *)positionKey {
@@ -382,7 +382,7 @@
     return spm.copy;
 }
 
-- (NSString *)_mergeLogH5_scmFromNode:(EventTracingVTreeNode *)node
+- (NSString *)_mergeLogH5_scmFromNode:(NEEventTracingVTreeNode *)node
                                 elist:(NSArray<NSDictionary<NSString *,NSString *> *> *)elist
                                 plist:(NSArray<NSDictionary<NSString *,NSString *> *> *)plist
                           needsEncode:(BOOL *)needsEncode {
@@ -390,8 +390,8 @@
     
     __block BOOL shouldEncode = NO;
     void(^appendSCMComponents)(NSDictionary<NSString *,NSString *> * _Nonnull, NSUInteger idx, BOOL * _Nonnull) = ^(NSDictionary<NSString *,NSString *> * _Nonnull dict, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSString *value = [[EventTracingEngine sharedInstance].ctx.referNodeSCMFormatter nodeSCMWithNodeParams:dict];
-        shouldEncode = shouldEncode || [[EventTracingEngine sharedInstance] .ctx.referNodeSCMFormatter needsEncodeSCMForNodeParams:dict];
+        NSString *value = [[NEEventTracingEngine sharedInstance].ctx.referNodeSCMFormatter nodeSCMWithNodeParams:dict];
+        shouldEncode = shouldEncode || [[NEEventTracingEngine sharedInstance] .ctx.referNodeSCMFormatter needsEncodeSCMForNodeParams:dict];
         
         if (scm.length != 0) {
             [scm appendString:@"|"];

@@ -1,25 +1,25 @@
 //
-//  EventTracingTraversalRunner.m
+//  NEEventTracingTraversalRunner.m
 //  BlocksKit
 //
 //  Created by dl on 2021/2/4.
 //
 
-#import "EventTracingTraversalRunner.h"
-#import "EventTracingTraversalRunnerDurationThrottle.h"
+#import "NEEventTracingTraversalRunner.h"
+#import "NEEventTracingTraversalRunnerDurationThrottle.h"
 
-@interface EventTracingTraversalRunner () <EventTracingTraversalRunnerThrottleCallback> {
+@interface NEEventTracingTraversalRunner () <NEEventTracingTraversalRunnerThrottleCallback> {
     CFRunLoopObserverRef _runloopObserver;
 }
 @property(nonatomic, assign, direct) CFTimeInterval currentLoopEntryTime;
-@property(nonatomic, strong, direct) EventTracingTraversalRunnerDurationThrottle *throtte;
+@property(nonatomic, strong, direct) NEEventTracingTraversalRunnerDurationThrottle *throtte;
 
 - (void)_runloopDidEntry __attribute__((objc_direct));
 - (void)_needRunTask __attribute__((objc_direct));
 @end
 
 __attribute__((objc_direct_members))
-@implementation EventTracingTraversalRunner
+@implementation NEEventTracingTraversalRunner
 @synthesize running = _running;
 @synthesize paused = _paused;
 @synthesize currentRunMode = _currentRunMode;
@@ -41,7 +41,7 @@ __attribute__((objc_direct_members))
     _running = YES;
     _paused = YES;
     
-    _throtte = [[EventTracingTraversalRunnerDurationThrottle alloc] init];
+    _throtte = [[NEEventTracingTraversalRunnerDurationThrottle alloc] init];
     /// 至少间隔 0.1s 才做一次
     _throtte.tolerentDuration = 0.1f;
     _throtte.callback = self;
@@ -81,8 +81,8 @@ __attribute__((objc_direct_members))
     CFRunLoopAddObserver([[NSRunLoop currentRunLoop] getCFRunLoop], _runloopObserver, kCFRunLoopCommonModes);
 }
 
-#pragma mark - EventTracingTraversalRunnerThrottleCallback
-- (void)throttle:(id<EventTracingTraversalRunnerThrottle>)throttle throttleDidFinished:(BOOL)throttled {
+#pragma mark - NEEventTracingTraversalRunnerThrottleCallback
+- (void)throttle:(id<NEEventTracingTraversalRunnerThrottle>)throttle throttleDidFinished:(BOOL)throttled {
     [self _needRunTask];
 }
 
@@ -121,7 +121,7 @@ __attribute__((objc_direct_members))
 
 #pragma mark - Runloop Observer cb
 void ETRunloopObserverCallback(CFRunLoopObserverRef observer, CFRunLoopActivity activity, void *info) {
-    EventTracingTraversalRunner *runner = (__bridge EventTracingTraversalRunner *)info;
+    NEEventTracingTraversalRunner *runner = (__bridge NEEventTracingTraversalRunner *)info;
     switch (activity) {
         case kCFRunLoopEntry:
             [runner _runloopDidEntry];

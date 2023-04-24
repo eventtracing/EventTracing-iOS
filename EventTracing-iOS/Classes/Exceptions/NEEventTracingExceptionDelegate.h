@@ -1,5 +1,5 @@
 //
-//  EventTracingExceptionDelegate.h
+//  NEEventTracingExceptionDelegate.h
 //  BlocksKit
 //
 //  Created by dl on 2021/5/20.
@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol EventTracingExceptionDelegate <NSObject>
+@protocol NEEventTracingExceptionDelegate <NSObject>
 
 @optional
 // param guard invalid exceptions
@@ -22,14 +22,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)internalExceptionKey:(NSString *)key
                         code:(NSInteger)code
                      message:(NSString *)message
-                        node:(EventTracingVTreeNode *)node
-       shouldNotEqualToOther:(EventTracingVTreeNode *)otherNode;
+                        node:(NEEventTracingVTreeNode *)node
+       shouldNotEqualToOther:(NEEventTracingVTreeNode *)otherNode;
 
 - (void)internalExceptionKey:(NSString *)key
                         code:(NSInteger)code
                      message:(NSString *)message
-                        node:(EventTracingVTreeNode *)node
-    spmShouldNotEqualToOther:(EventTracingVTreeNode *)otherNode;
+                        node:(NEEventTracingVTreeNode *)node
+    spmShouldNotEqualToOther:(NEEventTracingVTreeNode *)otherNode;
 
 - (void)logicalMountEndlessLoopExceptionKey:(NSString *)key
                                        code:(NSInteger)code

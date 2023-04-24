@@ -1,27 +1,27 @@
 //
-//  EventTracingVTreeNode.h
-//  EventTracing
+//  NEEventTracingVTreeNode.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/2/26.
 //
 
 #import <Foundation/Foundation.h>
-#import "EventTracingDiffable.h"
-#import "EventTracingDefines.h"
+#import "NEEventTracingDiffable.h"
+#import "NEEventTracingDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class EventTracingVTree;
-@interface EventTracingVTreeNode : NSObject <NSCopying, EventTracingDiffable>
+@class NEEventTracingVTree;
+@interface NEEventTracingVTreeNode : NSObject <NSCopying, NEEventTracingDiffable>
 
-@property(nonatomic, weak, readonly) EventTracingVTree *VTree;
+@property(nonatomic, weak, readonly) NEEventTracingVTree *VTree;
 @property(nonatomic, assign, readonly, getter=isRoot) BOOL root;
 @property(nonatomic, assign, readonly, getter=isVirtualNode) BOOL virtualNode;
 @property(nonatomic, assign, readonly) NSInteger depth;     // 节点在VTree中的深度
 
 @property(nonatomic, copy, readonly) NSString *identifier;
 @property(nonatomic, weak, readonly) UIView *view;      // 虚拟节点，view==nil
-@property(nonatomic, assign, readonly) ETNodeBuildinEventLogDisableStrategy buildinEventLogDisableStrategy;
+@property(nonatomic, assign, readonly) NEETNodeBuildinEventLogDisableStrategy buildinEventLogDisableStrategy;
 
 /// MARK: 该节点曝光的最大比例, 取值范围 [0,1]
 // 随着一个节点曝光之后持续的展示，最大曝光比例可能会增大，这里只取最大值
@@ -54,8 +54,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign, readonly) NSTimeInterval beginTime;
 
 @property(nonatomic, assign, readonly) BOOL isPageNode;
-@property(nonatomic, weak, readonly, nullable) EventTracingVTreeNode *parentNode;
-@property(nonatomic, strong, readonly) NSArray<EventTracingVTreeNode *> *subNodes;
+@property(nonatomic, weak, readonly, nullable) NEEventTracingVTreeNode *parentNode;
+@property(nonatomic, strong, readonly) NSArray<NEEventTracingVTreeNode *> *subNodes;
 
 // 被遮挡的场景, visible是NO
 @property(nonatomic, assign, readonly, getter=isVisible) BOOL visible;
@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 // 是基于 UIScreen 的可见区域
 // 计算可见区域的时候，是依赖parentNode节点的可见区域的
 @property(nonatomic, assign, readonly) CGRect visibleRect;
-@property(nonatomic, assign, readonly) ETNodeVisibleRectCalculateStrategy visibleRectCalculateStrategy;
+@property(nonatomic, assign, readonly) NEETNodeVisibleRectCalculateStrategy visibleRectCalculateStrategy;
 // 根据 visibleRect 计算出的相对于 paremtNode 的可见区域
 @property(nonatomic, assign, readonly) CGRect visibleFrame;
 
@@ -84,25 +84,25 @@ NS_ASSUME_NONNULL_BEGIN
 /// 其中 custom 目前是除了 明确类型的 其他类型
 /// all 是全部类型
 /// subpage_pv 专指子页面曝光产生的refer
-@property(nonatomic, assign, readonly) EventTracingPageReferConsumeOption pageReferConsumeOption;
+@property(nonatomic, assign, readonly) NEEventTracingPageReferConsumeOption pageReferConsumeOption;
 
 @end
 
-@interface EventTracingVTreeNode (Enumerater)
+@interface NEEventTracingVTreeNode (Enumerater)
 // 当前节点向上找第一个page节点(从当前节点开始算起)
-- (EventTracingVTreeNode * _Nullable)firstAncestorPageNode;
+- (NEEventTracingVTreeNode * _Nullable)firstAncestorPageNode;
 
 // 便捷方法: 向上遍历祖先节点(从当前节点开始算起)
-- (void)enumerateAncestorNodeWithBlock:(void(NS_NOESCAPE ^ _Nonnull)(EventTracingVTreeNode *ancestorNode, BOOL * _Nonnull stop))block;
+- (void)enumerateAncestorNodeWithBlock:(void(NS_NOESCAPE ^ _Nonnull)(NEEventTracingVTreeNode *ancestorNode, BOOL * _Nonnull stop))block;
 @end
 
 // MARK: Geometry
-@interface EventTracingVTreeNode (Geometry)
-- (EventTracingVTreeNode * _Nullable)hitTest:(CGPoint)point;
-- (EventTracingVTreeNode * _Nullable)hitTest:(CGPoint)point pageOnly:(BOOL)pageOnly;
+@interface NEEventTracingVTreeNode (Geometry)
+- (NEEventTracingVTreeNode * _Nullable)hitTest:(CGPoint)point;
+- (NEEventTracingVTreeNode * _Nullable)hitTest:(CGPoint)point pageOnly:(BOOL)pageOnly;
 @end
 
-@interface EventTracingVTreeNode (Params)
+@interface NEEventTracingVTreeNode (Params)
 // Params
 - (NSDictionary<NSString *, NSString *> *)nodeParams;
 - (NSDictionary<NSString *, NSString *> *)nodeStaticParams;
@@ -112,10 +112,21 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 /// MARK: Debug
-@interface EventTracingVTreeNode (Debug)
+@interface NEEventTracingVTreeNode (Debug)
 - (NSDictionary *)debugJson;
 - (NSString *)debugJsonString;
 - (NSDictionary *)debugSelfJson;
+@end
+
+@interface NEEventTracingVTreeNode (Deprecated)
+
+/// MARK: # 曝光限定
+@property(nonatomic, assign, readonly) CGFloat impressRatioThreshold DEPRECATED_MSG_ATTRIBUTE("已废弃曝光限定");
+@property(nonatomic, assign, readonly) NSTimeInterval impressIntervalThreshold DEPRECATED_MSG_ATTRIBUTE("已废弃曝光限定");
+
+/// MARK: 已经废弃
+// 如果当前页面还没有埋点，则该节点先临时挂载到 `parentId` 名下，否则挂载到 rootPage 名下
+@property(nonatomic, assign, readonly, getter=isAutoMountParentWaring) BOOL autoMountParentWaring DEPRECATED_MSG_ATTRIBUTE("方法已废弃, return NO");
 @end
 
 NS_ASSUME_NONNULL_END

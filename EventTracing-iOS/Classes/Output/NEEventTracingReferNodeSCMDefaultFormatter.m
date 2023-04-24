@@ -1,24 +1,24 @@
 //
-//  EventTracingReferNodeSCMDefaultFormatter.m
-//  EventTracing
+//  NEEventTracingReferNodeSCMDefaultFormatter.m
+//  NEEventTracing
 //
 //  Created by dl on 2021/9/2.
 //
 
-#import "EventTracingReferNodeSCMDefaultFormatter.h"
+#import "NEEventTracingReferNodeSCMDefaultFormatter.h"
 #import "NSString+EventTracingUtil.h"
 
-@implementation EventTracingReferNodeSCMDefaultFormatter
+@implementation NEEventTracingReferNodeSCMDefaultFormatter
 
 - (nonnull NSString *)nodeSCMWithView:(nonnull UIView *)view
-                                 node:(nonnull EventTracingVTreeNode *)node
-                              inVTree:(nonnull EventTracingVTree *)VTree {
+                                 node:(nonnull NEEventTracingVTreeNode *)node
+                              inVTree:(nonnull NEEventTracingVTree *)VTree {
     NSDictionary<NSString *, NSString *> *nodeParams = [node nodeParams];
     
     return [self nodeSCMWithNodeParams:nodeParams];
 }
 
-- (BOOL)needsEncodeSCMForNode:(EventTracingVTreeNode *)node {
+- (BOOL)needsEncodeSCMForNode:(NEEventTracingVTreeNode *)node {
     NSDictionary<NSString *, NSString *> *nodeParams = [node nodeParams];
     
     return [self needsEncodeSCMForNodeParams:nodeParams];
@@ -32,8 +32,8 @@
     NSString *ctrp = stringify([params objectForKey:@"s_ctrp"]);
 #undef stringify
     
-    BOOL needsEncode = [cid isKindOfClass:NSString.class] && [cid et_simplyNeedsEncoded];
-    NSString *cidValue = needsEncode ? [cid et_urlEncode] : cid;
+    BOOL needsEncode = [cid isKindOfClass:NSString.class] && [cid ne_et_simplyNeedsEncoded];
+    NSString *cidValue = needsEncode ? [cid ne_et_urlEncode] : cid;
     
     NSMutableString *result = [NSMutableString string];
     [result appendString:(cidValue ?: @"")];
@@ -50,7 +50,7 @@
 - (BOOL)needsEncodeSCMForNodeParams:(NSDictionary<NSString *, NSString *> *)params {
     NSString *cid = [params objectForKey:@"s_cid"];
     
-    return [cid isKindOfClass:NSString.class] && [cid et_simplyNeedsEncoded];;
+    return [cid isKindOfClass:NSString.class] && [cid ne_et_simplyNeedsEncoded];;
 }
 
 @end

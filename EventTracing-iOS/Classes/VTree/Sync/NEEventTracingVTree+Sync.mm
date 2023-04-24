@@ -1,15 +1,15 @@
 //
-//  EventTracingVTree+Sync.m
+//  NEEventTracingVTree+Sync.m
 //  BlocksKit
 //
 //  Created by dl on 2021/3/25.
 //
 
-#import "EventTracingVTree+Sync.h"
-#import "EventTracingVTree+Private.h"
-#import "EventTracingVTreeNode+Private.h"
+#import "NEEventTracingVTree+Sync.h"
+#import "NEEventTracingVTree+Private.h"
+#import "NEEventTracingVTreeNode+Private.h"
 
-#import "EventTracingDiffable.h"
+#import "NEEventTracingDiffable.h"
 #import "NSArray+ETEnumerator.h"
 #import "UIView+EventTracingPrivate.h"
 
@@ -23,8 +23,8 @@ struct ETVTreeSyncEntry {
     NSInteger fromIdx = NSNotFound;
 };
 
-static id<NSObject> ETVTreeSyncTableKey(__unsafe_unretained id<EventTracingDiffable> object) {
-    id<NSObject> key = [object et_diffIdentifier];
+static id<NSObject> ETVTreeSyncTableKey(__unsafe_unretained id<NEEventTracingDiffable> object) {
+    id<NSObject> key = [object ne_et_diffIdentifier];
     NSCAssert(key != nil, @"Cannot use a nil key for the diffIdentifier of object %@", object);
     return key;
 }
@@ -41,28 +41,28 @@ struct ETVTreeSyncEqualID {
     }
 };
 
-@implementation EventTracingVTree (Sync)
+@implementation NEEventTracingVTree (Sync)
 
-- (void)syncToVTree:(EventTracingVTree *)VTree {
-    [self _syncToVTree:VTree matchBlock:^(EventTracingVTreeNode *fromNode, EventTracingVTreeNode *toNode) {
+- (void)syncToVTree:(NEEventTracingVTree *)VTree {
+    [self _syncToVTree:VTree matchBlock:^(NEEventTracingVTreeNode *fromNode, NEEventTracingVTreeNode *toNode) {
         [fromNode syncToNode:toNode];
     }];
 }
 
-- (void)_syncToVTree:(EventTracingVTree *)VTree
-          matchBlock:(void(^)(EventTracingVTreeNode *fromNode, EventTracingVTreeNode *toNode))block {
+- (void)_syncToVTree:(NEEventTracingVTree *)VTree
+          matchBlock:(void(^)(NEEventTracingVTreeNode *fromNode, NEEventTracingVTreeNode *toNode))block {
     
     if (!block) {
         return;
     }
     
-    NSArray<EventTracingVTreeNode *> *fromNodes = [self flattenNodes];
+    NSArray<NEEventTracingVTreeNode *> *fromNodes = [self flattenNodes];
     NSUInteger fromCount = fromNodes.count;
     if (fromCount == 0) {
         return;
     }
     
-    NSArray<EventTracingVTreeNode *> *toNodes = [VTree flattenNodes];
+    NSArray<NEEventTracingVTreeNode *> *toNodes = [VTree flattenNodes];
     NSUInteger toCount = toNodes.count;
     if (toCount == 0) {
         return;
@@ -81,25 +81,25 @@ struct ETVTreeSyncEqualID {
         ETVTreeSyncEntry &entry = table[key];
         
         if (entry.fromIdx != NSNotFound) {
-            EventTracingVTreeNode *fromNode = fromNodes[entry.fromIdx];
-            EventTracingVTreeNode *toNode = toNodes[i];
+            NEEventTracingVTreeNode *fromNode = fromNodes[entry.fromIdx];
+            NEEventTracingVTreeNode *toNode = toNodes[i];
             
             block(fromNode, toNode);
         }
     }
 }
 
-- (void)syncNodeDynamicParamsForNode:(EventTracingVTreeNode *)node event:(NSString *)event {
-    [node enumerateAncestorNodeWithBlock:^(EventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
+- (void)syncNodeDynamicParamsForNode:(NEEventTracingVTreeNode *)node event:(NSString *)event {
+    [node enumerateAncestorNodeWithBlock:^(NEEventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
         [ancestorNode refreshDynsmicParamsIfNeededForEvent:event];
     }];
 }
 
-- (void)increaseActseqFromOtherTree:(EventTracingVTree *)otherTree node:(EventTracingVTreeNode *)node {
-    EventTracingVTreeNode *toppestNode = [node findToppestNode:NO];
+- (void)increaseActseqFromOtherTree:(NEEventTracingVTree *)otherTree node:(NEEventTracingVTreeNode *)node {
+    NEEventTracingVTreeNode *toppestNode = [node findToppestNode:NO];
     
-    [self.rootNode.subNodes et_enumerateObjectsUsingBlock:^NSArray<EventTracingVTreeNode *> * _Nonnull(EventTracingVTreeNode * _Nonnull obj, BOOL * _Nonnull stop) {
-        if ([obj et_isEqualToDiffableObject:toppestNode]) {
+    [self.rootNode.subNodes ne_et_enumerateObjectsUsingBlock:^NSArray<NEEventTracingVTreeNode *> * _Nonnull(NEEventTracingVTreeNode * _Nonnull obj, BOOL * _Nonnull stop) {
+        if ([obj ne_et_isEqualToDiffableObject:toppestNode]) {
             [obj doIncreaseActseq];
             *stop = YES;
         }

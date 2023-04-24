@@ -1,21 +1,21 @@
 //
-//  EventTracingTraversalRunnerScrollViewOffsetThrottle.m
-//  EventTracing
+//  NEEventTracingTraversalRunnerScrollViewOffsetThrottle.m
+//  NEEventTracing
 //
 //  Created by dl on 2021/4/2.
 //
 
-#import "EventTracingTraversalRunnerScrollViewOffsetThrottle.h"
+#import "NEEventTracingTraversalRunnerScrollViewOffsetThrottle.h"
 
-@interface EventTracingTraversalRunnerScrollViewOffsetThrottle () {
+@interface NEEventTracingTraversalRunnerScrollViewOffsetThrottle () {
     BOOL _throttled;
-    __weak id<EventTracingTraversalRunnerThrottleCallback> _callback;
+    __weak id<NEEventTracingTraversalRunnerThrottleCallback> _callback;
     CGPoint _preContentOffset;
 }
 
 @end
 
-@implementation EventTracingTraversalRunnerScrollViewOffsetThrottle
+@implementation NEEventTracingTraversalRunnerScrollViewOffsetThrottle
 @synthesize throttled = _throttled;
 @synthesize paused = _paused;
 @synthesize callback = _callback;

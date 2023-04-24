@@ -1,6 +1,6 @@
 //
-//  EventTracingEventActionConfig.h
-//  EventTracing
+//  NEEventTracingEventActionConfig.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/4/25.
 //
@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingEventActionConfig : NSObject
+@interface NEEventTracingEventActionConfig : NSObject
 - (instancetype)init NS_UNAVAILABLE;
 +(instancetype)new NS_UNAVAILABLE;
 

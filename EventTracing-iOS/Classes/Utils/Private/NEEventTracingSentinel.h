@@ -1,5 +1,5 @@
 //
-//  EventTracingSentinel.h
+//  NEEventTracingSentinel.h
 //  BlocksKit
 //
 //  Created by dl on 2021/3/25.
@@ -10,7 +10,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /// a thread safe incrementing counter.
-@interface EventTracingSentinel : NSObject
+@interface NEEventTracingSentinel : NSObject
 
 @property(atomic, readonly) int32_t value;
 

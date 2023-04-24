@@ -1,27 +1,27 @@
 //
-//  EventTracingEngine+Action.m
+//  NEEventTracingEngine+Action.m
 //  BlocksKit
 //
 //  Created by dl on 2021/3/23.
 //
 
-#import "EventTracingEngine+Action.h"
-#import "EventTracingEngine+Private.h"
+#import "NEEventTracingEngine+Action.h"
+#import "NEEventTracingEngine+Private.h"
 #import "UIView+EventTracingPrivate.h"
-#import "EventTracingContext+Private.h"
-#import "EventTracingEventOutput+Private.h"
-#import "EventTracingVTree+Sync.h"
-#import "EventTracingVTreeNode+Private.h"
-#import "EventTracingEventActionConfig+Private.h"
-#import "EventTracingParamGuardConfiguration.h"
-#import "EventTracingEventReferQueue.h"
+#import "NEEventTracingContext+Private.h"
+#import "NEEventTracingEventOutput+Private.h"
+#import "NEEventTracingVTree+Sync.h"
+#import "NEEventTracingVTreeNode+Private.h"
+#import "NEEventTracingEventActionConfig+Private.h"
+#import "NEEventTracingParamGuardConfiguration.h"
+#import "NEEventTracingEventReferQueue.h"
 #import "NSArray+ETEnumerator.h"
-#import "EventTracingFormattedReferBuilder.h"
-#import "EventTracingEventRefer+Private.h"
+#import "NEEventTracingFormattedReferBuilder.h"
+#import "NEEventTracingEventRefer+Private.h"
 #import <BlocksKit/BlocksKit.h>
 #import "NSString+EventTracingUtil.h"
 
-@implementation EventTracingEngine (Action)
+@implementation NEEventTracingEngine (Action)
 
 #pragma mark - Log
 - (void)logSimplyWithEvent:(NSString *)event
@@ -31,10 +31,10 @@
     }
     
     NSMutableDictionary *mutableParams = [(params ?: @{}) mutableCopy];
-    if (![params.allKeys containsObject:ET_REFER_KEY_HSREFER]) {
-        NSString *hsrefer = [EventTracingEngine sharedInstance].context.hsrefer;
+    if (![params.allKeys containsObject:NE_ET_REFER_KEY_HSREFER]) {
+        NSString *hsrefer = [NEEventTracingEngine sharedInstance].context.hsrefer;
         if (hsrefer.length) {
-            [mutableParams setObject:hsrefer forKey:ET_REFER_KEY_HSREFER];
+            [mutableParams setObject:hsrefer forKey:NE_ET_REFER_KEY_HSREFER];
         }
     }
     
@@ -73,12 +73,12 @@
         [mutableParams setObject:scm forKey:@"_refer_scm"];
     }
     
-    [mutableParams setObject:@(self.context.actseq).stringValue forKey:ET_REFER_KEY_ACTSEQ];
+    [mutableParams setObject:@(self.context.actseq).stringValue forKey:NE_ET_REFER_KEY_ACTSEQ];
     
     [self logSimplyWithEvent:event params:mutableParams.copy];
     
     /// MARK: refer => queue
-    id<EventTracingFormattedRefer> formattedRefer = [EventTracingFormattedReferBuilder build:^(id<EventTracingFormattedReferComponentBuilder>  _Nonnull builder) {
+    id<NEEventTracingFormattedRefer> formattedRefer = [NEEventTracingFormattedReferBuilder build:^(id<NEEventTracingFormattedReferComponentBuilder>  _Nonnull builder) {
         builder
         .type(referType)
         .actseq(self.context.actseq)
@@ -92,17 +92,17 @@
             builder.scm(scm);
         }
         
-        if ([scm et_hasBeenUrlEncoded]) {
+        if ([scm ne_et_hasBeenUrlEncoded]) {
             builder.er();
         }
     }].generateRefer;
     
-    EventTracingFormattedEventRefer *refer = [EventTracingFormattedEventRefer referWithEvent:event
-                                                                              formattedRefer:formattedRefer
-                                                                                  rootPagePV:NO
-                                                                          shouldStartHsrefer:NO
-                                                                          isNodePsreferMuted:NO];
-    [[EventTracingEventReferQueue queue] pushEventRefer:refer];
+    NEEventTracingFormattedEventRefer *refer = [NEEventTracingFormattedEventRefer referWithEvent:event
+                                                                                  formattedRefer:formattedRefer
+                                                                                      rootPagePV:NO
+                                                                              shouldStartHsrefer:NO
+                                                                              isNodePsreferMuted:NO];
+    [[NEEventTracingEventReferQueue queue] pushEventRefer:refer];
 }
 
 - (void)logWithEvent:(NSString *)event view:(UIView *)view {
@@ -118,12 +118,12 @@
 - (void)logWithEvent:(NSString *)event
                 view:(UIView *)view
               params:(NSDictionary<NSString *,NSString *> *)params
-         eventAction:(void(^ NS_NOESCAPE _Nullable)(EventTracingEventActionConfig *config))block {
+         eventAction:(void(^ NS_NOESCAPE _Nullable)(NEEventTracingEventActionConfig *config))block {
     /// MARK: 1. do pre (ignore buildin disable click)
-    EventTracingEventActionConfig *config = [EventTracingEventActionConfig configWithEvent:event];
+    NEEventTracingEventActionConfig *config = [NEEventTracingEventActionConfig configWithEvent:event];
     !block ?: block(config);
     
-    UIView *pipFixedView = [view.et_pipEventToView objectForKey:event] ?: view;
+    UIView *pipFixedView = [view.ne_et_pipEventToView objectForKey:event] ?: view;
     [self _preLogPushReferWithEvent:event view:pipFixedView useForRefer:config.useForRefer useNextActseq:config.increaseActseq];
     
     /// MARK: 2. do after (ignore buildin disable click)
@@ -136,15 +136,15 @@
 
 - (void)AOP_preLogWithEvent:(NSString *)event
                        view:(UIView *)view
-                eventAction:(void(^ NS_NOESCAPE _Nullable)(EventTracingEventActionConfig *config))block {
-    UIView *pipFixedView = [view.et_pipEventToView objectForKey:event] ?: view;
+                eventAction:(void(^ NS_NOESCAPE _Nullable)(NEEventTracingEventActionConfig *config))block {
+    UIView *pipFixedView = [view.ne_et_pipEventToView objectForKey:event] ?: view;
 
-    if ([event isEqualToString:ET_EVENT_ID_E_CLCK]
-        && pipFixedView.et_buildinEventLogDisableStrategy & ETNodeBuildinEventLogDisableStrategyClick) {
+    if ([event isEqualToString:NE_ET_EVENT_ID_E_CLCK]
+        && pipFixedView.ne_et_buildinEventLogDisableStrategy & NEETNodeBuildinEventLogDisableStrategyClick) {
         return;
     }
     
-    EventTracingEventActionConfig *config = [EventTracingEventActionConfig configWithEvent:event];
+    NEEventTracingEventActionConfig *config = [NEEventTracingEventActionConfig configWithEvent:event];
     !block ?: block(config);
     
     [self _preLogPushReferWithEvent:event view:pipFixedView useForRefer:config.useForRefer useNextActseq:config.increaseActseq];
@@ -159,23 +159,23 @@
 - (void)AOP_logWithEvent:(NSString *)event
                     view:(UIView *)view
                   params:(NSDictionary<NSString *,NSString *> *)params
-             eventAction:(void(^ NS_NOESCAPE _Nullable)(EventTracingEventActionConfig *config))block {
+             eventAction:(void(^ NS_NOESCAPE _Nullable)(NEEventTracingEventActionConfig *config))block {
     
-    UIView *pipFixedView = [view.et_pipEventToView objectForKey:event] ?: view;
-    if ([event isEqualToString:ET_EVENT_ID_E_CLCK]
-        && pipFixedView.et_buildinEventLogDisableStrategy & ETNodeBuildinEventLogDisableStrategyClick) {
+    UIView *pipFixedView = [view.ne_et_pipEventToView objectForKey:event] ?: view;
+    if ([event isEqualToString:NE_ET_EVENT_ID_E_CLCK]
+        && pipFixedView.ne_et_buildinEventLogDisableStrategy & NEETNodeBuildinEventLogDisableStrategyClick) {
         return;
     }
     
     [self _afterLogWithEvent:event view:pipFixedView params:params eventAction:block];
 }
 
-- (void)flushStockedActionsIfNeeded:(EventTracingVTree *)VTree {
-    NSArray<EventTracingEventAction *> *stockedEventActions = self.ctx.stockedEventActions.copy;
+- (void)flushStockedActionsIfNeeded:(NEEventTracingVTree *)VTree {
+    NSArray<NEEventTracingEventAction *> *stockedEventActions = self.ctx.stockedEventActions.copy;
     [self.ctx.stockedEventActions removeAllObjects];
     
-    [stockedEventActions enumerateObjectsUsingBlock:^(EventTracingEventAction * _Nonnull action, NSUInteger idx, BOOL * _Nonnull stop) {
-        [action setupNode:action.view.et_currentVTreeNode VTree:VTree];
+    [stockedEventActions enumerateObjectsUsingBlock:^(NEEventTracingEventAction * _Nonnull action, NSUInteger idx, BOOL * _Nonnull stop) {
+        [action setupNode:action.view.ne_et_currentVTreeNode VTree:VTree];
         [self.ctx.eventEmitter consumeEventAction:action];
     }];
 }
@@ -192,15 +192,15 @@
     
     /// MARK: 对于需要参加链路追踪(或者需要自增actseq)的(应该存在节点)场景，尝试重新 traverse 一次 (注意: 这里是主线程同步操作!!!)
     if ((useForRefer || useNextActseq)
-        && ET_isPageOrElement(view)
-        && view.et_currentVTreeNode == nil
-        && [view et_isSimpleVisible]) {
+        && NE_ET_isPageOrElement(view)
+        && view.ne_et_currentVTreeNode == nil
+        && [view ne_et_isSimpleVisible]) {
         [self traverseImmediatelyIfNeeded];
     }
     
-    [[EventTracingEventReferQueue queue] pushEventReferForEvent:event
+    [[NEEventTracingEventReferQueue queue] pushEventReferForEvent:event
                                                              view:view
-                                                             node:view.et_currentVTreeNode
+                                                             node:view.ne_et_currentVTreeNode
                                                       useForRefer:useForRefer
                                                     useNextActseq:useNextActseq];
 }
@@ -208,23 +208,23 @@
 - (void)_afterLogWithEvent:(NSString *)event
                       view:(UIView *)view
                     params:(NSDictionary<NSString *,NSString *> *)params
-               eventAction:(void(^ NS_NOESCAPE _Nullable)(EventTracingEventActionConfig *config))block {
+               eventAction:(void(^ NS_NOESCAPE _Nullable)(NEEventTracingEventActionConfig *config))block {
     if (!self.started || ![event isKindOfClass:NSString.class] || event.length == 0) {
         return;
     }
     
-    if (!ET_isPageOrElement(view)) {
+    if (!NE_ET_isPageOrElement(view)) {
         return;
     }
     
-    EventTracingEventActionConfig *config = [EventTracingEventActionConfig configWithEvent:event];
+    NEEventTracingEventActionConfig *config = [NEEventTracingEventActionConfig configWithEvent:event];
     !block ?: block(config);
-    EventTracingEventAction *action = [EventTracingEventAction actionWithEvent:event view:view];
+    NEEventTracingEventAction *action = [NEEventTracingEventAction actionWithEvent:event view:view];
     action.params = params;
     [action syncFromActionConfig:config];
     
-    EventTracingVTreeNode *node = view.et_currentVTreeNode;
-    EventTracingVTree *VTree = node.VTree;
+    NEEventTracingVTreeNode *node = view.ne_et_currentVTreeNode;
+    NEEventTracingVTree *VTree = node.VTree;
     
     /// MARK: 比如点击事件，发生的时候，当前的VTree一定是生成好了的（因为不会有人可以点击那么快，快到VTree还没生成好）
     /// MARK: 如果该action.useForRefer==YES，node节点找不到，说明有问题，比如节点不可见，或者构建时被遮挡等等
@@ -246,22 +246,22 @@
     [self traverse];
     
     /// MARK: DEBUG => exception check
-    [[EventTracingEngine sharedInstance].ctx.paramGuardExector asyncDoDispatchCheckTask:^{
-        ET_CheckEventKeyValid(event);
+    [[NEEventTracingEngine sharedInstance].ctx.paramGuardExector asyncDoDispatchCheckTask:^{
+        NE_ET_CheckEventKeyValid(event);
         
         [params enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull key, NSString * _Nonnull obj, BOOL * _Nonnull stop) {
-            ET_CheckUserParamKeyValid(key);
+            NE_ET_CheckUserParamKeyValid(key);
         }];
     }];
 }
 
-#pragma mark - EventTracingEventEmitterDelegate
-- (void)eventEmitter:(EventTracingEventEmitter *)eventEmitter
+#pragma mark - NEEventTracingEventEmitterDelegate
+- (void)eventEmitter:(NEEventTracingEventEmitter *)eventEmitter
            emitEvent:(NSString *)event
        contextParams:(NSDictionary * _Nullable)contextParams
      logActionParams:(NSDictionary * _Nullable)logActionParams
-                node:(EventTracingVTreeNode *)node
-             inVTree:(EventTracingVTree *)VTree {
+                node:(NEEventTracingVTreeNode *)node
+             inVTree:(NEEventTracingVTree *)VTree {
     [self.ctx.eventOutput outputEvent:event
                         contextParams:contextParams
                       logActionParams:logActionParams
@@ -272,15 +272,15 @@
 @end
 
 
-@implementation EventTracingEngine (MergeLogForH5)
+@implementation NEEventTracingEngine (MergeLogForH5)
 
 - (void)logWithEvent:(NSString *)event
-            baseNode:(EventTracingVTreeNode *)baseNode
+            baseNode:(NEEventTracingVTreeNode *)baseNode
                elist:(NSArray<NSDictionary<NSString *,NSString *> *> *)elist
                plist:(NSArray<NSDictionary<NSString *,NSString *> *> *)plist
          positionKey:(NSString *)positionKey
               params:(NSDictionary<NSString *,NSString *> *)params
-         eventAction:(void (^ NS_NOESCAPE)(EventTracingEventActionConfig * _Nonnull))block {
+         eventAction:(void (^ NS_NOESCAPE)(NEEventTracingEventActionConfig * _Nonnull))block {
     if (event.length == 0 || !baseNode) {
         return;
     }
@@ -288,7 +288,7 @@
     BOOL useForRefer = NO;
     BOOL fromH5 = NO;
     if (block) {
-        EventTracingEventActionConfig *config = [EventTracingEventActionConfig configWithEvent:event];
+        NEEventTracingEventActionConfig *config = [NEEventTracingEventActionConfig configWithEvent:event];
         block(config);
         
         useForRefer = config.useForRefer;

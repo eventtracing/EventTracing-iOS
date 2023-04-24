@@ -1,6 +1,6 @@
 //
-//  EventTracingTraversalRunnerThrottle.h
-//  EventTracing
+//  NEEventTracingTraversalRunnerThrottle.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/4/2.
 //
@@ -9,18 +9,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol EventTracingTraversalRunnerThrottle;
-@protocol EventTracingTraversalRunnerThrottleCallback <NSObject>
-- (void)throttle:(id<EventTracingTraversalRunnerThrottle>)throttle throttleDidFinished:(BOOL)throttled;
+@protocol NEEventTracingTraversalRunnerThrottle;
+@protocol NEEventTracingTraversalRunnerThrottleCallback <NSObject>
+- (void)throttle:(id<NEEventTracingTraversalRunnerThrottle>)throttle throttleDidFinished:(BOOL)throttled;
 @end
 
-@protocol EventTracingTraversalRunnerThrottle <NSObject>
+@protocol NEEventTracingTraversalRunnerThrottle <NSObject>
 
 @property(nonatomic, copy, readonly) NSString *name;
 // 标识当前正在处于 被限流状态
 @property(nonatomic, assign, readonly, getter=isThrottled) BOOL throttled;
 @property(nonatomic, assign, readonly, getter=isPaused) BOOL paused;
-@property(nonatomic, weak, nullable) id<EventTracingTraversalRunnerThrottleCallback> callback;
+@property(nonatomic, weak, nullable) id<NEEventTracingTraversalRunnerThrottleCallback> callback;
 
 - (void)pushValue:(id _Nullable)value;
 - (void)reset;

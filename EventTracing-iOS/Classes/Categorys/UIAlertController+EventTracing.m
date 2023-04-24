@@ -1,6 +1,6 @@
 //
 //  UIAlertController+EventTracing.m
-//  EventTracing
+//  NEEventTracing
 //
 //  Created by dl on 2021/4/7.
 //
@@ -10,66 +10,66 @@
 
 @implementation UIAlertController (EventTracing)
 
-- (BOOL)et_isIgnoreReferCascade {
-    return self.view.et_ignoreReferCascade;
+- (BOOL)ne_et_isIgnoreReferCascade {
+    return self.view.ne_et_ignoreReferCascade;
 }
 
-- (void)et_setIgnoreReferCascade:(BOOL)et_ignoreReferCascade {
-    self.view.et_ignoreReferCascade = et_ignoreReferCascade;
+- (void)ne_et_setIgnoreReferCascade:(BOOL)ne_et_ignoreReferCascade {
+    self.view.ne_et_ignoreReferCascade = ne_et_ignoreReferCascade;
 }
 
-- (BOOL)et_psreferMute {
-    return self.view.et_psreferMute;
+- (BOOL)ne_et_psreferMute {
+    return self.view.ne_et_psreferMute;
 }
-- (void)et_setPsreferMute:(BOOL)et_psreferMute {
-    self.view.et_psreferMute = et_psreferMute;
-}
-
-- (BOOL)et_subpagePvToReferEnable {
-    return self.view.et_subpagePvToReferEnable;
-}
-- (void)et_setSubpagePvToReferEnable:(BOOL)et_subpagePvToReferEnable {
-    self.view.et_subpagePvToReferEnable = et_subpagePvToReferEnable;
-}
-- (EventTracingPageReferConsumeOption)et_subpageConsumeOption {
-    return self.view.et_subpageConsumeOption;
-}
-- (void)et_setSubpageConsumeOption:(EventTracingPageReferConsumeOption)et_subpageConsumeOption {
-    self.view.et_subpageConsumeOption = et_subpageConsumeOption;
-}
-- (void)et_clearSubpageConsumeReferOption {
-    [self.view et_clearSubpageConsumeReferOption];
-}
-- (void)et_makeSubpageConsumeAllRefer {
-    [self.view et_makeSubpageConsumeAllRefer];
-}
-- (void)et_makeSubpageConsumeEventRefer {
-    [self.view et_makeSubpageConsumeEventRefer];
+- (void)ne_et_setPsreferMute:(BOOL)ne_et_psreferMute {
+    self.view.ne_et_psreferMute = ne_et_psreferMute;
 }
 
-- (void)et_configLastestActionWithElementId:(NSString *)elementId
+- (BOOL)ne_et_subpagePvToReferEnable {
+    return self.view.ne_et_subpagePvToReferEnable;
+}
+- (void)ne_et_setSubpagePvToReferEnable:(BOOL)ne_et_subpagePvToReferEnable {
+    self.view.ne_et_subpagePvToReferEnable = ne_et_subpagePvToReferEnable;
+}
+- (NEEventTracingPageReferConsumeOption)ne_et_subpageConsumeOption {
+    return self.view.ne_et_subpageConsumeOption;
+}
+- (void)ne_et_setSubpageConsumeOption:(NEEventTracingPageReferConsumeOption)ne_et_subpageConsumeOption {
+    self.view.ne_et_subpageConsumeOption = ne_et_subpageConsumeOption;
+}
+- (void)ne_et_clearSubpageConsumeReferOption {
+    [self.view ne_et_clearSubpageConsumeReferOption];
+}
+- (void)ne_et_makeSubpageConsumeAllRefer {
+    [self.view ne_et_makeSubpageConsumeAllRefer];
+}
+- (void)ne_et_makeSubpageConsumeEventRefer {
+    [self.view ne_et_makeSubpageConsumeEventRefer];
+}
+
+- (void)ne_et_configLastestActionWithElementId:(NSString *)elementId
                                      params:(NSDictionary<NSString *,NSString *> *)params {
-    [self et_configLastestActionWithElementId:elementId position:0 params:params];
+    [self ne_et_configLastestActionWithElementId:elementId position:0 params:params];
 }
 
-- (void)et_configLastestActionWithElementId:(NSString *)elementId
+- (void)ne_et_configLastestActionWithElementId:(NSString *)elementId
                                       position:(NSUInteger)position
                                      params:(NSDictionary<NSString *,NSString *> *)params {
-    [self et_configLastestActionWithElementId:elementId position:position params:params eventAction:nil];
+    [self ne_et_configLastestActionWithElementId:elementId position:position params:params eventAction:nil];
 }
 
-- (void)et_configLastestActionWithElementId:(NSString *)elementId
+- (void)ne_et_configLastestActionWithElementId:(NSString *)elementId
                                         params:(NSDictionary<NSString *,NSString *> *)params
-                                   eventAction:(void (^ NS_NOESCAPE _Nullable)(EventTracingEventActionConfig *))block {
-    [self et_configLastestActionWithElementId:elementId position:0 params:params eventAction:block];
+                                   eventAction:(void (^ NS_NOESCAPE _Nullable)(NEEventTracingEventActionConfig *))block {
+    [self ne_et_configLastestActionWithElementId:elementId position:0 params:params eventAction:block];
 }
 
-- (void)et_configLastestActionWithElementId:(NSString *)elementId
+- (void)ne_et_configLastestActionWithElementId:(NSString *)elementId
                                       position:(NSUInteger)position
                                      params:(NSDictionary<NSString *,NSString *> *)params
-                                eventAction:(void (^ NS_NOESCAPE _Nullable)(EventTracingEventActionConfig *))block {
+                                eventAction:(void (^ NS_NOESCAPE _Nullable)(NEEventTracingEventActionConfig *))block {
     UIAlertAction *alertAction = [self.actions lastObject];
     
-    [alertAction et_setElementId:elementId position:position params:params eventAction:block];
+    [alertAction ne_et_setElementId:elementId position:position params:params eventAction:block];
 }
 @end

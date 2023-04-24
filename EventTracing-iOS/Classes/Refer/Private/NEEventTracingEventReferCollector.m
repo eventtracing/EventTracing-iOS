@@ -1,27 +1,27 @@
 //
-//  EventTracingEventReferCollector.m
-//  EventTracing
+//  NEEventTracingEventReferCollector.m
+//  NEEventTracing
 //
 //  Created by dl on 2021/4/8.
 //
 
-#import "EventTracingEventReferCollector.h"
-#import "EventTracingEventReferQueue.h"
-#import "EventTracingEventReferQueue+Query.h"
-#import "EventTracingEventEmitter.h"
-#import "EventTracingVTreeNode+Private.h"
-#import "EventTracingDefines.h"
-#import "EventTracingFormattedReferBuilder.h"
-#import "EventTracingInternalLog.h"
+#import "NEEventTracingEventReferCollector.h"
+#import "NEEventTracingEventReferQueue.h"
+#import "NEEventTracingEventReferQueue+Query.h"
+#import "NEEventTracingEventEmitter.h"
+#import "NEEventTracingVTreeNode+Private.h"
+#import "NEEventTracingDefines.h"
+#import "NEEventTracingFormattedReferBuilder.h"
+#import "NEEventTracingInternalLog.h"
 
-#import "EventTracingEngine+Private.h"
-#import "EventTracingContext+Private.h"
+#import "NEEventTracingEngine+Private.h"
+#import "NEEventTracingContext+Private.h"
 
-@interface EventTracingEventReferCollector ()
+@interface NEEventTracingEventReferCollector ()
 @property (nonatomic, strong) NSMutableDictionary<NSString *, NSString *> *pageNodeIdentifierPsreferMap;
 @end
 
-@implementation EventTracingEventReferCollector
+@implementation NEEventTracingEventReferCollector
 
 - (instancetype)init {
     self = [super init];
@@ -36,10 +36,10 @@
         return;
     }
     
-    [[EventTracingEventReferQueue queue] pushEventRefer:[EventTracingFormattedEventRefer enterForegroundRefer]];
+    [[NEEventTracingEventReferQueue queue] pushEventRefer:[NEEventTracingFormattedEventRefer enterForegroundRefer]];
 }
 
-- (void)willImpressNode:(EventTracingVTreeNode *)node inVTree:(EventTracingVTree *)VTree {
+- (void)willImpressNode:(NEEventTracingVTreeNode *)node inVTree:(NEEventTracingVTree *)VTree {
     if (!node.isPageNode) {
         return ;
     }
@@ -52,34 +52,34 @@
 }
 
 #pragma mark - private methods
-- (void)_pageNodeWillImpress:(EventTracingVTreeNode *)node VTree:(EventTracingVTree *)VTree {
-    EventTracingVTreeNode *rootPageNode = [node findToppestNode:YES];
+- (void)_pageNodeWillImpress:(NEEventTracingVTreeNode *)node VTree:(NEEventTracingVTree *)VTree {
+    NEEventTracingVTreeNode *rootPageNode = [node findToppestNode:YES];
     BOOL isRootPagePV = rootPageNode == node;
     
     /// MARK: _hsrefer, 两个时机:
     // _hsrefer 时机1: oids列表中的页面曝光
     NSString *hsrefer = nil;
-    NSArray<NSString *> *needStartHsreferOids = [EventTracingEngine sharedInstance].ctx.needStartHsreferOids;
+    NSArray<NSString *> *needStartHsreferOids = [NEEventTracingEngine sharedInstance].ctx.needStartHsreferOids;
     if ([needStartHsreferOids containsObject:node.oid]) {
-        hsrefer = ET_formattedReferForNode(node, NO).value;
+        hsrefer = NE_ET_formattedReferForNode(node, NO).value;
     }
     
     // 只有顶层pageNode才设置 pgrefer & psrefer
     
-    EventTracingPageReferConsumeOption referOption = node.pageReferConsumeOption;
-    if (isRootPagePV && referOption == EventTracingPageReferConsumeOptionNone) {
-        referOption = EventTracingPageReferConsumeOptionEventEc | EventTracingPageReferConsumeOptionCustom;
+    NEEventTracingPageReferConsumeOption referOption = node.pageReferConsumeOption;
+    if (isRootPagePV && referOption == NEEventTracingPageReferConsumeOptionNone) {
+        referOption = NEEventTracingPageReferConsumeOptionEventEc | NEEventTracingPageReferConsumeOptionCustom;
     }
     // _hsrefer 时机2: rootPage页面曝光，尝试从队列中取合法的 refer
-    if (referOption != EventTracingPageReferConsumeOptionNone) {
+    if (referOption != NEEventTracingPageReferConsumeOptionNone) {
         
-        EventTracingEventReferQueryResult *result =
-        [[EventTracingEventReferQueue queue] queryWithBuilder:^(EventTracingEventReferQueryParams * _Nonnull params) {
+        NEEventTracingEventReferQueryResult *result =
+        [[NEEventTracingEventReferQueue queue] queryWithBuilder:^(NEEventTracingEventReferQueryParams * _Nonnull params) {
             params.referConsumeOption = referOption;
             params.rootPageNode = rootPageNode;
         }];
         
-        EventTracingFormattedEventRefer *preferedRefer = result.refer;
+        NEEventTracingFormattedEventRefer *preferedRefer = result.refer;
         
         [self _markPageNode:node
                   fromRefer:preferedRefer.formattedRefer
@@ -93,28 +93,28 @@
     }
     /// MARK: 生产 psrefer
     if (isRootPagePV) {
-        [[EventTracingEventReferQueue queue] rootPageNodeDidImpress:node inVTree:VTree];
+        [[NEEventTracingEventReferQueue queue] rootPageNodeDidImpress:node inVTree:VTree];
         // store psrefer
         [_pageNodeIdentifierPsreferMap setValue:node.psrefer forKey:node.identifier];
         
     } else if (node.subpagePvToReferEnable) {
-        [[EventTracingEventReferQueue queue] subPageNodeDidImpress:node inVTree:VTree];
+        [[NEEventTracingEventReferQueue queue] subPageNodeDidImpress:node inVTree:VTree];
         // store psrefer
         [_pageNodeIdentifierPsreferMap setValue:node.psrefer forKey:node.identifier];
     }
 
     /// MARK: 获取到了合法的 _hsrefer, 则更新
-    if (hsrefer.length && ![hsrefer isEqualToString:[EventTracingEventReferQueue queue].hsrefer]) {
-        [self _doCallReferObserversForSel:@selector(hsreferNeedsUpdatedTo:) block:^(id<EventTracingReferObserver> observer) {
+    if (hsrefer.length && ![hsrefer isEqualToString:[NEEventTracingEventReferQueue queue].hsrefer]) {
+        [self _doCallReferObserversForSel:@selector(hsreferNeedsUpdatedTo:) block:^(id<NEEventTracingReferObserver> observer) {
             [observer hsreferNeedsUpdatedTo:hsrefer];
         }];
 
-        [[EventTracingEventReferQueue queue] hsreferNeedsUpdateTo:hsrefer];
+        [[NEEventTracingEventReferQueue queue] hsreferNeedsUpdateTo:hsrefer];
     }
 }
 
-- (void)_markPageNode:(EventTracingVTreeNode *)pageNode
-            fromRefer:(id<EventTracingFormattedRefer>)formattedRefer
+- (void)_markPageNode:(NEEventTracingVTreeNode *)pageNode
+            fromRefer:(id<NEEventTracingFormattedRefer>)formattedRefer
        undefinedXpath:(BOOL)undefinedXpath
           psreferMute:(BOOL)psreferMute {
     if (!formattedRefer) {
@@ -124,23 +124,23 @@
     NSString *pgrefer = [formattedRefer valueWithSessid:NO undefinedXpath:undefinedXpath];
     NSString *psrefer = [self psreferForNodeIdentifier:pageNode.identifier] ?: pgrefer;
 
-    EventTracingVTreeNode *node = pageNode;
-    EventTracingVTree *VTree = pageNode.VTree;
+    NEEventTracingVTreeNode *node = pageNode;
+    NEEventTracingVTree *VTree = pageNode.VTree;
 
-    ETReferUpdateOption option = ETReferUpdateOptionNone;
+    NEETReferUpdateOption option = NEETReferUpdateOptionNone;
     if (psreferMute) {
-        option |= ETReferUpdateOptionPsreferMute;
+        option |= NEETReferUpdateOptionPsreferMute;
     }
     /// MARK: pgrefer & psrefer
-    [self _doCallReferObserversForSel:@selector(pgreferNeedsUpdatedTo:psrefer:node:inVTree:option:) block:^(id<EventTracingReferObserver> observer) {
+    [self _doCallReferObserversForSel:@selector(pgreferNeedsUpdatedTo:psrefer:node:inVTree:option:) block:^(id<NEEventTracingReferObserver> observer) {
         [observer pgreferNeedsUpdatedTo:pgrefer psrefer:psrefer node:node inVTree:VTree option:option];
     }];
 
     [pageNode pageNodeMarkFromRefer:pgrefer psrefer:psrefer];
 }
 
-- (void)_doCallReferObserversForSel:(SEL)sel block:(void(^)(id<EventTracingReferObserver> observer))block {
-    [[EventTracingEngine sharedInstance].ctx.allReferObservers enumerateObjectsUsingBlock:^(id<EventTracingReferObserver>  _Nonnull observer, NSUInteger idx, BOOL * _Nonnull stop) {
+- (void)_doCallReferObserversForSel:(SEL)sel block:(void(^)(id<NEEventTracingReferObserver> observer))block {
+    [[NEEventTracingEngine sharedInstance].ctx.allReferObservers enumerateObjectsUsingBlock:^(id<NEEventTracingReferObserver>  _Nonnull observer, NSUInteger idx, BOOL * _Nonnull stop) {
         if ([observer respondsToSelector:sel]) {
             !block ?: block(observer);
         }
@@ -148,14 +148,14 @@
 }
 
 - (BOOL)_checkIfCouldInsertBecomeActiveOrEnterForegroundRefer {
-    EventTracingFormattedEventRefer *lastestRefer =
-    [[EventTracingEventReferQueue queue] queryWithBuilder:^(EventTracingEventReferQueryParams * _Nonnull params) {
-        params.referConsumeOption = EventTracingPageReferConsumeOptionExceptSubPagePV;
+    NEEventTracingFormattedEventRefer *lastestRefer =
+    [[NEEventTracingEventReferQueue queue] queryWithBuilder:^(NEEventTracingEventReferQueryParams * _Nonnull params) {
+        params.referConsumeOption = NEEventTracingPageReferConsumeOptionExceptSubPagePV;
     }].refer;
     
     /// MARK: 表示在此之前，已经有了一个 refer 插入了进来
     // 场景: 业务侧可能插入一个refer，早于 NSApplicationWillEnterForegroundNotionfation 通知
-    return lastestRefer == nil || lastestRefer.appEnterBackgroundSeq < [EventTracingEngine sharedInstance].ctx.appEnterBackgroundSeq;
+    return lastestRefer == nil || lastestRefer.appEnterBackgroundSeq < [NEEventTracingEngine sharedInstance].ctx.appEnterBackgroundSeq;
 }
 
 @end

@@ -1,25 +1,26 @@
 //
-//  EventTracingEngine+Private.h
+//  NEEventTracingEngine+Private.h
 //  BlocksKit
 //
 //  Created by dl on 2021/2/4.
 //
 
 
-#import "EventTracingEngine.h"
-#import "EventTracingContext+Private.h"
-#import "EventTracingDefines.h"
-#import "EventTracingEngine+Action.h"
-#import "EventTracingEngine+TraverseAction.h"
-#import "EventTracingAppLifecycleProcotol.h"
+#import "NEEventTracingEngine.h"
+#import "NEEventTracingContext+Private.h"
+#import "NEEventTracingDefines.h"
+#import "NEEventTracingEngine+Action.h"
+#import "NEEventTracingEngine+TraverseAction.h"
+#import "NEEventTracingAppLifecycleProcotol.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingEngine () <EventTracingTraversalRunnerDelegate>
+@interface NEEventTracingEngine () <NEEventTracingTraversalRunnerDelegate>
 
-@property(nonatomic, strong, readonly) EventTracingContext *ctx;
+@property(nonatomic, strong, readonly) NEEventTracingContext *ctx;
 
-@property(nonatomic, strong) EventTracingStockedTraverseActionRecord *stockedTraverseActionRecord;
+@property(nonatomic, strong) NEEventTracingStockedTraverseActionRecord *stockedTraverseActionRecord;
+
 // 列表滚动
 @property(nonatomic, strong) NSHashTable<UIScrollView *> *stockedTraverseScrollViews;
 
@@ -29,8 +30,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface NEEventTracingEngine (InnerLifecycle) <NEEventTracingAppLifecycleProcotol>
+@end
 
-@interface EventTracingEngine (InnerTraverse)
+@interface NEEventTracingEngine (InnerTraverse)
 
 - (void)traverseImmediatelyIfNeeded;
 

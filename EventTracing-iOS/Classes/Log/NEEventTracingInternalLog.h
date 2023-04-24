@@ -1,13 +1,13 @@
 //
-//  EventTracingInternalLog.h
+//  NEEventTracingInternalLog.h
 //  BlocksKit
 //
 //  Created by dl on 2021/3/9.
 //
-#ifndef EventTracingInternalLog_h
-#define EventTracingInternalLog_h
+#ifndef NEEventTracingInternalLog_h
+#define NEEventTracingInternalLog_h
 
-#import "EventTracingDefines.h"
+#import "NEEventTracingDefines.h"
 
 FOUNDATION_EXPORT void _ETLog(ETLogLevel level, NSString *levelStr, NSString *tag, const char *file, const char *function, NSUInteger line, NSString *format, ...);
 
@@ -23,4 +23,4 @@ do {                                                                            
 #define ETLogS(tag, format, ...)         _ETLog_(System, tag, format, ## __VA_ARGS__)
 #define ETLogW(tag, format, ...)         _ETLog_(Warning, tag, format, ## __VA_ARGS__)
 
-#endif /* EventTracingInternalLog_h */
+#endif /* NEEventTracingInternalLog_h */

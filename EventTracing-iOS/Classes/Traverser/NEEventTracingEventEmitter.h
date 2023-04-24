@@ -1,45 +1,45 @@
 //
-//  EventTracingEventEmitter.h
-//  EventTracing
+//  NEEventTracingEventEmitter.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/3/16.
 //
 
 #import <Foundation/Foundation.h>
-#import "EventTracingContext.h"
-#import "EventTracingVTree.h"
-#import "EventTracingEventReferCollector.h"
+#import "NEEventTracingContext.h"
+#import "NEEventTracingVTree.h"
+#import "NEEventTracingEventReferCollector.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class EventTracingEventEmitter;
-@protocol EventTracingEventEmitterDelegate <NSObject>
+@class NEEventTracingEventEmitter;
+@protocol NEEventTracingEventEmitterDelegate <NSObject>
 
-- (void)eventEmitter:(EventTracingEventEmitter *)eventEmitter
+- (void)eventEmitter:(NEEventTracingEventEmitter *)eventEmitter
            emitEvent:(NSString *)event
        contextParams:(NSDictionary * _Nullable)contextParams
      logActionParams:(NSDictionary * _Nullable)logActionParams
-                node:(EventTracingVTreeNode * _Nullable)node
-             inVTree:(EventTracingVTree * _Nullable)VTree;
+                node:(NEEventTracingVTreeNode * _Nullable)node
+             inVTree:(NEEventTracingVTree * _Nullable)VTree;
 
 @end
 
-@interface EventTracingEventEmitter : NSObject <EventTracingContextVTreeObserverBuilder>
+@interface NEEventTracingEventEmitter : NSObject <NEEventTracingContextVTreeObserverBuilder>
 
-@property(nonatomic, weak, nullable) id<EventTracingEventEmitterDelegate> delegate;
-@property(nonatomic, strong, readonly, nullable) EventTracingVTree *lastVTree;
-@property(nonatomic, strong, readonly, nullable) NSArray<id<EventTracingVTreeObserver>> *allVTreeObservers;
-@property(nonatomic, weak, nullable) id<EventTracingContextVTreePerformanceObserver> VTreePerformanceObserver;
-@property(nonatomic, strong) EventTracingEventReferCollector *referCollector;
+@property(nonatomic, weak, nullable) id<NEEventTracingEventEmitterDelegate> delegate;
+@property(nonatomic, strong, readonly, nullable) NEEventTracingVTree *lastVTree;
+@property(nonatomic, strong, readonly, nullable) NSArray<id<NEEventTracingVTreeObserver>> *allVTreeObservers;
+@property(nonatomic, weak, nullable) id<NEEventTracingContextVTreePerformanceObserver> VTreePerformanceObserver;
+@property(nonatomic, strong) NEEventTracingEventReferCollector *referCollector;
 
-- (void)consumeVTree:(EventTracingVTree *)VTree;
+- (void)consumeVTree:(NEEventTracingVTree *)VTree;
 - (void)flush;
 
 // 下面俩方法，仅仅在主线程中调用
-- (void)consumeEventAction:(EventTracingEventAction *)action;
+- (void)consumeEventAction:(NEEventTracingEventAction *)action;
 
 /// MARK: 目前仅仅针对 UIAlertController 场景使用
-- (void)consumeEventAction:(EventTracingEventAction *)action forceInCurrentVTree:(BOOL)forceInCurrentVTree;
+- (void)consumeEventAction:(NEEventTracingEventAction *)action forceInCurrentVTree:(BOOL)forceInCurrentVTree;
 
 @end
 

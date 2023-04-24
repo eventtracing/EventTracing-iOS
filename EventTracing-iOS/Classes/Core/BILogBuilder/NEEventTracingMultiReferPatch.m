@@ -1,20 +1,20 @@
 //
-//  EventTracingMultiReferPatch.m
-//  EventTracing
+//  NEEventTracingMultiReferPatch.m
+//  NEEventTracing
 //
 //  Created by dl on 2022/12/6.
 //
 
-#import "EventTracingMultiReferPatch.h"
-#import "EventTracingReferObserver.h"
-#import "EventTracingOutputFormatter.h"
-#import "EventTracingEngine+Private.h"
+#import "NEEventTracingMultiReferPatch.h"
+#import "NEEventTracingReferObserver.h"
+#import "NEEventTracingOutputFormatter.h"
+#import "NEEventTracingEngine+Private.h"
 
-@interface EventTracingMultiReferPatch()<EventTracingReferObserver, EventTracingOutputParamsFilter>
+@interface NEEventTracingMultiReferPatch()<NEEventTracingReferObserver, NEEventTracingOutputParamsFilter>
 @property(nonatomic, strong) NSMutableArray<NSString *> *multiRefersStack;
 @end
 
-@implementation EventTracingMultiReferPatch
+@implementation NEEventTracingMultiReferPatch
 - (instancetype)init {
     self = [super init];
     if (self) {
@@ -24,35 +24,35 @@
 }
 
 + (instancetype)sharedPatch {
-    static EventTracingMultiReferPatch *instance = nil;
+    static NEEventTracingMultiReferPatch *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [[EventTracingMultiReferPatch alloc] init];
+        instance = [[NEEventTracingMultiReferPatch alloc] init];
     });
     return instance;
 }
 
-- (void)patchOnContextBuilder:(id<EventTracingContextBuilder>)builder {
+- (void)patchOnContextBuilder:(id<NEEventTracingContextBuilder>)builder {
     [builder addParamsFilter:self];
     [builder addReferObserver:self];
 }
 
-#pragma mark - EventTracingReferObserver
+#pragma mark - NEEventTracingReferObserver
 - (void)pgreferNeedsUpdatedTo:(NSString *)pgrefer
                       psrefer:(NSString *)psrefer
-                         node:(EventTracingVTreeNode *)node
-                      inVTree:(EventTracingVTree *)VTree
-                       option:(ETReferUpdateOption)option {
+                         node:(NEEventTracingVTreeNode *)node
+                      inVTree:(NEEventTracingVTree *)VTree
+                       option:(NEETReferUpdateOption)option {
     if (psrefer.length == 0) {
         return;
     }
 
-    if (option & ETReferUpdateOptionPsreferMute) {
+    if (option & NEETReferUpdateOptionPsreferMute) {
         // psrefer 静默，不添加到 multiRefersStack 中
         return;
     }
     
-    EventTracingVTreeNode *rootPageNode = [VTree rootPageNode];
+    NEEventTracingVTreeNode *rootPageNode = [VTree rootPageNode];
     BOOL isRootPagePV = rootPageNode == node;
     if (!isRootPagePV) {
         // 非根节点曝光，不参与 multirefers
@@ -72,12 +72,12 @@
 
 - (NSDictionary *)filteredJsonWithEvent:(NSString *)event
                            originalJson:(NSDictionary *)originalJson
-                                   node:(EventTracingVTreeNode * _Nullable)node
-                                inVTree:(EventTracingVTree * _Nullable)VTree {
-    NSString *eventListStr = [EventTracingEngine sharedInstance].ctx.multiReferAppliedEventList;
+                                   node:(NEEventTracingVTreeNode * _Nullable)node
+                                inVTree:(NEEventTracingVTree * _Nullable)VTree {
+    NSString *eventListStr = [NEEventTracingEngine sharedInstance].ctx.multiReferAppliedEventList;
     NSArray<NSString *> *events = [eventListStr componentsSeparatedByString:@","];
     if (!events.count) {
-        events = @[ET_EVENT_ID_E_CLCK, ET_EVENT_ID_P_VIEW];
+        events = @[NE_ET_EVENT_ID_E_CLCK, NE_ET_EVENT_ID_P_VIEW];
     }
     // MARK: 业务侧参数优先级更高，不覆盖
     if ([events containsObject:event] && ![originalJson.allKeys containsObject:@"_multirefers"]) {
@@ -90,7 +90,7 @@
 }
 
 - (NSArray<NSString *> *)multiRefers {
-    NSInteger multiReferCount = [EventTracingEngine sharedInstance].ctx.multiReferMaxItemCount;
+    NSInteger multiReferCount = [NEEventTracingEngine sharedInstance].ctx.multiReferMaxItemCount;
     NSArray<NSString *> *refers = self.multiRefersStack;
     if (refers.count > multiReferCount) {
         refers = [refers subarrayWithRange:NSMakeRange(0, multiReferCount)];

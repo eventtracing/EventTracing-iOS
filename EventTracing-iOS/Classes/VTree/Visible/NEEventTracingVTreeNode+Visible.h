@@ -1,19 +1,19 @@
 //
-//  EventTracingVTreeNode+Visible.h
-//  EventTracing
+//  NEEventTracingVTreeNode+Visible.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/3/18.
 //
 
-#import "EventTracingVTreeNode+Private.h"
+#import "NEEventTracingVTreeNode+Private.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingVTreeNode (Visible)
+@interface NEEventTracingVTreeNode (Visible)
 
 // VisibleRect
 - (void)updateVisible:(BOOL)visible visibleRect:(CGRect)visibleRect;
-- (void)markBlockedByOcclusionPageNode:(EventTracingVTreeNode *)occlusionPageNode;
+- (void)markBlockedByOcclusionPageNode:(NEEventTracingVTreeNode *)occlusionPageNode;
 
 @end
 

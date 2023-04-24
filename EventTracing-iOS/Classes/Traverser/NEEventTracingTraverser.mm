@@ -1,44 +1,44 @@
 //
-//  EventTracingTraverser.m
+//  NEEventTracingTraverser.m
 //  BlocksKit
 //
 //  Created by dl on 2021/2/4.
 //
 
-#import "EventTracingTraverser.h"
+#import "NEEventTracingTraverser.h"
 #import <stack>
 #import <BlocksKit/BlocksKit.h>
 
-#import "EventTracingInternalLog.h"
+#import "NEEventTracingInternalLog.h"
 #import "NSArray+ETEnumerator.h"
 
-#import "EventTracingVTree+Private.h"
-#import "EventTracingVTree+Visible.h"
-#import "EventTracingVTree+Sync.h"
-#import "EventTracingVTreeNode+Private.h"
+#import "NEEventTracingVTree+Private.h"
+#import "NEEventTracingVTree+Visible.h"
+#import "NEEventTracingVTree+Sync.h"
+#import "NEEventTracingVTreeNode+Private.h"
 
 #import "UIView+EventTracingPrivate.h"
-#import "EventTracingEngine+Private.h"
+#import "NEEventTracingEngine+Private.h"
 
-BOOL ET_isPage(UIView *view) {
-    return view && view.et_pageId.length > 0;
+BOOL NE_ET_isPage(UIView *view) {
+    return view && view.ne_et_pageId.length > 0;
 }
 
-BOOL ET_isElement(UIView *view) {
-    return view && view.et_elementId.length > 0;
+BOOL NE_ET_isElement(UIView *view) {
+    return view && view.ne_et_elementId.length > 0;
 }
 
-BOOL ET_isPageOrElement(UIView *view) {
-    EventTracingAssociatedPros *props = view.et_props;
+BOOL NE_ET_isPageOrElement(UIView *view) {
+    NEEventTracingAssociatedPros *props = view.ne_et_props;
     return view && (props.pageId.length > 0 || props.elementId.length > 0);
 }
 
-NSArray<UIView *> * ET_subViews(UIView *view) {
+NSArray<UIView *> * NE_ET_subViews(UIView *view) {
     NSMutableArray<UIView *> *views = [NSMutableArray array];
     [[view.subviews copy] enumerateObjectsUsingBlock:^(__kindof UIView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        BOOL hasLogicalParentView = obj.et_logicalParentView != nil;
-        BOOL hasLogicalParentSPM = obj.et_logicalParentSPM != nil;
-        BOOL autoMountOnRootPage = obj.et_isAutoMountOnCurrentRootPageEnable;
+        BOOL hasLogicalParentView = obj.ne_et_logicalParentView != nil;
+        BOOL hasLogicalParentSPM = obj.ne_et_logicalParentSPM != nil;
+        BOOL autoMountOnRootPage = obj.ne_et_isAutoMountOnCurrentRootPageEnable;
         
         if (hasLogicalParentView || hasLogicalParentSPM || autoMountOnRootPage) {
             return;
@@ -47,95 +47,95 @@ NSArray<UIView *> * ET_subViews(UIView *view) {
         [views addObject:obj];
     }];
     
-    if (view.et_subLogicalViews.count) {
-        [views addObjectsFromArray:[view.et_subLogicalViews.allObjects bk_map:^id(EventTracingWeakObjectContainer<UIView *> *obj) {
+    if (view.ne_et_subLogicalViews.count) {
+        [views addObjectsFromArray:[view.ne_et_subLogicalViews.allObjects bk_map:^id(NEEventTracingWeakObjectContainer<UIView *> *obj) {
             return obj.target;
         }]];
     }
     return views.copy;
 }
 
-UIView * _Nullable ET_superView(UIView *view) {
-    if (view.et_logicalParentView) {
-        return view.et_logicalParentView;
+UIView * _Nullable NE_ET_superView(UIView *view) {
+    if (view.ne_et_logicalParentView) {
+        return view.ne_et_logicalParentView;
     }
-    if (view.et_logicalParentSPM != nil && ET_isPage(view)) {
-        return view.et_currentVTreeNode.parentNode.view;
+    if (view.ne_et_logicalParentSPM != nil && NE_ET_isPage(view)) {
+        return view.ne_et_currentVTreeNode.parentNode.view;
     }
-    if (view.et_isAutoMountOnCurrentRootPageEnable && ET_isPageOrElement(view)) {
-        return view.et_currentVTreeNode.parentNode.view;
+    if (view.ne_et_isAutoMountOnCurrentRootPageEnable && NE_ET_isPageOrElement(view)) {
+        return view.ne_et_currentVTreeNode.parentNode.view;
     }
     return view.superview;
 }
 
 /// MARK: 节点校验-辅助功能
 /// 从当前view向上找，直到找个一个节点为止，如果中间发现手动挂载(中间不出现自动挂载)，则 return YES
-BOOL ET_viewIsLogicalMount(UIView *view) {
+BOOL NE_ET_viewIsLogicalMount(UIView *view) {
     // 1. 如果当前节点有手动挂载，则直接可判定 => YES
-    if (view.et_logicalParentView != nil) {
+    if (view.ne_et_logicalParentView != nil) {
         return YES;
     }
     // 2. 如果该节点是自动挂载的节点，则可直接判断 => NO
-    if (view.et_isAutoMountOnCurrentRootPageEnable) {
+    if (view.ne_et_isAutoMountOnCurrentRootPageEnable) {
         return NO;
     }
     
     // 3. 需要向上遍历(到第一个节点为止)
     //   3.1 如果遇到了自动挂载view，则终止，可判断为 NO
     //   3.2 如果遇到了手动挂载view，则终止，可判断为 YES
-    UIView *nextView = ET_superView(view);
+    UIView *nextView = NE_ET_superView(view);
     BOOL logicalMount = NO;
-    while (nextView != nil && !ET_isPageOrElement(nextView) && nextView.et_isAutoMountOnCurrentRootPageEnable) {
-        if (nextView.et_logicalParentView != nil) {
+    while (nextView != nil && !NE_ET_isPageOrElement(nextView) && nextView.ne_et_isAutoMountOnCurrentRootPageEnable) {
+        if (nextView.ne_et_logicalParentView != nil) {
             logicalMount = YES;
             break;
         }
-        nextView = ET_superView(nextView);
+        nextView = NE_ET_superView(nextView);
     }
     return logicalMount;
 }
 
 /// MARK: 节点校验-辅助功能
-BOOL ET_viewIsAutoMount(UIView *view) {
+BOOL NE_ET_viewIsAutoMount(UIView *view) {
     // 1. 如果该节点是自动挂载的节点，则可直接判断 => YES
-    if (view.et_isAutoMountOnCurrentRootPageEnable) {
+    if (view.ne_et_isAutoMountOnCurrentRootPageEnable) {
         return YES;
     }
     
     // 2. 如果当前节点有手动挂载，则直接可判定 => NO
-    if (view.et_logicalParentView != nil) {
+    if (view.ne_et_logicalParentView != nil) {
         return NO;
     }
     
     // 3. 需要向上遍历(到第一个节点为止)
     //   3.1 如果遇到了自动挂载view，则终止，可判断为 NO
     //   3.2 如果遇到了手动挂载view，则终止，可判断为 YES
-    UIView *nextView = ET_superView(view);
+    UIView *nextView = NE_ET_superView(view);
     BOOL autoMount = NO;
-    while (nextView != nil && !ET_isPageOrElement(nextView) && nextView.et_logicalParentView == nil) {
-        if (nextView.et_isAutoMountOnCurrentRootPageEnable) {
+    while (nextView != nil && !NE_ET_isPageOrElement(nextView) && nextView.ne_et_logicalParentView == nil) {
+        if (nextView.ne_et_isAutoMountOnCurrentRootPageEnable) {
             autoMount = YES;
             break;
         }
-        nextView = ET_superView(nextView);
+        nextView = NE_ET_superView(nextView);
     }
     return autoMount;
 }
 
-BOOL ET_isIgnoreRefer(UIView *view) {
+BOOL NE_ET_isIgnoreRefer(UIView *view) {
     UIView *nextView = view;
-    while (nextView && !nextView.et_ignoreReferCascade) {
-        nextView = ET_superView(nextView);
+    while (nextView && !nextView.ne_et_ignoreReferCascade) {
+        nextView = NE_ET_superView(nextView);
     }
     
-    return nextView && nextView.et_ignoreReferCascade;
+    return nextView && nextView.ne_et_ignoreReferCascade;
 }
 
-BOOL ET_isHasSubNodes(UIView *view) {
+BOOL NE_ET_isHasSubNodes(UIView *view) {
     __block BOOL hasSubNodes = NO;
     
-    [view.subviews et_enumerateObjectsUsingBlock:^NSArray<__kindof UIView *> * _Nonnull(__kindof UIView * _Nonnull nextView, BOOL * _Nonnull stop) {
-        hasSubNodes = ET_isPageOrElement(nextView);
+    [view.subviews ne_et_enumerateObjectsUsingBlock:^NSArray<__kindof UIView *> * _Nonnull(__kindof UIView * _Nonnull nextView, BOOL * _Nonnull stop) {
+        hasSubNodes = NE_ET_isPageOrElement(nextView);
         
         if (hasSubNodes) {
             *stop = YES;
@@ -147,15 +147,15 @@ BOOL ET_isHasSubNodes(UIView *view) {
     return hasSubNodes;
 }
 
-CGRect ET_viewVisibleRectOnSelf(UIView *view) {
+CGRect NE_ET_viewVisibleRectOnSelf(UIView *view) {
     if (!view) {
         return CGRectZero;
     }
     
-    return UIEdgeInsetsInsetRect(view.bounds, view.et_visibleEdgeInsets);
+    return UIEdgeInsetsInsetRect(view.bounds, view.ne_et_visibleEdgeInsets);
 }
 
-CGRect ET_calculateVisibleRect(UIView *view, CGRect visibleRectOnView, CGRect containerVisibleRect) {
+CGRect NE_ET_calculateVisibleRect(UIView *view, CGRect visibleRectOnView, CGRect containerVisibleRect) {
     CGRect visibleRectOnScreen = [view convertRect:visibleRectOnView toView:nil];
     
     CGRect fixedContainerVisibleRect = containerVisibleRect;
@@ -170,17 +170,17 @@ CGRect ET_calculateVisibleRect(UIView *view, CGRect visibleRectOnView, CGRect co
     return visibleRect;
 }
 
-BOOL ET_checkIfExistsLogicalMountEndlessLoopAtView(UIView *view, UIView *viewToMount) {
+BOOL NE_ET_checkIfExistsLogicalMountEndlessLoopAtView(UIView *view, UIView *viewToMount) {
     if (!view || !viewToMount) {
         return NO;
     }
     
     void(^exceptionBlock)(void) = ^(void) {
-        id<EventTracingExceptionDelegate> exceptionDelegate = [EventTracingEngine sharedInstance].context.exceptionInterface;
+        id<NEEventTracingExceptionDelegate> exceptionDelegate = [NEEventTracingEngine sharedInstance].context.exceptionInterface;
         NSString *errmsg = [NSString stringWithFormat:@"View logical mount endlessloop: view: %@, viewToMount: %@", view, viewToMount];
         if ([exceptionDelegate respondsToSelector:@selector(logicalMountEndlessLoopExceptionKey:code:message:view:viewToMount:)]) {
             [exceptionDelegate logicalMountEndlessLoopExceptionKey:@"LogicalMountEndlessLoop"
-                                                              code:EventTracingExceptionCodeLogicalMountEndlessLoop
+                                                              code:NEEventTracingExceptionCodeLogicalMountEndlessLoop
                                                            message:errmsg
                                                               view:view
                                                        viewToMount:viewToMount];
@@ -194,13 +194,13 @@ BOOL ET_checkIfExistsLogicalMountEndlessLoopAtView(UIView *view, UIView *viewToM
     }
     
     __block BOOL hasEndlessLoop = NO;
-    [@[viewToMount] et_enumerateObjectsUsingBlock:^NSArray<UIView *> * _Nonnull(UIView * _Nonnull obj, BOOL * _Nonnull stop) {
+    [@[viewToMount] ne_et_enumerateObjectsUsingBlock:^NSArray<UIView *> * _Nonnull(UIView * _Nonnull obj, BOOL * _Nonnull stop) {
         if (obj == view) {
             hasEndlessLoop = YES;
             *stop = YES;
         }
         
-        UIView *nextView = ET_superView(obj);
+        UIView *nextView = NE_ET_superView(obj);
         return nextView ? @[nextView] : nil;
     }];
     
@@ -212,7 +212,7 @@ BOOL ET_checkIfExistsLogicalMountEndlessLoopAtView(UIView *view, UIView *viewToM
     return NO;
 }
 
-NSString * _Nullable ET_undefinedXpathReferForView(UIView *view) {
+NSString * _Nullable NE_ET_undefinedXpathReferForView(UIView *view) {
     if (!view) {
         return nil;
     }
@@ -242,7 +242,7 @@ NSString * _Nullable ET_undefinedXpathReferForView(UIView *view) {
     return spm;
 }
 
-BOOL ET_checkIfExistsAncestorViewControllerTransitioning(UIView *view) {
+BOOL NE_ET_checkIfExistsAncestorViewControllerTransitioning(UIView *view) {
     UIViewController *viewController = nil;
     UIResponder *next = view;
     
@@ -253,29 +253,29 @@ BOOL ET_checkIfExistsAncestorViewControllerTransitioning(UIView *view) {
             viewController = (UIViewController *)next;
         }
         
-        if (viewController.et_isTransitioning) {
+        if (viewController.ne_et_isTransitioning) {
             break;
         }
         
         next = next.nextResponder;
     }
     
-    return viewController.et_transitioning;
+    return viewController.ne_et_transitioning;
 }
 
-@implementation EventTracingTraverser
+@implementation NEEventTracingTraverser
 
-- (void)cleanAssociationForPreVTree:(EventTracingVTree *)VTree {
-    [VTree.rootNode.subNodes et_enumerateObjectsUsingBlock:^NSArray<EventTracingVTreeNode *> * _Nonnull(EventTracingVTreeNode * _Nonnull node, BOOL * _Nonnull stop) {
-        node.view.et_currentVTreeNode = nil;
+- (void)cleanAssociationForPreVTree:(NEEventTracingVTree *)VTree {
+    [VTree.rootNode.subNodes ne_et_enumerateObjectsUsingBlock:^NSArray<NEEventTracingVTreeNode *> * _Nonnull(NEEventTracingVTreeNode * _Nonnull node, BOOL * _Nonnull stop) {
+        node.view.ne_et_currentVTreeNode = nil;
         
         return node.subNodes;
     }];
 }
 
-- (void)associateNodeToViewForVTree:(EventTracingVTree *)VTree {
-    [VTree.rootNode.subNodes et_enumerateObjectsUsingBlock:^NSArray<EventTracingVTreeNode *> * _Nonnull(EventTracingVTreeNode * _Nonnull node, BOOL * _Nonnull stop) {
-        node.view.et_currentVTreeNode = node;
+- (void)associateNodeToViewForVTree:(NEEventTracingVTree *)VTree {
+    [VTree.rootNode.subNodes ne_et_enumerateObjectsUsingBlock:^NSArray<NEEventTracingVTreeNode *> * _Nonnull(NEEventTracingVTreeNode * _Nonnull node, BOOL * _Nonnull stop) {
+        node.view.ne_et_currentVTreeNode = node;
         
         return node.subNodes;
     }];
@@ -284,27 +284,32 @@ BOOL ET_checkIfExistsAncestorViewControllerTransitioning(UIView *view) {
 // View 上的一些额外配置，可以随着view树的递归一起参与遍历，可减少后续再单独遍历
 struct ETTraverseObjectViewConfigData {
     BOOL ignoreRefer;
+    
+    /// MARK: 节点校验-辅助功能
+    // 如果当前view是被手动挂载的，则该标识被携带，向下遍历影响第一层节点
+    // 如果当前view是被自动挂载的，则该标识被携带，向下遍历影响第一层节点
+    NEEventTracingNodeValidMountType mountType;
 };
 
 struct ETTraverseObject {
-    EventTracingVTreeNode *parentNode;
+    NEEventTracingVTreeNode *parentNode;
     UIView *view;
     ETTraverseObjectViewConfigData configData;
     
-    ETTraverseObject(EventTracingVTreeNode *p, UIView *v, ETTraverseObjectViewConfigData data) :
+    ETTraverseObject(NEEventTracingVTreeNode *p, UIView *v, ETTraverseObjectViewConfigData data) :
     parentNode(p), view(v), configData(data) {};
 };
 
-- (EventTracingVTree *)totalGenerateVTreeFromWindows {
+- (NEEventTracingVTree *)totalGenerateVTreeFromWindows {
     NSMutableArray<UIWindow *> *windows = [UIApplication sharedApplication].windows.mutableCopy;
     UIWindow *keyWindow = [UIApplication sharedApplication].keyWindow;
     if (keyWindow && ![windows containsObject:keyWindow]) {
         [windows addObject:keyWindow];
     }
     
-    EventTracingVTree *VTree = [[EventTracingVTree alloc] init];
+    NEEventTracingVTree *VTree = [[NEEventTracingVTree alloc] init];
     
-    NSMutableArray<EventTracingVTreeNode *> *needsMakeSureValidNodes = [@[] mutableCopy];
+    NSMutableArray<NEEventTracingVTreeNode *> *needsMakeSureValidNodes = [@[] mutableCopy];
 
     [self _pushItemsToVTree:VTree
                  parentNode:nil
@@ -312,18 +317,18 @@ struct ETTraverseObject {
     needsMakeSureValidNodes:needsMakeSureValidNodes
       needsCheckEndlessloop:NO];
     
-    [needsMakeSureValidNodes enumerateObjectsUsingBlock:^(EventTracingVTreeNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [needsMakeSureValidNodes enumerateObjectsUsingBlock:^(NEEventTracingVTreeNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         if (obj.subNodes.count == 0) {
             [obj.parentNode removeSubNode:obj];
         }
     }];
     
     // 自动挂载到rootPage的逻辑
-    EventTracingVTreeNode *rootPageNode = [VTree findToppestRightPageNode];
-    if (rootPageNode && !ET_checkIfExistsAncestorViewControllerTransitioning(rootPageNode.view)) {
+    NEEventTracingVTreeNode *rootPageNode = [VTree findToppestRightPageNode];
+    if (rootPageNode && !NE_ET_checkIfExistsAncestorViewControllerTransitioning(rootPageNode.view)) {
         [self _pushItemsToVTree:VTree
                      parentNode:rootPageNode
-                          views:EventTracingAutoMountRootPageViews()
+                          views:NEEventTracingAutoMountRootPageViews()
         needsMakeSureValidNodes:nil
          needsCheckEndlessloop:YES];
     }
@@ -334,28 +339,28 @@ struct ETTraverseObject {
     return VTree;
 }
 
-- (EventTracingVTree *)incrementalGenerateVTreeFrom:(EventTracingVTree *)VTree views:(NSArray<UIView *> *)views {
+- (NEEventTracingVTree *)incrementalGenerateVTreeFrom:(NEEventTracingVTree *)VTree views:(NSArray<UIView *> *)views {
     if (!VTree) {
         return [self totalGenerateVTreeFromWindows];
     }
 
     // 首先，view内部得有节点
     NSArray<UIView *> *hasSubNodeViews = [views bk_reject:^BOOL(UIView *obj) {
-        return !obj.et_hasSubNodes;
+        return !obj.ne_et_hasSubNodes;
     }];
     
     // 如果当前view不是一个节点，则可以尝试向上追溯, 找到向上最近的一个节点
     NSMutableSet<UIView *> *nodableViews = [NSMutableSet set];
     [hasSubNodeViews enumerateObjectsUsingBlock:^(UIView * _Nonnull view, NSUInteger idx, BOOL * _Nonnull stop) {
-        if (ET_isPageOrElement(view)) {
+        if (NE_ET_isPageOrElement(view)) {
             [nodableViews addObject:view];
-        } else if(ET_superView(view)) {
-            [@[ET_superView(view)] et_enumerateObjectsUsingBlock:^NSArray<UIView *> * _Nonnull(UIView * _Nonnull obj, BOOL * _Nonnull stop) {
-                if (ET_isPageOrElement(obj)) {
+        } else if(NE_ET_superView(view)) {
+            [@[NE_ET_superView(view)] ne_et_enumerateObjectsUsingBlock:^NSArray<UIView *> * _Nonnull(UIView * _Nonnull obj, BOOL * _Nonnull stop) {
+                if (NE_ET_isPageOrElement(obj)) {
                     [nodableViews addObject:obj];
                     *stop = YES;
                 }
-                return ET_superView(obj) ? @[ET_superView(obj)] : nil;
+                return NE_ET_superView(obj) ? @[NE_ET_superView(obj)] : nil;
             }];
         }
     }];
@@ -365,7 +370,7 @@ struct ETTraverseObject {
     [nodableViews enumerateObjectsUsingBlock:^(UIView * _Nonnull view, BOOL * _Nonnull stop) {
         UIView *next = view;
         while (next) {
-            next = ET_superView(next);
+            next = NE_ET_superView(next);
             
             if ([nodableViews containsObject:(UIView *)next]) {
                 [validViews removeObject:view];
@@ -374,13 +379,13 @@ struct ETTraverseObject {
         }
     }];
     
-    __block EventTracingVTree *VTreeCopy = nil;
-    __block EventTracingVTreeNode *rootPageNode = nil;
+    __block NEEventTracingVTree *VTreeCopy = nil;
+    __block NEEventTracingVTreeNode *rootPageNode = nil;
     __block BOOL needAutoMoundNodes = NO;
     
     __block BOOL VTreeChanged = NO;
     [validViews enumerateObjectsUsingBlock:^(UIView * _Nonnull view, BOOL * _Nonnull stop) {
-        EventTracingVTreeNode *viewNode = view.et_currentVTreeNode;
+        NEEventTracingVTreeNode *viewNode = view.ne_et_currentVTreeNode;
         
         // 当前view没有对应的节点 或者 节点没有有子节点(如果没有子节点，是不需要重新构建的)
         if (viewNode == nil || viewNode.subNodes.count == 0) {
@@ -397,27 +402,27 @@ struct ETTraverseObject {
         }
         
         // 在 VTree 中找到该节点
-        __block EventTracingVTreeNode *parentNode = nil;
-        [VTreeCopy.rootNode.subNodes et_enumerateObjectsUsingBlock:^NSArray<EventTracingVTreeNode *> * _Nonnull(EventTracingVTreeNode * _Nonnull obj, BOOL * _Nonnull stop) {
-            if ([obj et_isEqualToDiffableObject:viewNode]) {
+        __block NEEventTracingVTreeNode *parentNode = nil;
+        [VTreeCopy.rootNode.subNodes ne_et_enumerateObjectsUsingBlock:^NSArray<NEEventTracingVTreeNode *> * _Nonnull(NEEventTracingVTreeNode * _Nonnull obj, BOOL * _Nonnull stop) {
+            if ([obj ne_et_isEqualToDiffableObject:viewNode]) {
                 parentNode = obj;
                 *stop = YES;
             }
             return obj.subNodes;
         }];
         
-        [parentNode.subNodes enumerateObjectsUsingBlock:^(EventTracingVTreeNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [parentNode.subNodes enumerateObjectsUsingBlock:^(NEEventTracingVTreeNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             [parentNode removeSubNode:obj];
         }];
         
         VTreeChanged = YES;
         
         // 如果当前需要构建的节点是 rootPage, 则需要重新做自动挂载
-        needAutoMoundNodes = needAutoMoundNodes || [parentNode et_isEqualToDiffableObject:rootPageNode];
+        needAutoMoundNodes = needAutoMoundNodes || [parentNode ne_et_isEqualToDiffableObject:rootPageNode];
         
         [self _pushItemsToVTree:VTreeCopy
                      parentNode:parentNode
-                          views:ET_subViews(view)
+                          views:NE_ET_subViews(view)
         needsMakeSureValidNodes:nil
           needsCheckEndlessloop:NO];
     }];
@@ -427,10 +432,10 @@ struct ETTraverseObject {
     }
     
     // 需要重新处理: 自动挂载到rootPage的逻辑
-    if (needAutoMoundNodes && !ET_checkIfExistsAncestorViewControllerTransitioning(rootPageNode.view)) {
+    if (needAutoMoundNodes && !NE_ET_checkIfExistsAncestorViewControllerTransitioning(rootPageNode.view)) {
         [self _pushItemsToVTree:VTreeCopy
                      parentNode:rootPageNode
-                          views:EventTracingAutoMountRootPageViews()
+                          views:NEEventTracingAutoMountRootPageViews()
         needsMakeSureValidNodes:nil
          needsCheckEndlessloop:YES];
     }
@@ -442,10 +447,10 @@ struct ETTraverseObject {
 }
 
 #pragma mark - private methods
-- (void)_mountLogicalParentSPMViewsToVTree:(EventTracingVTree *)VTree {
-    [EventTracingLogicalParentSPMViews() enumerateObjectsUsingBlock:^(UIView * _Nonnull view, NSUInteger idx, BOOL * _Nonnull stop) {
-        NSString *spm = view.et_logicalParentSPM;
-        EventTracingVTreeNode *parentNode = [VTree nodeForSpm:spm];
+- (void)_mountLogicalParentSPMViewsToVTree:(NEEventTracingVTree *)VTree {
+    [NEEventTracingLogicalParentSPMViews() enumerateObjectsUsingBlock:^(UIView * _Nonnull view, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSString *spm = view.ne_et_logicalParentSPM;
+        NEEventTracingVTreeNode *parentNode = [VTree nodeForSpm:spm];
         if (!parentNode) {
             return;
         }
@@ -458,22 +463,33 @@ struct ETTraverseObject {
     }];
 }
 
-- (void)_pushItemsToVTree:(EventTracingVTree *)VTree
-               parentNode:(EventTracingVTreeNode * _Nullable)parentNode
+- (void)_pushItemsToVTree:(NEEventTracingVTree *)VTree
+               parentNode:(NEEventTracingVTreeNode * _Nullable)parentNode
                     views:(NSArray<UIView *> *)views
-  needsMakeSureValidNodes:(NSMutableArray<EventTracingVTreeNode *> *)needsMakeSureValidNodes
+  needsMakeSureValidNodes:(NSMutableArray<NEEventTracingVTreeNode *> *)needsMakeSureValidNodes
     needsCheckEndlessloop:(BOOL)needsCheckEndlessloop {
+    
+    BOOL nodeInfoValidationEnable = [NEEventTracingEngine sharedInstance].context.nodeInfoValidationEnable;
     
     __block std::stack<ETTraverseObject> stack;
     [views enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(UIView * _Nonnull v, NSUInteger idx, BOOL * _Nonnull stop) {
-        stack.push(ETTraverseObject(parentNode, v, {ET_isIgnoreRefer(v)}));
+        NEEventTracingNodeValidMountType mountType = NEEventTracingNodeValidMountTypeNone;
+        /// MARK: 节点校验-辅助功能
+        if (nodeInfoValidationEnable) {
+            if (NE_ET_viewIsLogicalMount(v)) {
+                mountType = NEEventTracingNodeValidMountTypeManual;
+            } else if (NE_ET_viewIsAutoMount(v)) {
+                mountType = NEEventTracingNodeValidMountTypeAuto;
+            }
+        }
+        stack.push(ETTraverseObject(parentNode, v, {NE_ET_isIgnoreRefer(v), mountType}));
     }];
     
     while (!stack.empty()) {
         ETTraverseObject object = stack.top();
         
         BOOL continueTraverseSubViews = YES;
-        EventTracingVTreeNode *node = [self _nodeForObject:object
+        NEEventTracingVTreeNode *node = [self _nodeForObject:object
                                                    inVTree:VTree
                                   continueTraverseSubViews:&continueTraverseSubViews
                                      needsCheckEndlessloop:needsCheckEndlessloop];
@@ -485,42 +501,62 @@ struct ETTraverseObject {
         stack.pop();
         
         if (continueTraverseSubViews) {
-            [ET_subViews(object.view) enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(UIView * _Nonnull v, NSUInteger idx, BOOL * _Nonnull stop) {
-                BOOL ignoreRefer = object.configData.ignoreRefer || v.et_ignoreReferCascade;
-                stack.push(ETTraverseObject((node ?: object.parentNode), v, {ignoreRefer}));
+            [NE_ET_subViews(object.view) enumerateObjectsWithOptions:NSEnumerationReverse usingBlock:^(UIView * _Nonnull v, NSUInteger idx, BOOL * _Nonnull stop) {
+                BOOL ignoreRefer = object.configData.ignoreRefer || v.ne_et_ignoreReferCascade;
+                NEEventTracingNodeValidMountType mountType = object.configData.mountType;
+                /// MARK: 节点校验-辅助功能
+                if (nodeInfoValidationEnable && node == nil) {
+                    if (v.ne_et_isAutoMountOnCurrentRootPageEnable) {
+                        mountType = NEEventTracingNodeValidMountTypeAuto;
+                    } else if (v.ne_et_logicalParentView != nil) {
+                        mountType = NEEventTracingNodeValidMountTypeManual;
+                    }
+                }
+                stack.push(ETTraverseObject((node ?: object.parentNode), v, {ignoreRefer, mountType}));
             }];
         }
     }
 }
 
-- (EventTracingVTreeNode *)_nodeForObject:(ETTraverseObject)object
-                                  inVTree:(EventTracingVTree *)VTree
+- (NEEventTracingVTreeNode *)_nodeForObject:(ETTraverseObject)object
+                                  inVTree:(NEEventTracingVTree *)VTree
                  continueTraverseSubViews:(BOOL *)continueTraverseSubViews
                     needsCheckEndlessloop:(BOOL)needsCheckEndlessloop {
-    if (![object.view et_isSimpleVisible]) {
+    if (![object.view ne_et_isSimpleVisible]) {
         *continueTraverseSubViews = NO;
         
         return nil;
     }
     
-    EventTracingVTreeNode *node = nil;
+    NEEventTracingVTreeNode *node = nil;
     
-    if (ET_isPageOrElement(object.view)) {
+    if (NE_ET_isPageOrElement(object.view)) {
         
         // 需要针对自动挂载做循环检测
-        // 非自动挂载的场景，在 `et_setLogicalParentView:` 方法中实现，可大大减少检测次数
-        if (needsCheckEndlessloop && ET_checkIfExistsLogicalMountEndlessLoopAtView(object.view, object.parentNode.view)) {
+        // 非自动挂载的场景，在 `ne_et_setLogicalParentView:` 方法中实现，可大大减少检测次数
+        if (needsCheckEndlessloop && NE_ET_checkIfExistsLogicalMountEndlessLoopAtView(object.view, object.parentNode.view)) {
             return nil;
         }
         
-        node = [EventTracingVTreeNode buildWithView:object.view];
+        node = [NEEventTracingVTreeNode buildWithView:object.view];
         [node associateToVTree:VTree];
         if (object.configData.ignoreRefer) {
             [node markIgnoreRefer];
         }
         
-        /// MARK: 1. 自动挂载; => 忽略对父节点的校验
-        BOOL ignoreParentValid = object.view.et_isAutoMountOnCurrentRootPageEnable;
+        node.validMountType = object.configData.mountType;
+        
+        /// MARK: 1. 自动挂载; 2. 手动挂载 => 忽略对父节点的校验
+        __block BOOL ignoreParentValid = object.view.ne_et_isAutoMountOnCurrentRootPageEnable;
+        if (!ignoreParentValid && object.view.ne_et_logicalParentView != nil) {
+            [@[object.view.ne_et_logicalParentView] ne_et_enumerateObjectsUsingBlock:^NSArray * _Nonnull(id  _Nonnull obj, BOOL * _Nonnull stop) {
+                if (obj == object.parentNode.view) {
+                    ignoreParentValid = YES;
+                    *stop = YES;
+                }
+                return NE_ET_superView(obj) ? @[NE_ET_superView(obj)] : nil;
+            }];
+        }
         [VTree pushNode:node parentNode:object.parentNode ignoreParentValid:ignoreParentValid];
         
         // MARK: 更新节点的可见性
@@ -530,7 +566,7 @@ struct ETTraverseObject {
         [self _setupValidForContainingSubNodeOidsForNode:node];
         
         // MARK: => Params
-        [node updateStaticParams:object.view.et_params];
+        [node updateStaticParams:object.view.ne_et_params];
         [node doUpdateDynamicParams];
         
         // 虚拟父节点
@@ -546,11 +582,11 @@ struct ETTraverseObject {
     return node;
 }
 
-- (void)_setupValidForContainingSubNodeOidsForNode:(EventTracingVTreeNode *)node {
-    NSArray<NSString *> *validForContainingSubNodeOids = [node.view et_validForContainingSubNodeOids];
-    UIViewController *vc = node.view.et_currentViewController;
+- (void)_setupValidForContainingSubNodeOidsForNode:(NEEventTracingVTreeNode *)node {
+    NSArray<NSString *> *validForContainingSubNodeOids = [node.view ne_et_validForContainingSubNodeOids];
+    UIViewController *vc = node.view.ne_et_currentViewController;
     if (vc) {
-        validForContainingSubNodeOids = [vc et_validForContainingSubNodeOids];
+        validForContainingSubNodeOids = [vc ne_et_validForContainingSubNodeOids];
     }
     node.validForContainingSubNodeOids = validForContainingSubNodeOids;
 }
@@ -558,47 +594,47 @@ struct ETTraverseObject {
 // 虚拟父节点处理
 // 1. 先找到有虚拟父节点的view（自底向上，查找截止到父节点view），如果找不到即结束
 // 2. 增加虚拟父节点
-- (void)_updateVirtualParentNodeForNodeIfNeeded:(EventTracingVTreeNode *)node
-                                     parentNode:(EventTracingVTreeNode *)parentNode
-                                        inVTree:(EventTracingVTree *)VTree
+- (void)_updateVirtualParentNodeForNodeIfNeeded:(NEEventTracingVTreeNode *)node
+                                     parentNode:(NEEventTracingVTreeNode *)parentNode
+                                        inVTree:(NEEventTracingVTree *)VTree
                               ignoreParentValid:(BOOL)ignoreParentValid {
     UIView *view = node.view;
-    while (view && view != parentNode.view && !view.et_virtualParentProps.hasVirtualParentNode) {
-        view = ET_superView(view);
+    while (view && view != parentNode.view && !view.ne_et_virtualParentProps.hasVirtualParentNode) {
+        view = NE_ET_superView(view);
     }
     // 只考虑两个父子节点之间的其他view，是否设置了虚拟父节点
     view = view != parentNode.view ? view : nil;
     
-    if (!view.et_virtualParentProps.hasVirtualParentNode) {
+    if (!view.ne_et_virtualParentProps.hasVirtualParentNode) {
         return;
     }
     
     [node.parentNode removeSubNode:node];
     
-    NSString *virtualParentNodeIdentifier = view.et_virtualParentProps.virtualParentNodeIdentifier;
-    NSString *virtualParentNodeOid = view.et_virtualParentOid;
-    NSDictionary *virtualParentNodeParams = view.et_virtualParentProps.virtualParentNodeParams;
-    EventTracingVTreeNode *virtualParentNode = [parentNode.subNodes bk_match:^BOOL(EventTracingVTreeNode *obj) {
+    NSString *virtualParentNodeIdentifier = view.ne_et_virtualParentProps.virtualParentNodeIdentifier;
+    NSString *virtualParentNodeOid = view.ne_et_virtualParentOid;
+    NSDictionary *virtualParentNodeParams = view.ne_et_virtualParentProps.virtualParentNodeParams;
+    NEEventTracingVTreeNode *virtualParentNode = [parentNode.subNodes bk_match:^BOOL(NEEventTracingVTreeNode *obj) {
         return [obj.identifier isEqualToString:virtualParentNodeIdentifier]
                 && ([obj.oid isEqualToString:virtualParentNodeOid]);
     }];
     if (!virtualParentNode) {
-        virtualParentNode = [EventTracingVTreeNode buildVirtualNodeWithOid:view.et_virtualParentOid
-                                                                    isPage:view.et_virtualParentIsPage
-                                                                identifier:virtualParentNodeIdentifier
-                                                                  position:view.et_virtualParentProps.position
-                                            buildinEventLogDisableStrategy:view.et_virtualParentProps.buildinEventLogDisableStrategy
-                                                                  params:virtualParentNodeParams];
+        virtualParentNode = [NEEventTracingVTreeNode buildVirtualNodeWithOid:view.ne_et_virtualParentOid
+                                                                      isPage:view.ne_et_virtualParentIsPage
+                                                                  identifier:virtualParentNodeIdentifier
+                                                                    position:view.ne_et_virtualParentProps.position
+                                              buildinEventLogDisableStrategy:view.ne_et_virtualParentProps.buildinEventLogDisableStrategy
+                                                                      params:virtualParentNodeParams];
         
         /// MARK: 虚拟父节点是否校验父节点，跟随原节点走
         [VTree pushNode:virtualParentNode parentNode:parentNode ignoreParentValid:ignoreParentValid];
     } else if (virtualParentNodeParams.count) {
         NSMutableDictionary *params = [virtualParentNode.innerStaticParams ?: @[] mutableCopy];
-        [params addEntriesFromDictionary:view.et_virtualParentProps.virtualParentNodeParams];
+        [params addEntriesFromDictionary:view.ne_et_virtualParentProps.virtualParentNodeParams];
         [virtualParentNode updateStaticParams:params];
     }
     
-    [VTree pushNode:node parentNode:virtualParentNode ignoreParentValid:view.et_virtualParentIsPage == NO];
+    [VTree pushNode:node parentNode:virtualParentNode ignoreParentValid:view.ne_et_virtualParentIsPage == NO];
 }
 
 @end

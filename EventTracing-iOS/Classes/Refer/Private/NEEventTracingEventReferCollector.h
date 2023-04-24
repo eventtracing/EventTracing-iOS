@@ -1,22 +1,22 @@
 //
-//  EventTracingEventReferCollector.h
-//  EventTracing
+//  NEEventTracingEventReferCollector.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/4/8.
 //
 
 #import <Foundation/Foundation.h>
-#import "EventTracingVTree.h"
-#import "EventTracingVTreeNode.h"
-#import "EventTracingEventAction.h"
+#import "NEEventTracingVTree.h"
+#import "NEEventTracingVTreeNode.h"
+#import "NEEventTracingEventAction.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingEventReferCollector : NSObject
+@interface NEEventTracingEventReferCollector : NSObject
 
 - (void)appWillEnterForeground;
 
-- (void)willImpressNode:(EventTracingVTreeNode *)node inVTree:(EventTracingVTree *)VTree;
+- (void)willImpressNode:(NEEventTracingVTreeNode *)node inVTree:(NEEventTracingVTree *)VTree;
 
 @end
 

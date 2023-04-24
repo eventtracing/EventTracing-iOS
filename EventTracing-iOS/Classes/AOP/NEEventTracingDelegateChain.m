@@ -1,26 +1,26 @@
 //
-//  EventTracingDelegateChain.m
+//  NEEventTracingDelegateChain.m
 //  BlocksKit
 //
 //  Created by dl on 2021/2/24.
 //
 
-#import "EventTracingDelegateChain.h"
+#import "NEEventTracingDelegateChain.h"
 #import <BlocksKit/BlocksKit.h>
 #import <objc/runtime.h>
 
-@interface EventTracingDelegateChain ()
+@interface NEEventTracingDelegateChain ()
 @property(nonatomic, weak, readwrite) id originalDelegate;
 @property(nonatomic, strong) NSArray<Protocol *> *originalDelegateProtocols;
 @property(nonatomic, strong) NSMapTable<id, NSMutableDictionary<NSString *, NSString *> *> *weakInterceptorObjects;
 @end
 
-@implementation EventTracingDelegateChain
+@implementation NEEventTracingDelegateChain
 
 + (instancetype)delegateChainWithOriginalDelegate:(id)originalDelegate
                                         protocols:(NSArray<Protocol *> *)protocols
                                interceptorObjects:(id)firstInterceptor, ... NS_REQUIRES_NIL_TERMINATION {
-    EventTracingDelegateChain *delegateChain = [EventTracingDelegateChain alloc];
+    NEEventTracingDelegateChain *delegateChain = [NEEventTracingDelegateChain alloc];
     delegateChain.originalDelegate = originalDelegate;
     delegateChain.originalDelegateProtocols = protocols;
     delegateChain.weakInterceptorObjects = [NSMapTable mapTableWithKeyOptions:NSPointerFunctionsWeakMemory valueOptions:NSPointerFunctionsStrongMemory];
@@ -107,7 +107,7 @@
 
 - (void)forwardInvocation:(NSInvocation *)invocation {
     // pre
-    [self et_preForwardInvocation:invocation];
+    [self ne_et_preForwardInvocation:invocation];
     
     // original
     if ([_originalDelegate respondsToSelector:invocation.selector]) {
@@ -116,10 +116,10 @@
     }
     
     // after
-    [self et_afterForwardInvocation:invocation];
+    [self ne_et_afterForwardInvocation:invocation];
 }
 
-- (void)et_preForwardInvocation:(NSInvocation *)invocation {
+- (void)ne_et_preForwardInvocation:(NSInvocation *)invocation {
     [[self _allInterceptorObjectsRespondingToSelector:invocation.selector] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSDictionary *selectorMap = [self.weakInterceptorObjects objectForKey:obj];
         SEL preCallSelector = NSSelectorFromString([selectorMap objectForKey:NSStringFromSelector(invocation.selector)]);
@@ -127,17 +127,17 @@
             return;
         }
         
-        [self et_doCallSelector:preCallSelector fromInvocation:invocation target:obj];
+        [self ne_et_doCallSelector:preCallSelector fromInvocation:invocation target:obj];
     }];
 }
 
-- (void)et_afterForwardInvocation:(NSInvocation *)invocation {
+- (void)ne_et_afterForwardInvocation:(NSInvocation *)invocation {
     [[self _allInterceptorObjectsRespondingToSelector:invocation.selector] enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [self et_doCallSelector:invocation.selector fromInvocation:invocation target:obj];
+        [self ne_et_doCallSelector:invocation.selector fromInvocation:invocation target:obj];
     }];
 }
 
-- (void)et_doCallSelector:(SEL)selector fromInvocation:(NSInvocation *)invocation target:(id)target {
+- (void)ne_et_doCallSelector:(SEL)selector fromInvocation:(NSInvocation *)invocation target:(id)target {
     NSMethodSignature *sig = [invocation methodSignature];
     NSInvocation *interceptInvocation = [NSInvocation invocationWithMethodSignature:sig];
 

@@ -1,15 +1,15 @@
 //
-//  EventTracingVTreeNode+Visible.m
-//  EventTracing
+//  NEEventTracingVTreeNode+Visible.m
+//  NEEventTracing
 //
 //  Created by dl on 2021/3/18.
 //
 
-#import "EventTracingVTreeNode+Visible.h"
+#import "NEEventTracingVTreeNode+Visible.h"
 #import "NSArray+ETEnumerator.h"
 #import <BlocksKit/BlocksKit.h>
 
-@implementation EventTracingVTreeNode (Visible)
+@implementation NEEventTracingVTreeNode (Visible)
 
 - (void)updateVisible:(BOOL)visible visibleRect:(CGRect)visibleRect {
     self.visible = visible;
@@ -23,19 +23,19 @@
     self.impressMaxRatio = MAX(0.f, MIN(1.f, roundf(viewVisibleArea / viewSelfArea * 100) / 100.f)); // 保留两位小数
 }
 
-- (void)markBlockedByOcclusionPageNode:(EventTracingVTreeNode *)occlusionPageNode {
+- (void)markBlockedByOcclusionPageNode:(NEEventTracingVTreeNode *)occlusionPageNode {
     if (self.isVirtualNode) {
         self.blockedBySubPage = YES;
         return;
     }
     
-    [@[self] et_enumerateObjectsUsingBlock:^NSArray<EventTracingVTreeNode *> * _Nonnull(EventTracingVTreeNode * _Nonnull obj, BOOL * _Nonnull stop) {
+    [@[self] ne_et_enumerateObjectsUsingBlock:^NSArray<NEEventTracingVTreeNode *> * _Nonnull(NEEventTracingVTreeNode * _Nonnull obj, BOOL * _Nonnull stop) {
         obj.blockedBySubPage = YES;
         return obj.subNodes;
     }];
     
     if (self.parentNode.isVirtualNode) {
-        BOOL parentVirtualNodeHasVisiableSubNodes = [self.parentNode.subNodes bk_any:^BOOL(EventTracingVTreeNode *obj) {
+        BOOL parentVirtualNodeHasVisiableSubNodes = [self.parentNode.subNodes bk_any:^BOOL(NEEventTracingVTreeNode *obj) {
             return !obj.blockedBySubPage && obj.isVisible;
         }];
         if (!parentVirtualNodeHasVisiableSubNodes) {
@@ -52,7 +52,7 @@
     
     /// MARK: 遮挡，只能遮挡`左侧兄弟节点`，或者左右兄弟节点的子节点，不可以向上遮挡
     __block BOOL shouldBeBlocked = YES;
-    [occlusionPageNode enumerateAncestorNodeWithBlock:^(EventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
+    [occlusionPageNode enumerateAncestorNodeWithBlock:^(NEEventTracingVTreeNode * _Nonnull ancestorNode, BOOL * _Nonnull stop) {
         if (ancestorNode == self.parentNode) {
             shouldBeBlocked = NO;
             *stop = YES;
@@ -60,9 +60,9 @@
     }];
     
     if (shouldBeBlocked) {
-        [[self.parentNode.subNodes bk_reject:^BOOL(EventTracingVTreeNode *obj) {
+        [[self.parentNode.subNodes bk_reject:^BOOL(NEEventTracingVTreeNode *obj) {
             return !obj.visible;
-        }] enumerateObjectsUsingBlock:^(EventTracingVTreeNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        }] enumerateObjectsUsingBlock:^(NEEventTracingVTreeNode * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
             if ([self.parentNode.validForContainingSubNodeOids containsObject:obj.oid]) {
                 shouldBeBlocked = NO;
             }

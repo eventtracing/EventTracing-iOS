@@ -1,57 +1,57 @@
 //
-//  EventTracingEngine.m
+//  NEEventTracingEngine.m
 //  BlocksKit
 //
 //  Created by dl on 2021/2/4.
 //
 
-#import "EventTracingEngine.h"
-#import "EventTracingEngine+Private.h"
-#import "EventTracingDefines.h"
-#import "EventTracingContext+Private.h"
+#import "NEEventTracingEngine.h"
+#import "NEEventTracingEngine+Private.h"
+#import "NEEventTracingDefines.h"
+#import "NEEventTracingContext+Private.h"
 #import "UIView+EventTracingPrivate.h"
 
-#import "EventTracingAOPManager.h"
-#import "EventTracingAppLicycleAOP.h"
-#import "EventTracingUIControlAOP.h"
-#import "EventTracingUIScrollViewAOP.h"
-#import "EventTracingUITabbarAOP.h"
-#import "EventTracingUIViewAOP.h"
-#import "EventTracingUIViewControllerAOP.h"
-#import "EventTracingUIAlertControllerAOP.h"
+#import "NEEventTracingAOPManager.h"
+#import "NEEventTracingAppLicycleAOP.h"
+#import "NEEventTracingUIControlAOP.h"
+#import "NEEventTracingUIScrollViewAOP.h"
+#import "NEEventTracingUITabbarAOP.h"
+#import "NEEventTracingUIViewAOP.h"
+#import "NEEventTracingUIViewControllerAOP.h"
+#import "NEEventTracingUIAlertControllerAOP.h"
 
 #import <BlocksKit/BlocksKit.h>
 #import "NSArray+ETEnumerator.h"
-#import "EventTracingVTree+Private.h"
-#import "EventTracingOutputFlattenFormatter.h"
-#import "EventTracingContext+Private.h"
-#import "EventTracingEventOutput+Private.h"
-#import "EventTracingVTreeNode+Private.h"
-#import "EventTracingInternalLog.h"
+#import "NEEventTracingVTree+Private.h"
+#import "NEEventTracingOutputFlattenFormatter.h"
+#import "NEEventTracingContext+Private.h"
+#import "NEEventTracingEventOutput+Private.h"
+#import "NEEventTracingVTreeNode+Private.h"
+#import "NEEventTracingInternalLog.h"
 
-@implementation EventTracingEngine
+@implementation NEEventTracingEngine
 @synthesize incrementalVTreeWhenScrollEnable = _incrementalVTreeWhenScrollEnable;
 
 #pragma mark - Public: init & lifecycle methods
 + (instancetype)sharedInstance {
-    static EventTracingEngine *instance;
+    static NEEventTracingEngine *instance;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [[EventTracingEngine alloc] init];
+        instance = [[NEEventTracingEngine alloc] init];
     });
     return instance;
 }
 
-- (void) startWithContextBuilder:(void(^NS_NOESCAPE)(id<EventTracingContextBuilder> builder))block {
-    EventTracingContext *context = [[EventTracingContext alloc] init];
+- (void) startWithContextBuilder:(void(^NS_NOESCAPE)(id<NEEventTracingContextBuilder> builder))block {
+    NEEventTracingContext *context = [[NEEventTracingContext alloc] init];
     _ctx = context;
     _ctx.engine = self;
     
-    [_ctx registeFormatter:EventTracingOutputFlattenFormatter.new];
+    [_ctx registeFormatter:NEEventTracingOutputFlattenFormatter.new];
     
     [context.eventOutput configStaticPublicParams:@{
-        ET_REFER_KEY_SESSID: (_ctx.sessid ?: @""),
-        ET_REFER_KEY_SIDREFER: (_ctx.sidrefer ?: @"")
+        NE_ET_REFER_KEY_SESSID: (_ctx.sessid ?: @""),
+        NE_ET_REFER_KEY_SIDREFER: (_ctx.sidrefer ?: @"")
     } withParamGuard:NO];
     
     !block ?: block(context);
@@ -66,18 +66,6 @@
     
     if ([context.extraConfigurationProvider respondsToSelector:@selector(needStartHsreferOids)]) {
         context.needStartHsreferOids = [context.extraConfigurationProvider needStartHsreferOids];
-    }
-    
-    if ([context.extraConfigurationProvider respondsToSelector:@selector(multiReferAppliedEventList)]) {
-        context.multiReferAppliedEventList = [context.extraConfigurationProvider multiReferAppliedEventList];
-    } else {
-        context.multiReferAppliedEventList = @"_pv,_ec";
-    }
-    
-    if ([context.extraConfigurationProvider respondsToSelector:@selector(multiReferMaxItemCount)]) {
-        context.multiReferMaxItemCount = [context.extraConfigurationProvider multiReferMaxItemCount];
-    } else {
-        context.multiReferMaxItemCount = 5;
     }
     
     [context markRunState:YES];
@@ -119,24 +107,24 @@
 }
 
 - (NSDictionary *)publicParamsForViewController:(UIViewController * _Nullable)viewController {
-    return [self publicParamsForView:viewController.p_et_view];
+    return [self publicParamsForView:viewController.p_ne_et_view];
 }
 - (NSDictionary *)publicParamsForView:(UIView * _Nullable)view {
-    return [_ctx.eventOutput publicParamsForEvent:nil node:view.et_currentVTreeNode inVTree:view.et_currentVTreeNode.VTree];
+    return [_ctx.eventOutput publicParamsForEvent:nil node:view.ne_et_currentVTreeNode inVTree:view.ne_et_currentVTreeNode.VTree];
 }
 
 - (NSDictionary *)fulllyParamsForViewController:(UIViewController * _Nullable)viewController {
-    return [self fulllyParamsForView:viewController.p_et_view];
+    return [self fulllyParamsForView:viewController.p_ne_et_view];
 }
 - (NSDictionary *)fulllyParamsForView:(UIView * _Nullable)view {
-    return [_ctx.eventOutput fulllyParamsForEvent:nil contextParams:nil logActionParams:nil node:view.et_currentVTreeNode inVTree:view.et_currentVTreeNode.VTree];
+    return [_ctx.eventOutput fulllyParamsForEvent:nil contextParams:nil logActionParams:nil node:view.ne_et_currentVTreeNode inVTree:view.ne_et_currentVTreeNode.VTree];
 }
 
-#pragma mark - EventTracingAppLifecycleProcotol
+#pragma mark - NEEventTracingAppLifecycleProcotol
 - (void)appViewController:(UIViewController *)controller changedToAppear:(BOOL)appear {
     [_ctx appViewController:controller changedToAppear:appear];
     
-    if (!controller.et_isPage) {
+    if (!controller.ne_et_isPage) {
         return;
     }
     
@@ -153,7 +141,7 @@
     
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        [self->_ctx.eventOutput outputEventWithoutNode:ET_EVENT_ID_APP_ACTIVE contextParams:nil];
+        [self->_ctx.eventOutput outputEventWithoutNode:NE_ET_EVENT_ID_APP_ACTIVE contextParams:nil];
     });
     
     [self _doTraverse];
@@ -204,8 +192,8 @@
     [self->_ctx refreshAppInActiveState];
 }
 
-#pragma mark - EventTracingTraversalRunnerDelegate
-- (void)traversalRunner:(EventTracingTraversalRunner *)runner runWithRunModeMatched:(BOOL)runModeMatched {
+#pragma mark - NEEventTracingTraversalRunnerDelegate
+- (void)traversalRunner:(NEEventTracingTraversalRunner *)runner runWithRunModeMatched:(BOOL)runModeMatched {
     if (![self _couldRunTraverse]) {
         return;
     }
@@ -241,9 +229,9 @@
         return;
     }
     
-    [self _doTaskWithCollectPerforanceData:@"IncrementalVTree" task:^EventTracingVTree *{
-        EventTracingVTree *lastVTree = _ctx.eventEmitter.lastVTree;
-        EventTracingVTree *VTree = [_ctx.traverser incrementalGenerateVTreeFrom:lastVTree
+    [self _doTaskWithCollectPerforanceData:@"IncrementalVTree" task:^NEEventTracingVTree *{
+        NEEventTracingVTree *lastVTree = _ctx.eventEmitter.lastVTree;
+        NEEventTracingVTree *VTree = [_ctx.traverser incrementalGenerateVTreeFrom:lastVTree
                                                                           views:scrollViews];
         
         // 没有真正生成新的VTree
@@ -273,11 +261,11 @@
         [self _doTraverse];
         return;
     }
-
+    
     // 逆着遍历
-    NSArray<EventTracingTraverseAction *> *stockedTraverseActions = [[self.stockedTraverseActionRecord.actions reverseObjectEnumerator] allObjects];
+    NSArray<NEEventTracingTraverseAction *> *stockedTraverseActions = [[self.stockedTraverseActionRecord.actions reverseObjectEnumerator] allObjects];
     [self.stockedTraverseActionRecord reset];
-
+    
     // 全量生成 VTree 后，清空待处理的滚动action
     [self.stockedTraverseScrollViews removeAllObjects];
     
@@ -285,7 +273,7 @@
         return;
     }
     
-    BOOL needTraverse = [stockedTraverseActions bk_any:^BOOL(EventTracingTraverseAction *obj) {
+    BOOL needTraverse = [stockedTraverseActions bk_any:^BOOL(NEEventTracingTraverseAction *obj) {
         if (obj.view == nil) {
             return NO;
         }
@@ -295,9 +283,9 @@
         BOOL needsRunTraversal = YES;
         
         if (obj.ignoreViewInvisible) {
-            needsRunTraversal = ET_isPageOrElement(view) || ET_isHasSubNodes(view);
+            needsRunTraversal = NE_ET_isPageOrElement(view) || NE_ET_isHasSubNodes(view);
         } else {
-            needsRunTraversal = [view et_isSimpleVisible] && [view et_logicalVisible] && (ET_isPageOrElement(view) || ET_isHasSubNodes(view));
+            needsRunTraversal = [view ne_et_isSimpleVisible] && [view ne_et_logicalVisible] && (NE_ET_isPageOrElement(view) || NE_ET_isHasSubNodes(view));
         }
         
         return needsRunTraversal;
@@ -311,8 +299,8 @@
 }
 
 - (void)_doTraverse {
-    [self _doTaskWithCollectPerforanceData:@"TotalVTree" task:^EventTracingVTree *{
-        EventTracingVTree *VTree = [_ctx.traverser totalGenerateVTreeFromWindows];
+    [self _doTaskWithCollectPerforanceData:@"TotalVTree" task:^NEEventTracingVTree *{
+        NEEventTracingVTree *VTree = [_ctx.traverser totalGenerateVTreeFromWindows];
         [_ctx.traverser cleanAssociationForPreVTree:_ctx.eventEmitter.lastVTree];
         [_ctx.traverser associateNodeToViewForVTree:VTree];
         
@@ -324,9 +312,9 @@
     }];
 }
 
-- (void)_doTaskWithCollectPerforanceData:(NSString *)tag task:(EventTracingVTree *(^ NS_NOESCAPE)(void))block {
+- (void)_doTaskWithCollectPerforanceData:(NSString *)tag task:(NEEventTracingVTree *(^ NS_NOESCAPE)(void))block {
     if (![self.context.VTreePerformanceObserver respondsToSelector:@selector(didGenerateVTree:tag:idx:cost:ave:min:max:)]) {
-        EventTracingVTree *VTree = block();
+        NEEventTracingVTree *VTree = block();
         dispatch_async(dispatch_get_global_queue(0, 0), ^{
             [self _doCheckExceptionsInVTree:VTree];
         });
@@ -348,7 +336,7 @@
     CGFloat sum = [[recordInfo objectForKey:@"sum"] floatValue];
     
     CFTimeInterval begin = CACurrentMediaTime() * 1000.f;
-    EventTracingVTree *VTree = block();
+    NEEventTracingVTree *VTree = block();
     CFTimeInterval cost = CACurrentMediaTime() * 1000.f - begin;
     
     count ++;
@@ -368,28 +356,28 @@
 }
 
 // Check Exceptions in VTree
-- (void)_doCheckExceptionsInVTree:(EventTracingVTree *)VTree {
-    id<EventTracingExceptionDelegate> exceptionDelegate = [EventTracingEngine sharedInstance].context.exceptionInterface;
+- (void)_doCheckExceptionsInVTree:(NEEventTracingVTree *)VTree {
+    id<NEEventTracingExceptionDelegate> exceptionDelegate = [NEEventTracingEngine sharedInstance].context.exceptionInterface;
     BOOL needCheckNodeUnique = [exceptionDelegate respondsToSelector:@selector(internalExceptionKey:code:message:node:shouldNotEqualToOther:)];
     BOOL needCheckNodeSPMUnique = [exceptionDelegate respondsToSelector:@selector(internalExceptionKey:code:message:node:spmShouldNotEqualToOther:)];
     if (!needCheckNodeUnique && !needCheckNodeSPMUnique) {
         return;
     }
     
-    NSMutableDictionary<NSString *, EventTracingVTreeNode *> *allNodes = @{}.mutableCopy;
-    NSMutableDictionary<NSString *, EventTracingVTreeNode *> *allSpms = @{}.mutableCopy;
+    NSMutableDictionary<NSString *, NEEventTracingVTreeNode *> *allNodes = @{}.mutableCopy;
+    NSMutableDictionary<NSString *, NEEventTracingVTreeNode *> *allSpms = @{}.mutableCopy;
     NSMutableArray<NSString *> *checkedKeys = @[].mutableCopy;
-    [VTree.rootNode.subNodes et_enumerateObjectsUsingBlock:^NSArray<EventTracingVTreeNode *> * _Nonnull(EventTracingVTreeNode * _Nonnull node, BOOL * _Nonnull stop) {
+    [VTree.rootNode.subNodes ne_et_enumerateObjectsUsingBlock:^NSArray<NEEventTracingVTreeNode *> * _Nonnull(NEEventTracingVTreeNode * _Nonnull node, BOOL * _Nonnull stop) {
         
         // identifier unique
         if (needCheckNodeUnique) {
-            NSString *diffIdentifier = (NSString *)[node et_diffIdentifier];
-            EventTracingVTreeNode *otherNode = [allNodes objectForKey:diffIdentifier];
+            NSString *diffIdentifier = (NSString *)[node ne_et_diffIdentifier];
+            NEEventTracingVTreeNode *otherNode = [allNodes objectForKey:diffIdentifier];
             if (![checkedKeys containsObject:diffIdentifier] && otherNode != nil) {
                 NSString *errmsg = [NSString stringWithFormat:@"VTreeNode is not unique, NodeDiffIdentifier: %@", diffIdentifier];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [exceptionDelegate internalExceptionKey:@"NodeNotUnique"
-                                                       code:EventTracingExceptionCodeNodeNotUnique
+                                                       code:NEEventTracingExceptionCodeNodeNotUnique
                                                     message:errmsg
                                                        node:node
                                       shouldNotEqualToOther:otherNode];
@@ -404,12 +392,12 @@
         // spm unique
         if (needCheckNodeSPMUnique) {
             NSString *spm = [node spm];
-            EventTracingVTreeNode *otherNode = [allSpms objectForKey:spm];
+            NEEventTracingVTreeNode *otherNode = [allSpms objectForKey:spm];
             if (![checkedKeys containsObject:spm] && otherNode != nil) {
                 NSString *errmsg = [NSString stringWithFormat:@"VTreeNode _spm is not unique, _spm: %@", spm];
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [exceptionDelegate internalExceptionKey:@"SPMNotUnique"
-                                                       code:EventTracingExceptionCodeNodeSPMNotUnique
+                                                       code:NEEventTracingExceptionCodeNodeSPMNotUnique
                                                     message:errmsg
                                                        node:node
                                    spmShouldNotEqualToOther:otherNode];
@@ -426,12 +414,12 @@
 }
 
 - (void)_doOutputAppInLog {
-    [_ctx.eventOutput outputEventWithoutNode:ET_EVENT_ID_APP_IN contextParams:nil];
+    [_ctx.eventOutput outputEventWithoutNode:NE_ET_EVENT_ID_APP_IN contextParams:nil];
 }
 
 - (void)_doOutputAppOutLog {
     NSInteger duration = ([[NSDate date] timeIntervalSince1970] - _ctx.appLastAtForegroundTime) * 1000;
-    [_ctx.eventOutput outputEventWithoutNode:ET_EVENT_ID_APP_OUT contextParams:@{
+    [_ctx.eventOutput outputEventWithoutNode:NE_ET_EVENT_ID_APP_OUT contextParams:@{
         @"_duration": @(duration).stringValue
     }];
 }
@@ -441,17 +429,17 @@
     // AOP
     [@[
         EventTracingAppLicycleAOP.class,
-        EventTracingUIControlAOP.class,
-        EventTracingUIScrollViewAOP.class,
-        EventTracingUITabbarAOP.class,
-        EventTracingUIViewAOP.class,
-        EventTracingUIViewControllerAOP.class,
-        EventTracingUIAlertControllerAOP.class
+        NEEventTracingUIControlAOP.class,
+        NEEventTracingUIScrollViewAOP.class,
+        NEEventTracingUITabbarAOP.class,
+        NEEventTracingUIViewAOP.class,
+        NEEventTracingUIViewControllerAOP.class,
+        NEEventTracingUIAlertControllerAOP.class
     ] enumerateObjectsUsingBlock:^(Class _Nonnull clz, NSUInteger idx, BOOL * _Nonnull stop) {
-        [[EventTracingAOPManager defaultManager] registeAOPCls:clz];
+        [[NEEventTracingAOPManager defaultManager] registeAOPCls:clz];
     }];
     
-    [[EventTracingAOPManager defaultManager] fire];
+    [[NEEventTracingAOPManager defaultManager] fire];
 }
 
 #pragma mark - getters & setters
@@ -459,18 +447,18 @@
     return self.context.started;
 }
 
-- (id<EventTracingContext>)context {
+- (id<NEEventTracingContext>)context {
     return _ctx;
 }
 
 @end
 
-@implementation EventTracingEngine (VTreeObserver)
-- (void)addVTreeObserver:(id<EventTracingVTreeObserver>)observer {
+@implementation NEEventTracingEngine (VTreeObserver)
+- (void)addVTreeObserver:(id<NEEventTracingVTreeObserver>)observer {
     [self.ctx addVTreeObserver:observer];
 }
 
-- (void)removeVTreeObserver:(id<EventTracingVTreeObserver>)observer {
+- (void)removeVTreeObserver:(id<NEEventTracingVTreeObserver>)observer {
     [self.ctx removeVTreeObserver:observer];
 }
 @end

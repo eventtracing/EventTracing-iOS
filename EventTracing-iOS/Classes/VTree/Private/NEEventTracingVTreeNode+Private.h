@@ -1,25 +1,32 @@
 //
-//  EventTracingVTreeNode+Private.h
-//  EventTracing
+//  NEEventTracingVTreeNode+Private.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/3/11.
 //
 
-#import "EventTracingVTreeNode.h"
-#import "EventTracingSentinel.h"
-#import "EventTracingFormattedRefer.h"
+#import "NEEventTracingVTreeNode.h"
+#import "NEEventTracingSentinel.h"
+#import "NEEventTracingFormattedRefer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 #define LOCK        dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
 #define UNLOCK      dispatch_semaphore_signal(_lock);
 
-extern NSString * const kETAddParamCallbackObjectkey;
+extern NSString * const kNEETAddParamCallbackObjectkey;
 
-@interface EventTracingVTreeNode () {
+/// MARK: 节点校验-辅助功能
+typedef NS_ENUM(NSInteger, NEEventTracingNodeValidMountType) {
+    NEEventTracingNodeValidMountTypeNone = 0,
+    NEEventTracingNodeValidMountTypeManual,
+    NEEventTracingNodeValidMountTypeAuto
+};
+
+@interface NEEventTracingVTreeNode () {
     __weak UIView *_view;
-    __weak EventTracingVTreeNode *_parentNode;
-    __weak EventTracingVTree *_VTree;
+    __weak NEEventTracingVTreeNode *_parentNode;
+    __weak NEEventTracingVTree *_VTree;
 }
 
 @property(nonatomic, assign, readwrite) NSUInteger position;
@@ -43,21 +50,25 @@ extern NSString * const kETAddParamCallbackObjectkey;
 @property(nonatomic, assign) BOOL hasSubPageNodeMarkAsRootPage;     // 是否存在子节点 pageNodeMarkAsRootPage == YES
 @property(nonatomic, assign) BOOL pageNodeMarkAsRootPage;           // 当前节点是否被标识为要作为root page
 
+/// MARK: valid => manual/auto mount
+@property(nonatomic, assign) NEEventTracingNodeValidMountType validMountType;
+
 /// MARK: for rootpageNode/rootNode
 // 1. 当前root page范围内的互动深度(找不到rootpageNode，会降级到rootNode)
 // 2. 互动的时候，会+1
 // 3. 当当前节点重新曝光的时候，actseq清零
 // 4. 仅仅当节点是rootpageNode/rootNode的时候，才有值
-@property(nonatomic, strong, nullable) EventTracingSentinel *actseqSentinel;
+@property(nonatomic, strong, nullable) NEEventTracingSentinel *actseqSentinel;
 
 // 如果该节点是根节点，曝光的时候，所对应的 pv refer
-@property(nonatomic, strong, nullable) id<EventTracingFormattedRefer> rootPagePVFormattedRefer;
+@property(nonatomic, strong, nullable) id<NEEventTracingFormattedRefer> rootPagePVFormattedRefer;
 
-@property(nonatomic, strong) NSMutableArray<EventTracingVTreeNode *> *innerSubNodes;
+@property(nonatomic, strong) NSMutableArray<NEEventTracingVTreeNode *> *innerSubNodes;
 
 @property(nonatomic, copy, readonly) NSDictionary<NSString *, NSString *> *innerStaticParams;
 @property(nonatomic, copy, readonly) NSDictionary<NSString *, NSString *> *dynamicParams;
 @property(nonatomic, copy, readonly) NSDictionary<NSString *, NSDictionary<NSString *, NSString *> *> *callbackParams;
+@property(nonatomic, copy, readonly) NSDictionary<NSString *, NSString *> *innerValidationParams;
 
 + (instancetype)buildWithView:(UIView *)view;
 
@@ -65,11 +76,11 @@ extern NSString * const kETAddParamCallbackObjectkey;
                                  isPage:(BOOL)isPage
                              identifier:(NSString *)identifier
                                position:(NSUInteger)position
-         buildinEventLogDisableStrategy:(ETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
+         buildinEventLogDisableStrategy:(NEETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
                                  params:(NSDictionary * _Nullable)params;
 
 /// MARK: 下面方法只在主线程
-- (void)associateToVTree:(EventTracingVTree *)VTree;
+- (void)associateToVTree:(NEEventTracingVTree *)VTree;
 - (void)markAsRoot;
 
 - (void)markIgnoreRefer;
@@ -80,19 +91,19 @@ extern NSString * const kETAddParamCallbackObjectkey;
 - (void)refreshDynsmicParamsIfNeededForEvent:(NSString *)event;
 - (void)doUpdateDynamicParams;
 
-- (void)setupParentNode:(EventTracingVTreeNode * _Nullable)parentNode;
-- (void)pushSubNode:(EventTracingVTreeNode *)subNode;
-- (void)removeSubNode:(EventTracingVTreeNode *)subNode;
+- (void)setupParentNode:(NEEventTracingVTreeNode * _Nullable)parentNode;
+- (void)pushSubNode:(NEEventTracingVTreeNode *)subNode;
+- (void)removeSubNode:(NEEventTracingVTreeNode *)subNode;
 - (void)updateParentNodesHasSubpageNodeMarkAsRootPageIfNeeded;
 
 /// MARK: refer相关
 - (void)nodeWillImpress;
 - (NSUInteger)doIncreaseActseq;
 
-- (void)syncToNode:(EventTracingVTreeNode *)node;
+- (void)syncToNode:(NEEventTracingVTreeNode *)node;
 - (void)pageNodeMarkFromRefer:(NSString *)pgrefer psrefer:(NSString *)psrefer;
 
-- (EventTracingVTreeNode * _Nullable)findToppestNode:(BOOL)onlyPageNode;
+- (NEEventTracingVTreeNode * _Nullable)findToppestNode:(BOOL)onlyPageNode;
 
 @end
 

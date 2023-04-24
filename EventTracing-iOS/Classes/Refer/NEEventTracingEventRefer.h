@@ -1,6 +1,6 @@
 //
-//  EventTracingEventRefer.h
-//  EventTracing
+//  NEEventTracingEventRefer.h
+//  NEEventTracing
 //
 //  Created by dl on 2022/2/23.
 //
@@ -9,18 +9,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSInteger, EventTracingEventReferType) {
-    EventTracingEventReferTypeFormatted,              // 标准`格式化` 的refer
-    EventTracingEventReferTypeUndefinedXpath          // undefined-xpath 形式的 refer
+typedef NS_ENUM(NSInteger, NEEventTracingEventReferType) {
+    NEEventTracingEventReferTypeFormatted,              // 标准`格式化` 的refer
+    NEEventTracingEventReferTypeUndefinedXpath          // undefined-xpath 形式的 refer
 };
 
-@protocol EventTracingEventRefer <NSObject>
+@protocol NEEventTracingEventRefer <NSObject>
 
 @property(nonatomic, copy, readonly) NSString *event;
 @property(nonatomic, assign, readonly) NSTimeInterval eventTime;
 @property(nonatomic, copy, readonly) NSString *refer;
 
-@property(nonatomic, assign, readonly) EventTracingEventReferType referType;
+@property(nonatomic, assign, readonly) NEEventTracingEventReferType referType;
 
 @end
 

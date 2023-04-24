@@ -1,17 +1,17 @@
 //
-//  EventTracingVTree+Visible.h
-//  EventTracing
+//  NEEventTracingVTree+Visible.h
+//  NEEventTracing
 //
 //  Created by dl on 2021/3/18.
 //
 
-#import "EventTracingVTree+Private.h"
+#import "NEEventTracingVTree+Private.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingVTree (Visible)
+@interface NEEventTracingVTree (Visible)
 
-- (void)updateVisibleForNode:(EventTracingVTreeNode *)node;
+- (void)updateVisibleForNode:(NEEventTracingVTreeNode *)node;
 - (void)applySubpageOcclusionIfNeeded;
 
 @end

@@ -1,60 +1,60 @@
 //
 //  UIView+EventTracingReuse.m
-//  EventTracing
+//  NEEventTracing
 //
 //  Created by dl on 2021/3/18.
 //
 
 #import "UIView+EventTracing.h"
-#import "EventTracingDefines.h"
-#import "EventTracingSentinel.h"
-#import "EventTracingEngine+Private.h"
+#import "NEEventTracingDefines.h"
+#import "NEEventTracingSentinel.h"
+#import "NEEventTracingEngine+Private.h"
 #import "UIView+EventTracingPrivate.h"
 
 #import <BlocksKit/BlocksKit.h>
 
 @implementation UIViewController (EventTracingReuse)
-- (NSString *)et_reuseIdentifier {
-    return self.p_et_view.et_reuseIdentifier;
+- (NSString *)ne_et_reuseIdentifier {
+    return self.p_ne_et_view.ne_et_reuseIdentifier;
 }
-- (NSString *)et_bizLeafIdentifier {
-    return self.p_et_view.et_bizLeafIdentifier;
+- (NSString *)ne_et_bizLeafIdentifier {
+    return self.p_ne_et_view.ne_et_bizLeafIdentifier;
 }
-- (NSString * _Nonnull (^)(NSString * _Nonnull))et_autoClassifyIdAppend {
-    return self.p_et_view.et_autoClassifyIdAppend;
+- (NSString * _Nonnull (^)(NSString * _Nonnull))ne_et_autoClassifyIdAppend {
+    return self.p_ne_et_view.ne_et_autoClassifyIdAppend;
 }
-- (void)et_bindDataForReuse:(id)data {
-    [self.p_et_view et_bindDataForReuse:data];
+- (void)ne_et_bindDataForReuse:(id)data {
+    [self.p_ne_et_view ne_et_bindDataForReuse:data];
 }
-- (void)et_setNeedsImpress {
-    [self.p_et_view et_setNeedsImpress];
+- (void)ne_et_setNeedsImpress {
+    [self.p_ne_et_view ne_et_setNeedsImpress];
 }
 @end
 
 @implementation UIView (EventTracingReuse)
 
-- (NSString *)et_reuseIdentifier {
-    return self.et_props.reuseIdentifier;
+- (NSString *)ne_et_reuseIdentifier {
+    return self.ne_et_props.reuseIdentifier;
 }
-- (NSString *)et_bizLeafIdentifier {
-    return self.et_props.bizLeafIdentifier;
+- (NSString *)ne_et_bizLeafIdentifier {
+    return self.ne_et_props.bizLeafIdentifier;
 }
-- (NSString * _Nonnull (^)(NSString * _Nonnull))et_autoClassifyIdAppend {
-    return self.et_props.autoClassifyIdAppend;
+- (NSString * _Nonnull (^)(NSString * _Nonnull))ne_et_autoClassifyIdAppend {
+    return self.ne_et_props.autoClassifyIdAppend;
 }
-- (void)et_bindDataForReuse:(id)data {
-    [self.et_props bindDataForReuse:data];
+- (void)ne_et_bindDataForReuse:(id)data {
+    [self.ne_et_props bindDataForReuse:data];
 }
 
-- (void)et_setNeedsImpress {
+- (void)ne_et_setNeedsImpress {
     void(^block)(void) = ^() {
-        [self.et_props.reuseSEQ increase];
-        [self.et_props setResueIdentifierNeedsUpdate];
+        [self.ne_et_props.reuseSEQ increase];
+        [self.ne_et_props setResueIdentifierNeedsUpdate];
         
-        [[EventTracingEngine sharedInstance] traverse:self];
+        [[NEEventTracingEngine sharedInstance] traverse:self];
     };
     
-    ETDispatchMainAsyncSafe(block);
+    NEETDispatchMainAsyncSafe(block);
 }
 
 @end

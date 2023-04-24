@@ -1,22 +1,22 @@
 //
-//  EventTracingVTree.m
-//  EventTracing
+//  NEEventTracingVTree.m
+//  NEEventTracing
 //
 //  Created by dl on 2021/2/26.
 //
 
-#import "EventTracingVTree.h"
-#import "EventTracingVTree+Private.h"
-#import "EventTracingVTreeNode+Private.h"
-#import "EventTracingVTreeNode+Visible.h"
+#import "NEEventTracingVTree.h"
+#import "NEEventTracingVTree+Private.h"
+#import "NEEventTracingVTreeNode+Private.h"
+#import "NEEventTracingVTreeNode+Visible.h"
 
-#import "EventTracingTraverser.h"
+#import "NEEventTracingTraverser.h"
 #import "UIView+EventTracingPrivate.h"
 #import "NSArray+ETEnumerator.h"
 
 #import <BlocksKit/BlocksKit.h>
 
-@implementation EventTracingVTree
+@implementation NEEventTracingVTree
 @synthesize stable = _stable;
 @synthesize visible = _visible;
 @synthesize rootPageNode = _rootPageNode;
@@ -26,7 +26,7 @@
     if (self) {
         _lock = dispatch_semaphore_create(1);
         
-        _rootNode = [[EventTracingVTreeNode alloc] init];
+        _rootNode = [[NEEventTracingVTreeNode alloc] init];
         [_rootNode markAsRoot];
         
         [self regenerateVTreeIdentifier];
@@ -35,19 +35,19 @@
 }
 
 + (instancetype)emptyVTree {
-    static EventTracingVTree *emptyVTree;
+    static NEEventTracingVTree *emptyVTree;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        emptyVTree = [[EventTracingVTree alloc] init];
+        emptyVTree = [[NEEventTracingVTree alloc] init];
     });
     return emptyVTree;
 }
 
-- (void)pushNode:(EventTracingVTreeNode *)node parentNode:(EventTracingVTreeNode * _Nullable)parentNode ignoreParentValid:(BOOL)ignoreParentValid {
-    __block EventTracingVTreeNode *validParentNode = parentNode;
+- (void)pushNode:(NEEventTracingVTreeNode *)node parentNode:(NEEventTracingVTreeNode * _Nullable)parentNode ignoreParentValid:(BOOL)ignoreParentValid {
+    __block NEEventTracingVTreeNode *validParentNode = parentNode;
     if (!ignoreParentValid && parentNode) {
         /// MARK: 如果父节点明确声明了只能存在哪几个子节点，则严格控制，其他节点不可挂载该名下
-        /// MARK: 排除场景 => 1. 自动挂载;
+        /// MARK: 排除两个场景 => 1. 自动挂载; 2. 主动挂载
         if (parentNode.validForContainingSubNodeOids.count > 0 && ![parentNode.validForContainingSubNodeOids containsObject:node.oid]) {
             validParentNode = nil;
         }
@@ -60,23 +60,23 @@
     }
 }
 
-- (void)removeNode:(EventTracingVTreeNode *)node {
+- (void)removeNode:(NEEventTracingVTreeNode *)node {
     [_rootNode removeSubNode:node];
 }
 
-- (BOOL)containsNode:(EventTracingVTreeNode *)node {
+- (BOOL)containsNode:(NEEventTracingVTreeNode *)node {
     return [self.flattenNodes containsObject:node];
 }
 
-- (EventTracingVTreeNode * _Nullable)findRootPageNodeFromNode:(EventTracingVTreeNode *)node {
+- (NEEventTracingVTreeNode * _Nullable)findRootPageNodeFromNode:(NEEventTracingVTreeNode *)node {
     return [node findToppestNode:YES];
 }
 
-- (EventTracingVTreeNode * _Nullable)findToppestRightPageNode {
-    __block EventTracingVTreeNode *toppestPageNode = nil;
+- (NEEventTracingVTreeNode * _Nullable)findToppestRightPageNode {
+    __block NEEventTracingVTreeNode *toppestPageNode = nil;
     
     // MARK: 右侧深度遍历，找到第一个page节点
-    [self.rootNode.subNodes et_enumerateObjectsWithType:EventTracingEnumeratorTypeBFSRight usingBlock:^NSArray<EventTracingVTreeNode *> * _Nonnull(EventTracingVTreeNode * _Nonnull nextNode, BOOL * _Nonnull stop) {
+    [self.rootNode.subNodes ne_et_enumerateObjectsWithType:NEEventTracingEnumeratorTypeBFSRight usingBlock:^NSArray<NEEventTracingVTreeNode *> * _Nonnull(NEEventTracingVTreeNode * _Nonnull nextNode, BOOL * _Nonnull stop) {
         if (nextNode.isPageNode && !nextNode.hasSubPageNodeMarkAsRootPage) {
             toppestPageNode = nextNode;
             
@@ -92,10 +92,10 @@
     return toppestPageNode;
 }
 
-- (EventTracingVTreeNode * _Nullable)findNodeByDiffIdentifier:(id<NSObject>)diffIdentifier {
-    __block EventTracingVTreeNode *node = nil;
-    [self.rootNode.subNodes et_enumerateObjectsUsingBlock:^NSArray<EventTracingVTreeNode *> * _Nonnull(EventTracingVTreeNode * _Nonnull obj, BOOL * _Nonnull stop) {
-        if ([obj.et_diffIdentifier isEqual:diffIdentifier]) {
+- (NEEventTracingVTreeNode * _Nullable)findNodeByDiffIdentifier:(id<NSObject>)diffIdentifier {
+    __block NEEventTracingVTreeNode *node = nil;
+    [self.rootNode.subNodes ne_et_enumerateObjectsUsingBlock:^NSArray<NEEventTracingVTreeNode *> * _Nonnull(NEEventTracingVTreeNode * _Nonnull obj, BOOL * _Nonnull stop) {
+        if ([obj.ne_et_diffIdentifier isEqual:diffIdentifier]) {
             node = obj;
             *stop = YES;
         }
@@ -104,10 +104,10 @@
     return node;
 }
 
-- (NSArray<EventTracingVTreeNode *> *)flattenNodes {
-    NSMutableArray<EventTracingVTreeNode *> *nodes = [@[] mutableCopy];
+- (NSArray<NEEventTracingVTreeNode *> *)flattenNodes {
+    NSMutableArray<NEEventTracingVTreeNode *> *nodes = [@[] mutableCopy];
     
-    [self.rootNode.subNodes et_enumerateObjectsWithType:EventTracingEnumeratorTypeDFS usingBlock:^NSArray<EventTracingVTreeNode *> * _Nonnull(EventTracingVTreeNode * _Nonnull obj, BOOL * _Nonnull stop) {
+    [self.rootNode.subNodes ne_et_enumerateObjectsWithType:NEEventTracingEnumeratorTypeDFS usingBlock:^NSArray<NEEventTracingVTreeNode *> * _Nonnull(NEEventTracingVTreeNode * _Nonnull obj, BOOL * _Nonnull stop) {
         [nodes addObject:obj];
         return obj.subNodes;
     }];
@@ -135,19 +135,19 @@
 
 #pragma mark - NSCopying
 - (id)copyWithZone:(nullable NSZone *)zone {
-    EventTracingVTree *VTree = [[EventTracingVTree alloc] init];
+    NEEventTracingVTree *VTree = [[NEEventTracingVTree alloc] init];
     VTree.identifier = self.identifier.copy;
     VTree->_stable = self.stable;
     VTree->_visible = self.visible;
     VTree->_rootNode = self.rootNode.copy;
-    [@[VTree->_rootNode] et_enumerateObjectsUsingBlock:^NSArray<EventTracingVTreeNode *> * _Nonnull(EventTracingVTreeNode * _Nonnull obj, BOOL * _Nonnull stop) {
+    [@[VTree->_rootNode] ne_et_enumerateObjectsUsingBlock:^NSArray<NEEventTracingVTreeNode *> * _Nonnull(NEEventTracingVTreeNode * _Nonnull obj, BOOL * _Nonnull stop) {
         [obj associateToVTree:VTree];
         return obj.subNodes;
     }];
     return VTree;
 }
 
-- (BOOL)isEaualToOtherVTree:(EventTracingVTree *)otherVTree {
+- (BOOL)isEaualToOtherVTree:(NEEventTracingVTree *)otherVTree {
     if (otherVTree == self) {
         return YES;
     }
@@ -156,21 +156,21 @@
         return NO;
     }
     
-    if (_visible != [(EventTracingVTree *)otherVTree isVisible]) {
+    if (_visible != [(NEEventTracingVTree *)otherVTree isVisible]) {
         return NO;
     }
     
-    NSArray<EventTracingVTreeNode *> *selfNodes = self.flattenNodes;
-    NSArray<EventTracingVTreeNode *> *otherNodes = [(EventTracingVTree *)otherVTree flattenNodes];
+    NSArray<NEEventTracingVTreeNode *> *selfNodes = self.flattenNodes;
+    NSArray<NEEventTracingVTreeNode *> *otherNodes = [(NEEventTracingVTree *)otherVTree flattenNodes];
     
     if (selfNodes.count != otherNodes.count) {
         return NO;
     }
     
     __block BOOL equal = YES;
-    [selfNodes enumerateObjectsUsingBlock:^(EventTracingVTreeNode * _Nonnull selfNode, NSUInteger idx, BOOL * _Nonnull stop) {
-        EventTracingVTreeNode *otherNode = [otherNodes objectAtIndex:idx];
-        if (![selfNode et_isEqualToDiffableObject:otherNode]) {
+    [selfNodes enumerateObjectsUsingBlock:^(NEEventTracingVTreeNode * _Nonnull selfNode, NSUInteger idx, BOOL * _Nonnull stop) {
+        NEEventTracingVTreeNode *otherNode = [otherNodes objectAtIndex:idx];
+        if (![selfNode ne_et_isEqualToDiffableObject:otherNode]) {
             equal = NO;
             *stop = YES;
         }
@@ -191,7 +191,7 @@
     [json setValue:@(_visible).stringValue forKey:@"_visible"];
     
     if (self.rootNode.subNodes.count) {
-        [json setObject:[self.rootNode.subNodes bk_map:^id(EventTracingVTreeNode *obj) {
+        [json setObject:[self.rootNode.subNodes bk_map:^id(NEEventTracingVTreeNode *obj) {
             return obj.debugJson;
         }] forKey:@"nodes"];
     }
@@ -212,24 +212,24 @@
 
 @end
 
-@implementation EventTracingVTree (Geometry)
+@implementation NEEventTracingVTree (Geometry)
 
 #pragma mark - Geometry
-- (EventTracingVTreeNode * _Nullable)hitTest:(CGPoint)point {
+- (NEEventTracingVTreeNode * _Nullable)hitTest:(CGPoint)point {
     return [self hitTest:point pageOnly:NO];
 }
 
-- (EventTracingVTreeNode * _Nullable)hitTest:(CGPoint)point pageOnly:(BOOL)pageOnly {
+- (NEEventTracingVTreeNode * _Nullable)hitTest:(CGPoint)point pageOnly:(BOOL)pageOnly {
     return [self.rootNode hitTest:point pageOnly:pageOnly];
 }
 
-- (EventTracingVTreeNode * _Nullable)nodeForSpm:(NSString *)spm {
+- (NEEventTracingVTreeNode * _Nullable)nodeForSpm:(NSString *)spm {
     if (!self.rootNode) {
         return nil;
     }
     
-    __block EventTracingVTreeNode *foundedNode = nil;
-    [@[self.rootNode] et_enumerateObjectsUsingBlock:^NSArray<EventTracingVTreeNode *> * _Nonnull(EventTracingVTreeNode * _Nonnull obj, BOOL * _Nonnull stop) {
+    __block NEEventTracingVTreeNode *foundedNode = nil;
+    [@[self.rootNode] ne_et_enumerateObjectsUsingBlock:^NSArray<NEEventTracingVTreeNode *> * _Nonnull(NEEventTracingVTreeNode * _Nonnull obj, BOOL * _Nonnull stop) {
         if ([obj.spm isEqualToString:spm]) {
             foundedNode = obj;
             *stop = YES;

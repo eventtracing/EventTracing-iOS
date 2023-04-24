@@ -1,5 +1,5 @@
 //
-//  EventTracingTraversalRunner.h
+//  NEEventTracingTraversalRunner.h
 //  BlocksKit
 //
 //  Created by dl on 2021/2/4.
@@ -9,18 +9,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class EventTracingTraversalRunner;
-@protocol EventTracingTraversalRunnerDelegate <NSObject>
-- (void) traversalRunner:(EventTracingTraversalRunner *)runner runWithRunModeMatched:(BOOL)runModeMatched;
+@class NEEventTracingTraversalRunner;
+@protocol NEEventTracingTraversalRunnerDelegate <NSObject>
+- (void) traversalRunner:(NEEventTracingTraversalRunner *)runner runWithRunModeMatched:(BOOL)runModeMatched;
 @end
 
 __attribute__((objc_direct_members))
-@interface EventTracingTraversalRunner : NSObject
+@interface NEEventTracingTraversalRunner : NSObject
 
 @property(nonatomic, assign, readonly) BOOL running;
 @property(nonatomic, assign, readonly) BOOL paused;
 
-@property(nonatomic, weak, nullable) id<EventTracingTraversalRunnerDelegate> delegate;
+@property(nonatomic, weak, nullable) id<NEEventTracingTraversalRunnerDelegate> delegate;
 @property(nonatomic, copy, readonly) NSRunLoopMode currentRunMode;
 
 - (void) run;

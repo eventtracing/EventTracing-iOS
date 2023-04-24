@@ -1,6 +1,6 @@
 //
 //  UIScrollView+EventTracingES.h
-//  EventTracing
+//  NEEventTracing
 //
 //  Created by dl on 2021/8/2.
 //
@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface UIScrollView (EventTracingES)
 
 // default: NO
-@property(nonatomic, assign, getter=et_isESEventEnable, setter=et_setESEventEnable:) BOOL et_esEventEnable;
+@property(nonatomic, assign, getter=ne_et_isESEventEnable, setter=ne_et_setESEventEnable:) BOOL ne_et_esEventEnable;
 
 @end
 

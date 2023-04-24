@@ -1,11 +1,11 @@
 //
-//  EventTracingConstData.m
-//  EventTracing
+//  NEEventTracingConstData.m
+//  NEEventTracing
 //
 //  Created by dl on 2021/5/20.
 //
 
-#import "EventTracingConstData.h"
+#import "NEEventTracingConstData.h"
 #include <mach-o/dyld.h>
 #include <mach-o/getsect.h>
 
@@ -15,17 +15,17 @@ typedef struct mach_header_64 * mach_header_ptr_t;
 typedef struct mach_header * mach_header_ptr_t;
 #endif
 
-@interface EventTracingConstData()
+@interface NEEventTracingConstData()
 @property(nonatomic, strong) NSDictionary<NSString *, NSArray<NSString *> *> *constData;
 @end
 
-@implementation EventTracingConstData
+@implementation NEEventTracingConstData
 
 + (instancetype)sharedInstance {
-    static EventTracingConstData *instance = nil;
+    static NEEventTracingConstData *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [[EventTracingConstData alloc] init];
+        instance = [[NEEventTracingConstData alloc] init];
     });
     return instance;
 }

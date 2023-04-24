@@ -1,16 +1,16 @@
 //
-//  EventTracingParamGuardExector.m
+//  NEEventTracingParamGuardExector.m
 //  BlocksKit
 //
 //  Created by dl on 2021/5/20.
 //
 
-#import "EventTracingParamGuardExector.h"
-#import "EventTracingDefines.h"
-#import "EventTracingEngine+Private.h"
-#import "EventTracingContext+Private.h"
-#import "EventTracingInternalLog.h"
-#import "EventTracingConstData.h"
+#import "NEEventTracingParamGuardExector.h"
+#import "NEEventTracingDefines.h"
+#import "NEEventTracingEngine+Private.h"
+#import "NEEventTracingContext+Private.h"
+#import "NEEventTracingInternalLog.h"
+#import "NEEventTracingConstData.h"
 
 NSString * const ETParamKeyGuardEvent = @"Event";
 NSString * const ETParamKeyGuardPublicParam = @"PublicParam";
@@ -18,36 +18,36 @@ NSString * const ETParamKeyGuardUserParam = @"UserParam";
 
 NSString * const ETParamKeyGuardErrorRegxKey = @"regx";
 
-BOOL ET_CheckEventKeyValid(NSString *eventKey) {
+BOOL NE_ET_CheckEventKeyValid(NSString *eventKey) {
     NSError *error;
-    return [[EventTracingEngine sharedInstance].ctx.paramGuardExector checkEventKeyValid:eventKey error:&error];
+    return [[NEEventTracingEngine sharedInstance].ctx.paramGuardExector checkEventKeyValid:eventKey error:&error];
 }
 
-BOOL ET_CheckPublicParamKeyValid(NSString *publicParamKey) {
+BOOL NE_ET_CheckPublicParamKeyValid(NSString *publicParamKey) {
     NSError *error;
-    return [[EventTracingEngine sharedInstance].ctx.paramGuardExector checkPublicParamKeyValid:publicParamKey error:&error];
+    return [[NEEventTracingEngine sharedInstance].ctx.paramGuardExector checkPublicParamKeyValid:publicParamKey error:&error];
 }
 
-BOOL ET_CheckUserParamKeyValid(NSString *userParamKey) {
+BOOL NE_ET_CheckUserParamKeyValid(NSString *userParamKey) {
     NSError *error;
-    return [[EventTracingEngine sharedInstance].ctx.paramGuardExector checkUserParamKeyValid:userParamKey error:&error];
+    return [[NEEventTracingEngine sharedInstance].ctx.paramGuardExector checkUserParamKeyValid:userParamKey error:&error];
 }
 
 #define LOCK        dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
 #define UNLOCK      dispatch_semaphore_signal(_lock);
 
-NSString *ET_ExceptionKeyForCode(NSUInteger code) {
+NSString *NE_ET_ExceptionKeyForCode(NSUInteger code) {
     NSDictionary *map = @{
-        @(EventTracingExceptionEventKeyInvalid): @"EventKeyInvalid",
-        @(EventTracingExceptionEventKeyConflictWithEmbedded): @"EventKeyConflictWithEmbedded",
-        @(EventTracingExceptionPublicParamInvalid): @"PublicParamInvalid",
-        @(EventTracingExceptionUserParamInvalid): @"UserParamInvalid",
-        @(EventTracingExceptionParamConflictWithEmbedded): @"ParamConflictWithEmbedded"
+        @(NEEventTracingExceptionEventKeyInvalid): @"EventKeyInvalid",
+        @(NEEventTracingExceptionEventKeyConflictWithEmbedded): @"EventKeyConflictWithEmbedded",
+        @(NEEventTracingExceptionPublicParamInvalid): @"PublicParamInvalid",
+        @(NEEventTracingExceptionUserParamInvalid): @"UserParamInvalid",
+        @(NEEventTracingExceptionParamConflictWithEmbedded): @"ParamConflictWithEmbedded"
     };
     return [map objectForKey:@(code)];
 }
 
-@interface EventTracingParamGuardExector ()
+@interface NEEventTracingParamGuardExector ()
 @property(nonatomic, strong) NSRegularExpression *eventKeyRegxExp;
 @property(nonatomic, strong) NSRegularExpression *publicParamRegxExp;
 @property(nonatomic, strong) NSRegularExpression *userParamRegxExp;
@@ -57,7 +57,7 @@ NSString *ET_ExceptionKeyForCode(NSUInteger code) {
 @property(nonatomic, strong) dispatch_queue_t queue;
 @end
 
-@implementation EventTracingParamGuardExector
+@implementation NEEventTracingParamGuardExector
 @synthesize eventKeyRegx = _eventKeyRegx;
 @synthesize publicParamRegx = _publicParamRegx;
 @synthesize userParamRegxOptionalPrefix = _userParamRegxOptionalPrefix;
@@ -94,7 +94,7 @@ NSString *ET_ExceptionKeyForCode(NSUInteger code) {
 
 - (void)asyncDoDispatchCheckTask:(void (^)(void))block {
     // 如果不开启，则直接当做验证没问题
-    if (![EventTracingEngine sharedInstance].ctx.isParamGuardEnable) {
+    if (![NEEventTracingEngine sharedInstance].ctx.isParamGuardEnable) {
         return ;
     }
     
@@ -107,9 +107,9 @@ NSString *ET_ExceptionKeyForCode(NSUInteger code) {
     return [self _checkKeyIfValid:eventKey
                        paramGuard:ETParamKeyGuardEvent
                  constKeyListType:@kETConstKeyTypeEvent
-                  conflictErrCode:EventTracingExceptionEventKeyConflictWithEmbedded
+                  conflictErrCode:NEEventTracingExceptionEventKeyConflictWithEmbedded
                              regx:self.eventKeyRegx
-                      regxErrCode:EventTracingExceptionEventKeyInvalid
+                      regxErrCode:NEEventTracingExceptionEventKeyInvalid
                             error:error];
 }
 
@@ -117,9 +117,9 @@ NSString *ET_ExceptionKeyForCode(NSUInteger code) {
     return [self _checkKeyIfValid:publicParamKey
                        paramGuard:ETParamKeyGuardPublicParam
                  constKeyListType:nil
-                  conflictErrCode:EventTracingExceptionParamConflictWithEmbedded
+                  conflictErrCode:NEEventTracingExceptionParamConflictWithEmbedded
                              regx:self.publicParamRegx
-                      regxErrCode:EventTracingExceptionPublicParamInvalid
+                      regxErrCode:NEEventTracingExceptionPublicParamInvalid
                             error:error];
 }
 
@@ -127,9 +127,9 @@ NSString *ET_ExceptionKeyForCode(NSUInteger code) {
     return [self _checkKeyIfValid:userParamKey
                        paramGuard:ETParamKeyGuardUserParam
                  constKeyListType:nil
-                  conflictErrCode:EventTracingExceptionParamConflictWithEmbedded
+                  conflictErrCode:NEEventTracingExceptionParamConflictWithEmbedded
                              regx:self.userParamRegxFixed
-                      regxErrCode:EventTracingExceptionUserParamInvalid
+                      regxErrCode:NEEventTracingExceptionUserParamInvalid
                             error:error];
 }
 
@@ -142,9 +142,9 @@ NSString *ET_ExceptionKeyForCode(NSUInteger code) {
                    error:(NSError ** _Nullable)error {
     __block NSError *localError = *error;
     void(^reportException)(NSInteger) = ^(NSInteger code) {
-        id<EventTracingExceptionDelegate> exceptionDelegate = [[EventTracingEngine sharedInstance].context exceptionInterface];
+        id<NEEventTracingExceptionDelegate> exceptionDelegate = [[NEEventTracingEngine sharedInstance].context exceptionInterface];
         if ([exceptionDelegate respondsToSelector:@selector(paramGuardExceptionKey:code:paramKey:regex:error:)]) {
-            [exceptionDelegate paramGuardExceptionKey:ET_ExceptionKeyForCode(code) code:code paramKey:paramKey regex:regx error:localError];
+            [exceptionDelegate paramGuardExceptionKey:NE_ET_ExceptionKeyForCode(code) code:code paramKey:paramKey regex:regx error:localError];
         }
 
         ETLogE(@"ParamGuard", @"%@", localError);
@@ -152,7 +152,7 @@ NSString *ET_ExceptionKeyForCode(NSUInteger code) {
     
     BOOL valid =  [self _doCheckKeyIfConflict:paramKey paramGuard:paramGuard constKeyListType:constKeyListType errCode:conflictErrCode error:&localError];
     if (!valid) {
-        ETDispatchMainAsyncSafe(^{
+        NEETDispatchMainAsyncSafe(^{
             reportException(conflictErrCode);
         });
         return NO;
@@ -160,7 +160,7 @@ NSString *ET_ExceptionKeyForCode(NSUInteger code) {
     
     valid = [self _doCheckKey:paramKey paramGuard:paramGuard regx:regx errCode:regxErrCode error:&localError];
     if (!valid) {
-        ETDispatchMainAsyncSafe(^{
+        NEETDispatchMainAsyncSafe(^{
             reportException(regxErrCode);
         });
         return NO;
@@ -174,15 +174,15 @@ NSString *ET_ExceptionKeyForCode(NSUInteger code) {
              constKeyListType:(NSString *)constKeyListType
                       errCode:(NSInteger)errcode
                         error:(NSError ** _Nullable)error {
-    NSMutableArray<NSString *> *constKeyList = [EventTracingConstData sharedInstance].allConstKeys.mutableCopy;
+    NSMutableArray<NSString *> *constKeyList = [NEEventTracingConstData sharedInstance].allConstKeys.mutableCopy;
     if (constKeyListType) {
-        NSArray<NSString *> *list = [[EventTracingConstData sharedInstance] constKeysForType:constKeyListType];
+        NSArray<NSString *> *list = [[NEEventTracingConstData sharedInstance] constKeysForType:constKeyListType];
         [constKeyList removeObjectsInArray:list];
     }
     
     if (error != NULL && [constKeyList containsObject:key]) {
         *error = [NSError errorWithDomain:@"com.eventtracing.param.guard" code:errcode userInfo:@{
-            EventTracingExeptionErrmsgKey: [NSString stringWithFormat:@"%@ key: %@, conflict with enbedded", paramGuard, key]
+            NEEventTracingExeptionErrmsgKey: [NSString stringWithFormat:@"%@ key: %@, conflict with enbedded", paramGuard, key]
         }];
         return NO;
     }
@@ -207,7 +207,7 @@ NSString *ET_ExceptionKeyForCode(NSUInteger code) {
     
     if (error != NULL) {
         *error = [NSError errorWithDomain:@"com.eventtracing.param.guard" code:errcode userInfo:@{
-            EventTracingExeptionErrmsgKey: [NSString stringWithFormat:@"%@ key: %@, dot match regx", paramGuard, key],
+            NEEventTracingExeptionErrmsgKey: [NSString stringWithFormat:@"%@ key: %@, dot match regx", paramGuard, key],
             ETParamKeyGuardErrorRegxKey: (exp.pattern ?: @"")
         }];
     }

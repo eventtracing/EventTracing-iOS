@@ -1,30 +1,30 @@
 //
-//  EventTracingEngine+Traverse.m
-//  EventTracing
+//  NEEventTracingEngine+Traverse.m
+//  NEEventTracing
 //
 //  Created by dl on 2021/4/13.
 //
 
-#import "EventTracingEngine+TraverseAction.h"
-#import "EventTracingEngine+Private.h"
+#import "NEEventTracingEngine+TraverseAction.h"
+#import "NEEventTracingEngine+Private.h"
 #import <BlocksKit/BlocksKit.h>
 
-@implementation EventTracingTraverseAction
+@implementation NEEventTracingTraverseAction
 @synthesize view = _view;
 @synthesize viewIsNil = _viewIsNil;
 
 + (instancetype)actionWithView:(UIView * _Nullable)view {
-    EventTracingTraverseAction *action = [[EventTracingTraverseAction alloc] init];
+    NEEventTracingTraverseAction *action = [[NEEventTracingTraverseAction alloc] init];
     action->_view = view;
     action->_viewIsNil = view == nil;
     return action;
 }
 @end
 
-@interface EventTracingStockedTraverseActionRecord()
-@property(nonatomic, strong) NSMutableArray<EventTracingTraverseAction *> *innerActions;
+@interface NEEventTracingStockedTraverseActionRecord()
+@property(nonatomic, strong) NSMutableArray<NEEventTracingTraverseAction *> *innerActions;
 @end
-@implementation EventTracingStockedTraverseActionRecord
+@implementation NEEventTracingStockedTraverseActionRecord
 @synthesize passthrough = _passthrough;
 
 - (instancetype)init {
@@ -35,7 +35,7 @@
     return self;
 }
 
-- (void)actionDidOccured:(EventTracingTraverseAction *)action {
+- (void)actionDidOccured:(NEEventTracingTraverseAction *)action {
     if (_passthrough) {
         return;
     }
@@ -55,36 +55,36 @@
     [_innerActions removeAllObjects];
 }
 
-- (NSArray<EventTracingTraverseAction *> *)actions {
+- (NSArray<NEEventTracingTraverseAction *> *)actions {
     return _innerActions.copy;
 }
 
 @end
 
-@implementation EventTracingEngine (TraverseAction)
+@implementation NEEventTracingEngine (TraverseAction)
 
 - (void)traverse:(UIView * _Nullable)view {
     [self traverse:view traverseAction:nil];
 }
 
-- (void)traverse:(UIView *)view traverseAction:(void (^ NS_NOESCAPE _Nullable)(EventTracingTraverseAction * _Nonnull))block {
+- (void)traverse:(UIView *)view traverseAction:(void (^ NS_NOESCAPE _Nullable)(NEEventTracingTraverseAction * _Nonnull))block {
     /// MARK: 后台情况下，直接忽略树的构建
     if (!self.context.isAppInActive) {
         return;
     }
     
-    EventTracingTraverseAction *action = [EventTracingTraverseAction actionWithView:view];
+    NEEventTracingTraverseAction *action = [NEEventTracingTraverseAction actionWithView:view];
     !block ?: block(action);
     
     void(^insertToStockedActions)(void) = ^() {
         if (!self.stockedTraverseActionRecord) {
-            self.stockedTraverseActionRecord = [[EventTracingStockedTraverseActionRecord alloc] init];
+            self.stockedTraverseActionRecord = [[NEEventTracingStockedTraverseActionRecord alloc] init];
         }
         
         [self.stockedTraverseActionRecord actionDidOccured:action];
     };
     
-    ETDispatchMainAsyncSafe(insertToStockedActions);
+    NEETDispatchMainAsyncSafe(insertToStockedActions);
 }
 
 - (void)traverseForScrollView:(UIScrollView *)scrollView {
