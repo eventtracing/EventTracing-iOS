@@ -53,7 +53,7 @@
     NSMutableArray<UIView *> *actionViews = @[].mutableCopy;
     // Alert || Actionsheet 中按钮，都处于 `UIStackView` 内，并且在 `` 内的label.text就是按钮文案
     [self.view.subviews ne_et_enumerateObjectsUsingBlock:^NSArray<__kindof UIView *> * _Nonnull(__kindof UIView * _Nonnull obj, BOOL * _Nonnull stop) {
-        if (NE_STR_MATCHES(NSStringFromClass([obj class]), ET_MANGLED(_,U,I,A,l,e,r,t),@"Controller",@"Action",@"View")) {
+        if (ET_STR_MATCHES(NSStringFromClass([obj class]), ET_CONFUSED(_,U,I,A,l,e,r,t),@"Controller",@"Action",@"View")) {
             [actionViews addObject:obj];
             return nil;
         }

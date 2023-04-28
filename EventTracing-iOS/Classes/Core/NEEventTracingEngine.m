@@ -12,7 +12,7 @@
 #import "UIView+EventTracingPrivate.h"
 
 #import "NEEventTracingAOPManager.h"
-#import "NEEventTracingAppLicycleAOP.h"
+#import "EventTracingAppLicycleAOP.h"
 #import "NEEventTracingUIControlAOP.h"
 #import "NEEventTracingUIScrollViewAOP.h"
 #import "NEEventTracingUITabbarAOP.h"

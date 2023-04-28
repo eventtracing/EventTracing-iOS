@@ -6,7 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "EventTracingDefines.h"
+#import "NEEventTracingDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -152,7 +152,7 @@ typedef void(^ET_BuildVirtualParentBlock)(id<EventTracingLogVirtualParentNodeBui
 @protocol EventTracingLogVirtualParentNodeBuilder <NSObject>
 // 内建埋点策略: impress
 // 针对虚拟父节点，click无意义，也不会打
-@property(nonatomic, readonly) id<EventTracingLogVirtualParentNodeBuilder> (^buildinEventLogDisableStrategy)(ETNodeBuildinEventLogDisableStrategy strategy);
+@property(nonatomic, readonly) id<EventTracingLogVirtualParentNodeBuilder> (^buildinEventLogDisableStrategy)(NEETNodeBuildinEventLogDisableStrategy strategy);
 @property(nonatomic, readonly) id<EventTracingLogVirtualParentNodeBuilder> (^buildinEventLogDisableImpress)(void);
 @property(nonatomic, readonly) id<EventTracingLogVirtualParentNodeBuilder> (^buildinEventLogDisableImpressend)(BOOL disable);
 @property(nonatomic, readonly) id<EventTracingLogVirtualParentNodeBuilder> (^buildinEventLogDisableAll)(void);
@@ -171,7 +171,7 @@ typedef void(^ET_BuildParamsCarryEventsBlock)(id<EventTracingLogNodeParamsBuilde
 @property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^visibleEdgeInsetsLeft)(CGFloat insetsLeft);
 @property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^visibleEdgeInsetsBottom)(CGFloat insetsBottom);
 @property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^visibleEdgeInsetsRight)(CGFloat insetsRight);
-@property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^visibleRectCalculateStrategy)(ETNodeVisibleRectCalculateStrategy strategy);   // default: ETNodeVisibleRectCalculateStrategyOnParentNode
+@property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^visibleRectCalculateStrategy)(NEETNodeVisibleRectCalculateStrategy strategy);   // default: ETNodeVisibleRectCalculateStrategyOnParentNode
 
 /// MARK: 是否穿透父节点的可见区域，常跟`logicalParentSPM`一起用，用在需要将一个比较大的浮层，挂载到一个比较小的按钮上的场景
 /// MARK: 相当于调用 visibleRectCalculateStrategy
@@ -179,7 +179,7 @@ typedef void(^ET_BuildParamsCarryEventsBlock)(id<EventTracingLogNodeParamsBuilde
 @property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^visiblePassthrough)(BOOL passthrough);
 
 // 内建埋点策略: clck | impress
-@property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^buildinEventLogDisableStrategy)(ETNodeBuildinEventLogDisableStrategy strategy);
+@property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^buildinEventLogDisableStrategy)(NEETNodeBuildinEventLogDisableStrategy strategy);
 @property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^buildinEventLogDisableClick)(void);
 @property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^buildinEventLogDisableImpress)(void);
 @property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^buildinEventLogDisableImpressend)(BOOL disable);
@@ -194,7 +194,7 @@ typedef void(^ET_BuildParamsCarryEventsBlock)(id<EventTracingLogNodeParamsBuilde
 @property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^logicalParentView)(UIView * _Nullable view);
 @property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^logicalParentSPM)(NSString * _Nullable spm);
 @property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^autoMountOnCurrentRootPage)(BOOL mount);
-@property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^autoMountOnCurrentRootPageWithPriority)(ETAutoMountRootPageQueuePriority priority);
+@property(nonatomic, readonly) id<EventTracingLogNodeBuilder> (^autoMountOnCurrentRootPageWithPriority)(NEETAutoMountRootPageQueuePriority priority);
 
 /// MARK: `页面` 节点是否拥有 `遮挡` 能力，default: YES
 // `遮挡`: 可以遮挡父节点名下添加顺序早于自己的其他节点; 遮挡不考虑多节点累加遮挡场景(比如a,b都是页面节点，这俩合起来才可以完整覆盖c节点，单独都不能完成覆盖，则构不成遮挡关系)

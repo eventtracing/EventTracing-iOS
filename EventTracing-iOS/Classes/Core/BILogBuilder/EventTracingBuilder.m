@@ -8,7 +8,7 @@
 #import "EventTracingBuilder.h"
 #import "UIView+EventTracingPrivate.h"
 #import "UIView+EventTracingPipEvent.h"
-#import "EventTracingEngine.h"
+#import "NEEventTracingEngine.h"
 #import <objc/runtime.h>
 
 static bool s_enable_check_node_oid_overwrite = false;
@@ -56,7 +56,7 @@ static void _check_node_oid_overwrite (UIView *view, bool isPage, NSString *oid)
 
 @interface EventTracingLogVirtualParentNodeBuilder : NSObject<EventTracingLogVirtualParentNodeBuilder>
 @property(nonatomic, assign) NSUInteger positionValue;
-@property(nonatomic, assign) ETNodeBuildinEventLogDisableStrategy buildinEventLogDisableStrategyValue;
+@property(nonatomic, assign) NEETNodeBuildinEventLogDisableStrategy buildinEventLogDisableStrategyValue;
 
 @property(nonatomic, strong) EventTracingLogNodeParamsBuilder *paramsBuilder;
 @end
@@ -79,7 +79,7 @@ static void _check_node_oid_overwrite (UIView *view, bool isPage, NSString *oid)
         _check_node_oid_overwrite(view, true, pageId);
     }
     
-    [view et_setPageId:pageId params:nodeBuilder.paramsBuilder.params];
+    [view ne_et_setPageId:pageId params:nodeBuilder.paramsBuilder.params];
     
     nodeBuilder.view = view;
     view.et_nodeBuilder = nodeBuilder;
@@ -94,7 +94,7 @@ static void _check_node_oid_overwrite (UIView *view, bool isPage, NSString *oid)
         _check_node_oid_overwrite(viewController.view, true, pageId);
     }
     
-    [viewController et_setPageId:pageId params:nodeBuilder.paramsBuilder.params];
+    [viewController ne_et_setPageId:pageId params:nodeBuilder.paramsBuilder.params];
     
     nodeBuilder.view = viewController.view;
     viewController.view.et_nodeBuilder = nodeBuilder;
@@ -109,7 +109,7 @@ static void _check_node_oid_overwrite (UIView *view, bool isPage, NSString *oid)
         _check_node_oid_overwrite(view, false, elementId);
     }
     
-    [view et_setElementId:elementId params:nodeBuilder.paramsBuilder.params];
+    [view ne_et_setElementId:elementId params:nodeBuilder.paramsBuilder.params];
     
     nodeBuilder.view = view;
     view.et_nodeBuilder = nodeBuilder;
@@ -124,8 +124,8 @@ static void _check_node_oid_overwrite (UIView *view, bool isPage, NSString *oid)
     
     /// MARK: 开发&测试 包，会做一步检查
 #ifdef DEBUG
-    UIView *pipFixedView = [view.et_pipTargetEventViews objectForKey:actionBuilder.eventValue] ?: view;
-    BOOL valid = pipFixedView.et_isElement || pipFixedView.et_isPage;
+    UIView *pipFixedView = [view.ne_et_pipTargetEventViews objectForKey:actionBuilder.eventValue] ?: view;
+    BOOL valid = pipFixedView.ne_et_isElement || pipFixedView.ne_et_isPage;
     if (!valid) {
         NSString *message = [NSString stringWithFormat:@"[%@]\n%@\n%@\n%@",
                              NSStringFromClass(pipFixedView.class),
@@ -138,10 +138,10 @@ static void _check_node_oid_overwrite (UIView *view, bool isPage, NSString *oid)
     }
 #endif
     
-    [[EventTracingEngine sharedInstance] logWithEvent:actionBuilder.eventValue
+    [[NEEventTracingEngine sharedInstance] logWithEvent:actionBuilder.eventValue
                                                    view:view
                                                  params:actionBuilder.params
-                                            eventAction:^(EventTracingEventActionConfig * _Nonnull config) {
+                                            eventAction:^(NEEventTracingEventActionConfig * _Nonnull config) {
         if (actionBuilder.useForReferValue) {
             config.useForRefer = [actionBuilder.useForReferValue boolValue];
         }
@@ -155,7 +155,7 @@ static void _check_node_oid_overwrite (UIView *view, bool isPage, NSString *oid)
     EventTracingLogNodeEventActionBuilder *actionBuilder = [[EventTracingLogNodeEventActionBuilder alloc] init];
     !block ?: block(actionBuilder);
     
-    [[EventTracingEngine sharedInstance] logSimplyWithEvent:actionBuilder.eventValue
+    [[NEEventTracingEngine sharedInstance] logSimplyWithEvent:actionBuilder.eventValue
                                                        params:actionBuilder.params];
 }
 
@@ -163,7 +163,7 @@ static void _check_node_oid_overwrite (UIView *view, bool isPage, NSString *oid)
     EventTracingLogNodeUseForReferEventActionBuilder *actionBuilder = [[EventTracingLogNodeUseForReferEventActionBuilder alloc] init];
     !block ?: block(actionBuilder);
     
-    [[EventTracingEngine sharedInstance] logReferEvent:actionBuilder.eventValue
+    [[NEEventTracingEngine sharedInstance] logReferEvent:actionBuilder.eventValue
                                                referType:actionBuilder.referTypeValue
                                                 referSPM:actionBuilder.referSPMValue
                                                 referSCM:actionBuilder.referSCMValue
@@ -210,12 +210,12 @@ static void _check_node_oid_overwrite (UIView *view, bool isPage, NSString *oid)
     EventTracingLogVirtualParentNodeBuilder *builder = [[EventTracingLogVirtualParentNodeBuilder alloc] init];
     !block ?: block(builder);
     
-    [view et_setVirtualParentOid:elementId
-                          isPage:NO
-                  nodeIdentifier:identifier
-                        position:builder.positionValue
-  buildinEventLogDisableStrategy:builder.buildinEventLogDisableStrategyValue
-                          params:builder.paramsBuilder.params];
+    [view ne_et_setVirtualParentOid:elementId
+                             isPage:NO
+                     nodeIdentifier:identifier
+                           position:builder.positionValue
+     buildinEventLogDisableStrategy:builder.buildinEventLogDisableStrategyValue
+                             params:builder.paramsBuilder.params];
 }
 
 + (void)buildVirtualParentNodeForView:(UIView *)view
@@ -225,12 +225,12 @@ static void _check_node_oid_overwrite (UIView *view, bool isPage, NSString *oid)
     EventTracingLogVirtualParentNodeBuilder *builder = [[EventTracingLogVirtualParentNodeBuilder alloc] init];
     !block ?: block(builder);
     
-    [view et_setVirtualParentOid:pageId
-                          isPage:YES
-                  nodeIdentifier:identifier
-                        position:builder.positionValue
-  buildinEventLogDisableStrategy:builder.buildinEventLogDisableStrategyValue
-                          params:builder.paramsBuilder.params];
+    [view ne_et_setVirtualParentOid:pageId
+                             isPage:YES
+                     nodeIdentifier:identifier
+                           position:builder.positionValue
+     buildinEventLogDisableStrategy:builder.buildinEventLogDisableStrategyValue
+                             params:builder.paramsBuilder.params];
 }
 
 @end
@@ -303,11 +303,11 @@ EventTracingLogSCMComponentBuilderMethod(ctrp)
         if (scm.length) {
             [scm appendString:@"|"];
         }
-        NSString *value = [[EventTracingEngine sharedInstance].context.referNodeSCMFormatter nodeSCMWithNodeParams:params];
+        NSString *value = [[NEEventTracingEngine sharedInstance].context.referNodeSCMFormatter nodeSCMWithNodeParams:params];
         [scm appendString:value];
         if (er
             && !(*er)
-            && [[EventTracingEngine sharedInstance].context.referNodeSCMFormatter needsEncodeSCMForNodeParams:params]) {
+            && [[NEEventTracingEngine sharedInstance].context.referNodeSCMFormatter needsEncodeSCMForNodeParams:params]) {
             *er = YES;
         }
     }];
@@ -407,13 +407,13 @@ EventTracingLogNodeParamContentIdBuilderMethod(song)
 
 - (void)clean {
     [self->_json removeAllObjects];
-    [self.nodeBuilder.view et_removeAllParams];
+    [self.nodeBuilder.view ne_et_removeAllParams];
 }
 
 - (void)syncToNodeBuilder {
     NSDictionary *json = [self->_json copy];
     [EventTracingBuilder checkForBlackListParamKeys:json.allKeys];
-    [self.nodeBuilder.view et_addParams:json];
+    [self.nodeBuilder.view ne_et_addParams:json];
 }
 
 - (id<EventTracingLogNodeParamsBuilder> _Nonnull (^)(NSDictionary<NSString *,NSString *> * _Nullable))addParams {
@@ -459,8 +459,8 @@ EventTracingLogNodeParamsBuilderMethod(ctrp)
 
 - (id<EventTracingLogNodeParamsBuilder>  _Nonnull (^)(NSUInteger))position {
     return ^(NSUInteger value) {
-        self.nodeBuilder.view.et_position = value;
-        NSString *key = [NSString stringWithFormat:@"s%@", ET_REFER_KEY_POSITION];
+        self.nodeBuilder.view.ne_et_position = value;
+        NSString *key = [NSString stringWithFormat:@"s%@", NE_ET_REFER_KEY_POSITION];
         self->_json[key] = @(value).stringValue;
         
         [self syncToNodeBuilder];
@@ -555,16 +555,16 @@ EventTracingLogNodeParamsBuilderMethod(name)
     };                                                              \
 }
 
-EventTracingLogNodeEventActionBuilderMethod(pv, ET_EVENT_ID_P_VIEW)
-EventTracingLogNodeEventActionBuilderMethod(pd, ET_EVENT_ID_P_VIEW_END)
-EventTracingLogNodeEventActionBuilderMethod(ev, ET_EVENT_ID_E_VIEW)
-EventTracingLogNodeEventActionBuilderMethod(ed, ET_EVENT_ID_E_VIEW_END)
-EventTracingLogNodeEventActionBuilderMethod(ec, ET_EVENT_ID_E_CLCK)
-EventTracingLogNodeEventActionBuilderMethod(elc, ET_EVENT_ID_E_LONG_CLCK)
-EventTracingLogNodeEventActionBuilderMethod(es, ET_EVENT_ID_E_SLIDE)
-EventTracingLogNodeEventActionBuilderMethod(pgf, ET_EVENT_ID_P_REFRESH)
-EventTracingLogNodeEventActionBuilderMethod(plv, ET_EVENT_ID_PLV)
-EventTracingLogNodeEventActionBuilderMethod(pld, ET_EVENT_ID_PLD)
+EventTracingLogNodeEventActionBuilderMethod(pv, NE_ET_EVENT_ID_P_VIEW)
+EventTracingLogNodeEventActionBuilderMethod(pd, NE_ET_EVENT_ID_P_VIEW_END)
+EventTracingLogNodeEventActionBuilderMethod(ev, NE_ET_EVENT_ID_E_VIEW)
+EventTracingLogNodeEventActionBuilderMethod(ed, NE_ET_EVENT_ID_E_VIEW_END)
+EventTracingLogNodeEventActionBuilderMethod(ec, NE_ET_EVENT_ID_E_CLCK)
+EventTracingLogNodeEventActionBuilderMethod(elc, NE_ET_EVENT_ID_E_LONG_CLCK)
+EventTracingLogNodeEventActionBuilderMethod(es, NE_ET_EVENT_ID_E_SLIDE)
+EventTracingLogNodeEventActionBuilderMethod(pgf, NE_ET_EVENT_ID_P_REFRESH)
+EventTracingLogNodeEventActionBuilderMethod(plv, NE_ET_EVENT_ID_PLV)
+EventTracingLogNodeEventActionBuilderMethod(pld, NE_ET_EVENT_ID_PLD)
 
 - (id<EventTracingLogNodeParamsBuilder> _Nonnull (^)(NSString * _Nonnull))event {
     return ^(NSString *event) {
@@ -617,7 +617,7 @@ EventTracingLogNodeEventActionBuilderMethod(pld, ET_EVENT_ID_PLD)
 #define EventTracingLogNodeBuilderMethod(TYPE, p)                                       \
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(TYPE))p {                               \
     return ^(TYPE value) {                                                      \
-        self.view.et_ ## p = value;                                             \
+        self.view.ne_et_ ## p = value;                                             \
         return self;                                                            \
     };                                                                          \
 }
@@ -625,7 +625,7 @@ EventTracingLogNodeEventActionBuilderMethod(pld, ET_EVENT_ID_PLD)
 #define NELogETNodeVisibleBuilderMethod(TYPE, p)                                \
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(CGFloat)) p {                           \
     return ^(CGFloat value) {                                                   \
-        UIEdgeInsets insets = self.view.et_visibleEdgeInsets;                   \
+        UIEdgeInsets insets = self.view.ne_et_visibleEdgeInsets;                   \
         insets.TYPE = value;                                                    \
         self.visibleEdgeInsets(insets);                                         \
         return self;                                                            \
@@ -638,11 +638,11 @@ NELogETNodeVisibleBuilderMethod(top, visibleEdgeInsetsTop)
 NELogETNodeVisibleBuilderMethod(left, visibleEdgeInsetsLeft)
 NELogETNodeVisibleBuilderMethod(bottom, visibleEdgeInsetsBottom)
 NELogETNodeVisibleBuilderMethod(right, visibleEdgeInsetsRight)
-EventTracingLogNodeBuilderMethod(ETNodeVisibleRectCalculateStrategy, visibleRectCalculateStrategy)
+EventTracingLogNodeBuilderMethod(NEETNodeVisibleRectCalculateStrategy, visibleRectCalculateStrategy)
 
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(BOOL))visiblePassthrough {
     return ^(BOOL passthrough) {
-        self.visibleRectCalculateStrategy(passthrough ? ETNodeVisibleRectCalculateStrategyPassthrough : ETNodeVisibleRectCalculateStrategyOnParentNode);
+        self.visibleRectCalculateStrategy(passthrough ? NEETNodeVisibleRectCalculateStrategyPassthrough : NEETNodeVisibleRectCalculateStrategyOnParentNode);
         return self;
     };
 }
@@ -663,37 +663,37 @@ EventTracingLogNodeBuilderMethod(ETNodeVisibleRectCalculateStrategy, visibleRect
     };
 }
 
-- (id<EventTracingLogNodeBuilder>  _Nonnull (^)(ETNodeBuildinEventLogDisableStrategy))buildinEventLogDisableStrategy {
-    return ^(ETNodeBuildinEventLogDisableStrategy value) {
-        self.view.et_buildinEventLogDisableStrategy = value;
+- (id<EventTracingLogNodeBuilder>  _Nonnull (^)(NEETNodeBuildinEventLogDisableStrategy))buildinEventLogDisableStrategy {
+    return ^(NEETNodeBuildinEventLogDisableStrategy value) {
+        self.view.ne_et_buildinEventLogDisableStrategy = value;
         return self;
     };
 }
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(void))buildinEventLogDisableClick {
     return ^(void) {
-        self.view.et_buildinEventLogDisableStrategy |= ETNodeBuildinEventLogDisableStrategyClick;
+        self.view.ne_et_buildinEventLogDisableStrategy |= NEETNodeBuildinEventLogDisableStrategyClick;
         return self;
     };
 }
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(void))buildinEventLogDisableImpress {
     return ^(void) {
-        self.view.et_buildinEventLogDisableStrategy |= ETNodeBuildinEventLogDisableStrategyImpress;
+        self.view.ne_et_buildinEventLogDisableStrategy |= NEETNodeBuildinEventLogDisableStrategyImpress;
         return self;
     };
 }
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(BOOL))buildinEventLogDisableImpressend {
     return ^(BOOL value) {
         if (value) {
-            self.view.et_buildinEventLogDisableStrategy |= ETNodeBuildinEventLogDisableStrategyImpressend;
-        } else if (self.view.et_buildinEventLogDisableStrategy & ETNodeBuildinEventLogDisableStrategyImpressend) {
-            self.view.et_buildinEventLogDisableStrategy &= ~ETNodeBuildinEventLogDisableStrategyImpressend;
+            self.view.ne_et_buildinEventLogDisableStrategy |= NEETNodeBuildinEventLogDisableStrategyImpressend;
+        } else if (self.view.ne_et_buildinEventLogDisableStrategy & NEETNodeBuildinEventLogDisableStrategyImpressend) {
+            self.view.ne_et_buildinEventLogDisableStrategy &= ~NEETNodeBuildinEventLogDisableStrategyImpressend;
         }
         return self;
     };
 }
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(void))buildinEventLogDisableAll {
     return ^(void) {
-        self.view.et_buildinEventLogDisableStrategy = ETNodeBuildinEventLogDisableStrategyAll;
+        self.view.ne_et_buildinEventLogDisableStrategy = NEETNodeBuildinEventLogDisableStrategyAll;
         return self;
     };
 }
@@ -705,9 +705,9 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(BOOL))autoMountOnCurrentRootPage {
     return ^(BOOL mount) {
         if (mount) {
-            [self.view et_autoMountOnCurrentRootPage];
+            [self.view ne_et_autoMountOnCurrentRootPage];
         } else {
-            [self.view et_cancelAutoMountOnCurrentRootPage];
+            [self.view ne_et_cancelAutoMountOnCurrentRootPage];
         }
         return self;
     };
@@ -717,20 +717,20 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
     return self.autoMountOnCurrentRootPage;
 }
 
-- (id<EventTracingLogNodeBuilder> _Nonnull (^)(ETAutoMountRootPageQueuePriority))autoMountOnCuurentRootPageWithPriority {
+- (id<EventTracingLogNodeBuilder> _Nonnull (^)(NEETAutoMountRootPageQueuePriority))autoMountOnCuurentRootPageWithPriority {
     return self.autoMountOnCurrentRootPageWithPriority;
 }
 
-- (id<EventTracingLogNodeBuilder>  _Nonnull (^)(ETAutoMountRootPageQueuePriority))autoMountOnCurrentRootPageWithPriority {
-    return ^(ETAutoMountRootPageQueuePriority priority) {
-        [self.view et_autoMountOnCurrentRootPageWithPriority:priority];
+- (id<EventTracingLogNodeBuilder>  _Nonnull (^)(NEETAutoMountRootPageQueuePriority))autoMountOnCurrentRootPageWithPriority {
+    return ^(NEETAutoMountRootPageQueuePriority priority) {
+        [self.view ne_et_autoMountOnCurrentRootPageWithPriority:priority];
         return self;
     };
 }
 
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(BOOL))pageOcclusionEnable {
     return ^(BOOL pageOcclusionEnable) {
-        self.view.et_pageOcclusionEnable = pageOcclusionEnable;
+        self.view.ne_et_pageOcclusionEnable = pageOcclusionEnable;
         return self;
     };
 }
@@ -747,12 +747,12 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
     EventTracingLogVirtualParentNodeBuilder *builder = [[EventTracingLogVirtualParentNodeBuilder alloc] init];
     !block ?: block(builder);
     
-    [self.view et_setVirtualParentOid:oid
-                               isPage:isPage
-                       nodeIdentifier:identifier
-                             position:builder.positionValue
-       buildinEventLogDisableStrategy:builder.buildinEventLogDisableStrategyValue
-                               params:builder.paramsBuilder.params];
+    [self.view ne_et_setVirtualParentOid:oid
+                                  isPage:isPage
+                          nodeIdentifier:identifier
+                                position:builder.positionValue
+          buildinEventLogDisableStrategy:builder.buildinEventLogDisableStrategyValue
+                                  params:builder.paramsBuilder.params];
 }
 
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(NSString * _Nonnull, id _Nonnull, ET_BuildVirtualParentBlock NS_NOESCAPE _Nullable))virtualParent {
@@ -771,7 +771,7 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
 
 - (id<EventTracingLogNodeBuilder> _Nonnull (^)(id _Nonnull))bindDataForReuse {
     return ^(id data) {
-        [self.view et_bindDataForReuse:data];
+        [self.view ne_et_bindDataForReuse:data];
         
         if ([data isKindOfClass:NSString.class] || [data isKindOfClass:NSArray.class] || [data isKindOfClass:NSDictionary.class]) {
             return self;
@@ -783,7 +783,7 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
 
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(BOOL))enableSubPageProducePvRefer {
     return ^(BOOL value) {
-        self.view.et_subpagePvToReferEnable = value;
+        self.view.ne_et_subpagePvToReferEnable = value;
         return self;
     };
 }
@@ -791,9 +791,9 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(BOOL))enableSubPageConsumeAllRefer {
     return ^(BOOL value) {
         if (value) {
-            [self.view et_makeSubpageConsumeAllRefer];
+            [self.view ne_et_makeSubpageConsumeAllRefer];
         } else {
-            [self.view et_clearSubpageConsumeReferOption];
+            [self.view ne_et_clearSubpageConsumeReferOption];
         }
         return self;
     };
@@ -802,9 +802,9 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(BOOL))enableSubPageConsumeEventRefer {
     return ^(BOOL value) {
         if (value) {
-            [self.view et_makeSubpageConsumeEventRefer];
+            [self.view ne_et_makeSubpageConsumeEventRefer];
         } else {
-            [self.view et_clearSubpageConsumeReferOption];
+            [self.view ne_et_clearSubpageConsumeReferOption];
         }
         return self;
     };
@@ -812,27 +812,27 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
 
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(NSString * _Nonnull))bindDataForReuseWithAutoClassifyIdAppend {
     return ^(NSString *identifier) {
-        [self.view et_bindDataForReuse:self.view.et_autoClassifyIdAppend(identifier)];
+        [self.view ne_et_bindDataForReuse:self.view.ne_et_autoClassifyIdAppend(identifier)];
         return self;
     };
 }
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(NSString * _Nonnull))referToid {
     return ^(NSString *toid) {
-        [self.view et_makeReferToid:toid];
+        [self.view ne_et_makeReferToid:toid];
         return self;
     };
 }
 
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(BOOL))ignoreReferCascade {
     return ^(BOOL value) {
-        self.view.et_ignoreReferCascade = value;
+        self.view.ne_et_ignoreReferCascade = value;
         return self;
     };
 }
 
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(BOOL))doNotParticipateMultirefer {
     return ^(BOOL value) {
-        self.view.et_psreferMute = value;
+        self.view.ne_et_psreferMute = value;
         return self;
     };
 }
@@ -847,7 +847,7 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
 
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(ET_BuildParamsBlock _Nullable))addParamsCallback {
     return ^(ET_BuildParamsBlock block) {
-        [self.view et_addParamsCallback:^NSDictionary * _Nonnull{
+        [self.view ne_et_addParamsCallback:^NSDictionary * _Nonnull{
             EventTracingLogNodeParamsBuilder *builder = [[EventTracingLogNodeParamsBuilder alloc] init];
             !block ?: block(builder);
             return builder.params;
@@ -858,19 +858,19 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
 
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(ET_BuildParamsBlock _Nullable))addClickParamsCallback {
     return ^(ET_BuildParamsBlock block) {
-        return self.addParamsCallbackForEvent(ET_EVENT_ID_E_CLCK, block);
+        return self.addParamsCallbackForEvent(NE_ET_EVENT_ID_E_CLCK, block);
     };
 }
 
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(ET_BuildParamsBlock _Nullable))addLongClickParamsCallback {
     return ^(ET_BuildParamsBlock block) {
-        return self.addParamsCallbackForEvent(ET_EVENT_ID_E_LONG_CLCK, block);
+        return self.addParamsCallbackForEvent(NE_ET_EVENT_ID_E_LONG_CLCK, block);
     };
 }
 
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(NSString * _Nonnull, ET_BuildParamsBlock _Nullable))addParamsCallbackForEvent {
     return ^(NSString *event, ET_BuildParamsBlock block) {
-        [self.view et_addParamsCallback:^NSDictionary * _Nonnull{
+        [self.view ne_et_addParamsCallback:^NSDictionary * _Nonnull{
             EventTracingLogNodeParamsBuilder *builder = [[EventTracingLogNodeParamsBuilder alloc] init];
             !block ?: block(builder);
             return builder.params;
@@ -880,7 +880,7 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
 }
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(NSArray<NSString *> * _Nonnull, ET_BuildParamsBlock _Nullable))addParamsCallbackForEvents {
     return ^(NSArray<NSString *> *events, ET_BuildParamsBlock block) {
-        [self.view et_addParamsCallback:^NSDictionary * _Nonnull{
+        [self.view ne_et_addParamsCallback:^NSDictionary * _Nonnull{
             EventTracingLogNodeParamsBuilder *builder = [[EventTracingLogNodeParamsBuilder alloc] init];
             !block ?: block(builder);
             return builder.params;
@@ -891,7 +891,7 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
 
 - (id<EventTracingLogNodeBuilder>  _Nonnull (^)(NSArray<NSString *> * _Nonnull, ET_BuildParamsCarryEventsBlock _Nullable))addParamsCarryEventCallbackForEvents {
     return ^(NSArray<NSString *> *events, ET_BuildParamsCarryEventsBlock block) {
-        [self.view et_addParamsCarryEventCallback:^NSDictionary * _Nonnull(NSString *event) {
+        [self.view ne_et_addParamsCarryEventCallback:^NSDictionary * _Nonnull(NSString *event) {
             EventTracingLogNodeParamsBuilder *builder = [[EventTracingLogNodeParamsBuilder alloc] init];
             !block ?: block(builder, event);
             return builder.params;
@@ -915,35 +915,35 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
         _paramsBuilder = [[EventTracingLogNodeParamsBuilder alloc] init];
         _paramsBuilder.virtualParentNodeBuilder = self;
         
-        _buildinEventLogDisableStrategyValue = [EventTracingEngine sharedInstance].context.isElementAutoImpressendEnable ? ETNodeBuildinEventLogDisableStrategyNone : ETNodeBuildinEventLogDisableStrategyImpressend;
+        _buildinEventLogDisableStrategyValue = [NEEventTracingEngine sharedInstance].context.isElementAutoImpressendEnable ? NEETNodeBuildinEventLogDisableStrategyNone : NEETNodeBuildinEventLogDisableStrategyImpressend;
     }
     return self;
 }
-- (id<EventTracingLogVirtualParentNodeBuilder>  _Nonnull (^)(ETNodeBuildinEventLogDisableStrategy))buildinEventLogDisableStrategy {
-    return ^(ETNodeBuildinEventLogDisableStrategy value) {
+- (id<EventTracingLogVirtualParentNodeBuilder>  _Nonnull (^)(NEETNodeBuildinEventLogDisableStrategy))buildinEventLogDisableStrategy {
+    return ^(NEETNodeBuildinEventLogDisableStrategy value) {
         self.buildinEventLogDisableStrategyValue |= value;
         return self;
     };
 }
 - (id<EventTracingLogVirtualParentNodeBuilder>  _Nonnull (^)(void))buildinEventLogDisableImpress {
     return ^(void) {
-        self.buildinEventLogDisableStrategyValue |= ETNodeBuildinEventLogDisableStrategyImpress;
+        self.buildinEventLogDisableStrategyValue |= NEETNodeBuildinEventLogDisableStrategyImpress;
         return self;
     };
 }
 - (id<EventTracingLogVirtualParentNodeBuilder>  _Nonnull (^)(BOOL))buildinEventLogDisableImpressend {
     return ^(BOOL value) {
         if (value) {
-            self.buildinEventLogDisableStrategyValue |= ETNodeBuildinEventLogDisableStrategyImpressend;
-        } else if (self.buildinEventLogDisableStrategyValue & ETNodeBuildinEventLogDisableStrategyImpressend) {
-            self.buildinEventLogDisableStrategyValue &= ~ETNodeBuildinEventLogDisableStrategyImpressend;
+            self.buildinEventLogDisableStrategyValue |= NEETNodeBuildinEventLogDisableStrategyImpressend;
+        } else if (self.buildinEventLogDisableStrategyValue & NEETNodeBuildinEventLogDisableStrategyImpressend) {
+            self.buildinEventLogDisableStrategyValue &= ~NEETNodeBuildinEventLogDisableStrategyImpressend;
         }
         return self;
     };
 }
 - (id<EventTracingLogVirtualParentNodeBuilder>  _Nonnull (^)(void))buildinEventLogDisableAll {
     return ^(void) {
-        self.buildinEventLogDisableStrategyValue = ETNodeBuildinEventLogDisableStrategyAll;
+        self.buildinEventLogDisableStrategyValue = NEETNodeBuildinEventLogDisableStrategyAll;
         return self;
     };
 }
@@ -989,7 +989,7 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
 }
 @end
 
-@interface UIView (ETNodeDynamicParams_Private) <EventTracingVTreeNodeDynamicParamsProtocol>
+@interface UIView (ETNodeDynamicParams_Private) <NEEventTracingVTreeNodeDynamicParamsProtocol>
 @end
 @implementation UIView (ETNodeExtraParams)
 - (NSDictionary *)et_dynamicParams {
@@ -1003,9 +1003,9 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
     [self et_makeDynamicParams:builder];
     
     // 将 position 同步到节点配置中
-    id position = [builder.params objectForKey:ET_PARAM_CONST_KEY_POSITION];
+    id position = [builder.params objectForKey:NE_ET_PARAM_CONST_KEY_POSITION];
     if (position) {
-        self.et_position = [position unsignedIntegerValue];
+        self.ne_et_position = [position unsignedIntegerValue];
     }
     
     return builder.params;
@@ -1014,7 +1014,7 @@ EventTracingLogNodeBuilderMethod(NSString *, logicalParentSPM)
 - (void)et_makeDynamicParams:(id<EventTracingLogNodeParamsBuilder>)builder { }
 @end
 
-@interface UIViewController (ETNodeDynamicParams_Private) <EventTracingVTreeNodeDynamicParamsProtocol>
+@interface UIViewController (ETNodeDynamicParams_Private) <NEEventTracingVTreeNodeDynamicParamsProtocol>
 @end
 @implementation UIViewController (ETNodeExtraParams)
 - (NSDictionary *)et_dynamicParams {
@@ -1031,12 +1031,12 @@ static void _check_node_oid_overwrite(UIView *view, bool isPage, NSString *oid)
         return;
     }
     id element = view;
-    NSString *ori_oid = isPage ? [element et_pageId] : [element et_elementId];
+    NSString *ori_oid = isPage ? [element ne_et_pageId] : [element ne_et_elementId];
     NSString *ori_anotherOid;
-    if (isPage && [element respondsToSelector:@selector(et_elementId)]) {
-        ori_anotherOid = [element et_elementId];
-    } else if (!isPage && [element respondsToSelector:@selector(et_pageId)]) {
-        ori_anotherOid = [element et_pageId];
+    if (isPage && [element respondsToSelector:@selector(ne_et_elementId)]) {
+        ori_anotherOid = [element ne_et_elementId];
+    } else if (!isPage && [element respondsToSelector:@selector(ne_et_pageId)]) {
+        ori_anotherOid = [element ne_et_pageId];
     }
     
     bool isOidWillChanged = (oid && ori_oid && ![oid isEqualToString:ori_oid]); // oid 将发生变更
@@ -1044,10 +1044,10 @@ static void _check_node_oid_overwrite(UIView *view, bool isPage, NSString *oid)
     if (isOidWillChanged || isEidPidExistAtTheSameTime) {
         NSString *nodeDesc = NSStringFromClass([element class]);
         if ([element isKindOfClass:UIView.class]) {
-            if ([(UIView *)element et_logicalParentViewController]) {
-                nodeDesc = NSStringFromClass([(UIView *)element et_logicalParentViewController].class);
-            } else if ([(UIView *)element respondsToSelector:@selector(et_currentViewController)]) {
-                nodeDesc = NSStringFromClass([[(UIView *)element performSelector:@selector(et_currentViewController)] class]);
+            if ([(UIView *)element ne_et_logicalParentViewController]) {
+                nodeDesc = NSStringFromClass([(UIView *)element ne_et_logicalParentViewController].class);
+            } else if ([(UIView *)element respondsToSelector:@selector(ne_et_currentViewController)]) {
+                nodeDesc = NSStringFromClass([[(UIView *)element performSelector:@selector(ne_et_currentViewController)] class]);
             }
         }
         NSString *message = [NSString stringWithFormat:@"⚠️节点oid变更 %@: 原oid:%@ => 新oid:%@⚠️\n%@\n%@\n%@",

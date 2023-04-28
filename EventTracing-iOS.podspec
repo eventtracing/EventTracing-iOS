@@ -39,13 +39,13 @@ Pod::Spec.new do |s|
     'EventTracing-iOS/Classes/VTree/Visible/*.h'
   ]
   s.public_header_files = [
-    'EventTracing-iOS/Classes/Public/*.h',
+    'EventTracing-iOS/Classes/Public/**/*.h',
     'EventTracing-iOS/Classes/VTree/*.h',
     'EventTracing-iOS/Classes/Refer/*.h',
     'EventTracing-iOS/Classes/Output/*.h',
     'EventTracing-iOS/Classes/Diff/*.h',
-    'EventTracing-iOS/Classes/ParamGuard/EventTracingParamGuardConfiguration.h',
-    'EventTracing-iOS/Classes/Exceptions/EventTracingExceptionDelegate.h',
+    'EventTracing-iOS/Classes/ParamGuard/NEEventTracingParamGuardConfiguration.h',
+    'EventTracing-iOS/Classes/Exceptions/NEEventTracingExceptionDelegate.h',
     'EventTracing-iOS/Classes/Utils/NSArray+ETEnumerator.h'
   ]
 
