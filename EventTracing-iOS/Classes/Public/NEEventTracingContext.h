@@ -167,10 +167,10 @@ NEEventTracingContextOutputParamsFilterBuilder
 @property(nonatomic, assign) NEETViewControllerDidNotLoadViewExceptionTip viewControllerDidNotLoadViewExceptionTip;
 
 /// 参与 multirefer 链路追踪的事件类型，默认 @"_pv,_ec"
-@property(nonatomic, copy) NSString * multiReferAppliedEventList;
+@property(nonatomic, copy, readonly) NSString * multiReferAppliedEventList;
 
 /// multirefer 最大数量，默认 5
-@property(nonatomic, assign) NSInteger multiReferMaxItemCount;
+@property(nonatomic, assign, readonly) NSInteger multiReferMaxItemCount;
 
 /// - 如果为 YES 则表示使用外部的APP生命周期事件，此时需要外部在适当的时机调用下面的方法
 /// ```

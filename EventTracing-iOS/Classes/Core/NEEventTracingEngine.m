@@ -68,14 +68,6 @@
         context.needStartHsreferOids = [context.extraConfigurationProvider needStartHsreferOids];
     }
     
-    if ([context.extraConfigurationProvider respondsToSelector:@selector(multiReferAppliedEventList)]) {
-        context.multiReferAppliedEventList = [context.extraConfigurationProvider multiReferAppliedEventList];
-    }
-    
-    if ([context.extraConfigurationProvider respondsToSelector:@selector(multiReferMaxItemCount)]) {
-        context.multiReferMaxItemCount = [context.extraConfigurationProvider multiReferMaxItemCount];
-    }
-    
     [context markRunState:YES];
     [self _doAOP];
 }

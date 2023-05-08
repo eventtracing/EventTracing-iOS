@@ -91,6 +91,9 @@
 
 - (NSArray<NSString *> *)multiRefers {
     NSInteger multiReferCount = [NEEventTracingEngine sharedInstance].ctx.multiReferMaxItemCount;
+    if (multiReferCount <= 0) {
+        multiReferCount = 5;
+    }
     NSArray<NSString *> *refers = self.multiRefersStack;
     if (refers.count > multiReferCount) {
         refers = [refers subarrayWithRange:NSMakeRange(0, multiReferCount)];

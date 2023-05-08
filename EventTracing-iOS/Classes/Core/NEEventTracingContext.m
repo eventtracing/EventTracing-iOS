@@ -37,8 +37,6 @@
 @synthesize appLastEnterBackgroundTime = _appLastEnterBackgroundTime;
 @synthesize useCustomAppLifeCycle = _useCustomAppLifeCycle;
 @synthesize appBuildVersion = _appBuildVersion;
-@synthesize multiReferAppliedEventList = _multiReferAppliedEventList;
-@synthesize multiReferMaxItemCount = _multiReferMaxItemCount;
 
 #define LOCK        dispatch_semaphore_wait(_lock, DISPATCH_TIME_FOREVER);
 #define UNLOCK      dispatch_semaphore_signal(_lock);
@@ -115,6 +113,20 @@ NSString * const kEventTracingSessIdKey = @"kEventTracingSessIdKey";
     [_actseqSentinel increase];
     
     return _actseqSentinel.value;
+}
+
+- (NSInteger)multiReferMaxItemCount {
+    if ([self.extraConfigurationProvider respondsToSelector:@selector(multiReferMaxItemCount)]) {
+        return [self.extraConfigurationProvider multiReferMaxItemCount];
+    }
+    return 5;
+}
+
+- (NSString *)multiReferAppliedEventList {
+    if ([self.extraConfigurationProvider respondsToSelector:@selector(multiReferAppliedEventList)]) {
+        return [self.extraConfigurationProvider multiReferAppliedEventList];
+    }
+    return @"_pv,_ec";
 }
 
 #pragma mark - NEEventTracingContextVTreeObserverBuilder
