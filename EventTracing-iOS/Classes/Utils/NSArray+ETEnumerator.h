@@ -1,6 +1,6 @@
 //
 //  NSArray+ETEnumerator.h
-//  EventTracing
+//  NEEventTracing
 //
 //  Created by dl on 2021/3/18.
 //
@@ -9,18 +9,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, EventTracingEnumeratorType) {
-    EventTracingEnumeratorTypeDFS,          // 深度优先遍历
-    EventTracingEnumeratorTypeDFSRight,     // 深度优先遍历, 优先遍历右节点
-    EventTracingEnumeratorTypeBFS,          // 广度优先遍历
-    EventTracingEnumeratorTypeBFSRight      // 广度优先遍历, 优先遍历右节点
+typedef NS_ENUM(NSUInteger, NEEventTracingEnumeratorType) {
+    NEEventTracingEnumeratorTypeDFS,          // 深度优先遍历
+    NEEventTracingEnumeratorTypeDFSRight,     // 深度优先遍历, 优先遍历右节点
+    NEEventTracingEnumeratorTypeBFS,          // 广度优先遍历
+    NEEventTracingEnumeratorTypeBFSRight      // 广度优先遍历, 优先遍历右节点
 };
 
 @interface NSArray<__covariant ObjectType> (ETEnumerator)
 
-- (void)et_enumerateObjectsUsingBlock:(NSArray<ObjectType>* (NS_NOESCAPE ^)(ObjectType obj, BOOL *stop))block;
+- (void)ne_et_enumerateObjectsUsingBlock:(NSArray<ObjectType>* (NS_NOESCAPE ^)(ObjectType obj, BOOL *stop))block;
 
-- (void)et_enumerateObjectsWithType:(EventTracingEnumeratorType)type
+- (void)ne_et_enumerateObjectsWithType:(NEEventTracingEnumeratorType)type
                          usingBlock:(NSArray<ObjectType>* (NS_NOESCAPE ^)(ObjectType obj, BOOL *stop))block;
 
 @end

@@ -1,6 +1,6 @@
 //
 //  UIView+EventTracingRefer.m
-//  EventTracing
+//  NEEventTracing
 //
 //  Created by dl on 2021/4/1.
 //
@@ -10,19 +10,19 @@
 
 @implementation UIView (EventTracingRefer)
 
-- (void)et_makeReferToid:(NSString *)toid {/*废弃*/}
+- (void)ne_et_makeReferToid:(NSString *)toid {/*已废弃*/}
 
-- (void)et_makeReferToids:(NSString *)toid, ... {/*废弃*/}
+- (void)ne_et_makeReferToids:(NSString *)toid, ... {/*已废弃*/}
 
-- (void)et_remakeReferToid:(NSString *)toid {/*废弃*/}
+- (void)ne_et_remakeReferToid:(NSString *)toid {/*已废弃*/}
 
-- (void)et_remakeReferToids:(NSString *)toid, ... {/*废弃*/}
+- (void)ne_et_remakeReferToids:(NSString *)toid, ... {/*已废弃*/}
 
-- (void)_et_makeReferToids:(NSArray<NSString *> *)toids reset:(BOOL)reset __attribute__((objc_direct)) {/*废弃*/}
+- (void)_et_makeReferToids:(NSArray<NSString *> *)toids reset:(BOOL)reset __attribute__((objc_direct)) {/*已废弃*/}
 
-- (void)et_clearReferToids {/*废弃*/}
+- (void)ne_et_clearReferToids {/*已废弃*/}
 
 #pragma mark - getters & setters
-- (NSArray<NSString *> *)et_toids {/*废弃*/ return nil;}
+- (NSArray<NSString *> *)ne_et_toids {/*已废弃*/ return nil;}
 
 @end

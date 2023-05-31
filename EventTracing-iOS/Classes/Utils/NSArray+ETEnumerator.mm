@@ -1,6 +1,6 @@
 //
 //  NSArray+ETEnumerator.m
-//  EventTracing
+//  NEEventTracing
 //
 //  Created by dl on 2021/3/18.
 //
@@ -11,22 +11,22 @@
 
 @implementation NSArray (ETEnumerator)
 
-- (void)et_enumerateObjectsUsingBlock:(NSArray<id> * _Nonnull (NS_NOESCAPE ^)(id _Nonnull obj, BOOL * _Nonnull stop))block {
-    [self et_enumerateObjectsWithType:EventTracingEnumeratorTypeBFS usingBlock:block];
+- (void)ne_et_enumerateObjectsUsingBlock:(NSArray<id> * _Nonnull (NS_NOESCAPE ^)(id _Nonnull obj, BOOL * _Nonnull stop))block {
+    [self ne_et_enumerateObjectsWithType:NEEventTracingEnumeratorTypeBFS usingBlock:block];
 }
 
-- (void)et_enumerateObjectsWithType:(EventTracingEnumeratorType)type usingBlock:(NSArray<id> * _Nonnull (NS_NOESCAPE ^)(id _Nonnull obj, BOOL * _Nonnull stop))block {
+- (void)ne_et_enumerateObjectsWithType:(NEEventTracingEnumeratorType)type usingBlock:(NSArray<id> * _Nonnull (NS_NOESCAPE ^)(id _Nonnull obj, BOOL * _Nonnull stop))block {
     if (!block) {
         return;
     }
     
-    if (type == EventTracingEnumeratorTypeBFS) {
+    if (type == NEEventTracingEnumeratorTypeBFS) {
         [self _et_enumerateObjectsBFSUsingBlock:block];
-    } else if (type == EventTracingEnumeratorTypeBFSRight) {
+    } else if (type == NEEventTracingEnumeratorTypeBFSRight) {
         [self _et_enumerateObjectsBFSWithReverse:YES usingBlock:block];
-    } else if (type == EventTracingEnumeratorTypeDFS) {
+    } else if (type == NEEventTracingEnumeratorTypeDFS) {
         [self _et_enumerateObjectsDFSUsingBlock:block];
-    } else if (type == EventTracingEnumeratorTypeDFSRight) {
+    } else if (type == NEEventTracingEnumeratorTypeDFSRight) {
         [self _et_enumerateObjectsDFSWithReverse:YES UsingBlock:block];
     }
 }

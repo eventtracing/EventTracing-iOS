@@ -1,6 +1,6 @@
 //
 //  NSString+EventTracingUtil.m
-//  EventTracing
+//  NEEventTracing
 //
 //  Created by dl on 2022/2/23.
 //
@@ -9,7 +9,7 @@
 
 @implementation NSString (EventTracingUtil)
 
-- (BOOL)et_simplyNeedsEncoded {
+- (BOOL)ne_et_simplyNeedsEncoded {
     static NSRegularExpression *reg = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -21,11 +21,11 @@
     return matchCount > 0;
 }
 
-- (BOOL)et_hasBeenUrlEncoded {
-    return ![self.et_urlDecode isEqualToString:self];
+- (BOOL)ne_et_hasBeenUrlEncoded {
+    return ![self.ne_et_urlDecode isEqualToString:self];
 }
 
-- (NSString * _Nullable)et_urlEncode {
+- (NSString * _Nullable)ne_et_urlEncode {
     static dispatch_once_t onceToken;
     static NSCharacterSet *charSet = nil;
     dispatch_once(&onceToken, ^{
@@ -36,7 +36,7 @@
     return [self stringByAddingPercentEncodingWithAllowedCharacters:charSet];
 }
 
-- (NSString * _Nullable)et_urlDecode {
+- (NSString * _Nullable)ne_et_urlDecode {
     return self.stringByRemovingPercentEncoding;
 }
 

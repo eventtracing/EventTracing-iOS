@@ -1,51 +1,51 @@
 //
 //  EventTracingAppLicycleAOP.m
-//  EventTracingEngine
+//  NEEventTracingEngine
 //
 //  Created by dl on 2021/2/25.
 //
 
 #import "EventTracingAppLicycleAOP.h"
-#import "EventTracingEngine+Private.h"
-
+#import "NEEventTracingEngine+Private.h"
+#import <UIKit/UIKit.h>
 
 @interface EventTracingAppLicycleAOP ()
 @end
 
+
 @implementation EventTracingAppLicycleAOP
 
-EventTracingAOPInstanceImp
+NEEventTracingAOPInstanceImp
 
 - (void)inject {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        if ([EventTracingEngine sharedInstance].context.isUseCustomAppLifeCycle) {
+        if ([NEEventTracingEngine sharedInstance].context.isUseCustomAppLifeCycle) {
             // 使用外部的生命周期事件
         } else {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(et_appDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(et_appWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(et_appDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ne_et_appDidBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ne_et_appWillEnterForeground:) name:UIApplicationWillEnterForegroundNotification object:nil];
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ne_et_appDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
         }
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(et_appWillTerminate:) name:UIApplicationWillTerminateNotification object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(ne_et_appWillTerminate:) name:UIApplicationWillTerminateNotification object:nil];
     });
-    
-    [[EventTracingEngine sharedInstance] refreshAppInActiveState];
+    [[NEEventTracingEngine sharedInstance] refreshAppInActiveState];
 }
 
-- (void)et_appDidBecomeActive:(NSNotification *)noti {
-    [[EventTracingEngine sharedInstance] appDidBecomeActive];
+- (void)ne_et_appDidBecomeActive:(NSNotification *)noti {
+    [[NEEventTracingEngine sharedInstance] appDidBecomeActive];
 }
 
-- (void)et_appWillEnterForeground:(NSNotification *)noti {
-    [[EventTracingEngine sharedInstance] appWillEnterForeground];
+- (void)ne_et_appWillEnterForeground:(NSNotification *)noti {
+    [[NEEventTracingEngine sharedInstance] appWillEnterForeground];
 }
 
-- (void)et_appDidEnterBackground:(NSNotification *)noti {
-    [[EventTracingEngine sharedInstance] appDidEnterBackground];
+- (void)ne_et_appDidEnterBackground:(NSNotification *)noti {
+    [[NEEventTracingEngine sharedInstance] appDidEnterBackground];
 }
 
-- (void)et_appWillTerminate:(NSNotification *)noti {
-    [[EventTracingEngine sharedInstance] appDidTerminate];
+- (void)ne_et_appWillTerminate:(NSNotification *)noti {
+    [[NEEventTracingEngine sharedInstance] appDidTerminate];
 }
 
 @end
