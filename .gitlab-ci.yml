@@ -1,0 +1,8 @@
+variables:
+  DEPLOY_BRANCH: "master"
+  ENABLE_FRAMEWORK: "true"
+  IGNORE_XCFRAMEWORK: "true"
+include:
+  - project: 'cloudmusic-ruby/gitlabci'
+    ref: master
+    file: 'gitlabci/sdk/source/.gitlab-ci.yml'
