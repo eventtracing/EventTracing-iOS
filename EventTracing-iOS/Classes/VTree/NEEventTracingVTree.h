@@ -91,8 +91,11 @@ NS_ASSUME_NONNULL_BEGIN
 // 从 node 开始向上查找 root page 节点
 - (NEEventTracingVTreeNode * _Nullable)findRootPageNodeFromNode:(NEEventTracingVTreeNode *)node;
 
-// MARK: 右侧深度遍历，找到第一个page节点
+// MARK: 右侧广度遍历，找到第一个page节点
 - (NEEventTracingVTreeNode * _Nullable)findToppestRightPageNode;
+
+// MARK: 左侧广度遍历，找到第一个page节点
+- (NEEventTracingVTreeNode * _Nullable)findToppestLeftPageNode;
 
 /// MARK: 判断两个VTree是否内容上相等
 - (BOOL)isEaualToOtherVTree:(NEEventTracingVTree *)otherVTree;
