@@ -75,7 +75,7 @@
 - (NEEventTracingVTreeNode * _Nullable)findToppestRightPageNode {
     __block NEEventTracingVTreeNode *toppestPageNode = nil;
     
-    // MARK: 右侧深度遍历，找到第一个page节点
+    // MARK: 右侧广度遍历，找到第一个page节点
     [self.rootNode.subNodes ne_et_enumerateObjectsWithType:NEEventTracingEnumeratorTypeBFSRight usingBlock:^NSArray<NEEventTracingVTreeNode *> * _Nonnull(NEEventTracingVTreeNode * _Nonnull nextNode, BOOL * _Nonnull stop) {
         if (nextNode.isPageNode && !nextNode.hasSubPageNodeMarkAsRootPage) {
             toppestPageNode = nextNode;
@@ -89,6 +89,22 @@
     /// MARK: 更新 rootpage 节点
     _rootPageNode = toppestPageNode;
     
+    return toppestPageNode;
+}
+
+- (NEEventTracingVTreeNode * _Nullable)findToppestLeftPageNode {
+    __block NEEventTracingVTreeNode *toppestPageNode = nil;
+    
+    // MARK: 左侧广度遍历，找到第一个page节点
+    [self.rootNode.subNodes ne_et_enumerateObjectsWithType:NEEventTracingEnumeratorTypeBFS usingBlock:^NSArray<NEEventTracingVTreeNode *> * _Nonnull(NEEventTracingVTreeNode * _Nonnull nextNode, BOOL * _Nonnull stop) {
+        if (nextNode.isPageNode && !nextNode.hasSubPageNodeMarkAsRootPage) {
+            toppestPageNode = nextNode;
+            
+            *stop = YES;
+        }
+        
+        return nextNode.subNodes;
+    }];
     return toppestPageNode;
 }
 
