@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'EventTracing-iOS'
-  s.version          = '1.1.1'
+  s.version          = (require 'Martin'; Martin::smart_version)  
   s.summary          = 'EventTracing-iOS'
 
   s.description      = <<-DESC
@@ -11,6 +11,12 @@ Pod::Spec.new do |s|
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'eventtracing' => 'eventtracing@service.netease.com' }
   s.source           = { :git => 'https://github.com/EventTracing/EventTracing-iOS.git', :tag => s.version.to_s }
+
+  #======= 补充的组件信息, 字段释义见文档: https://docs.popo.netease.com/lingxi/7134ae564a764260b1e2425bb41d2cf6 ========= 
+  s.attributes_hash['ne_owners'] = ["xiongxunquan@corp.netease.com", "dingli@corp.netease.com"] 
+  s.attributes_hash['ne_biz_tags'] = ["公技", "曙光"] 
+  s.attributes_hash['ne_level'] = '0' 
+  #============================  
 
   s.ios.deployment_target = '11.0'
   s.module_name = 'EventTracing'  
