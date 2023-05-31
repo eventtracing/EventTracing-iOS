@@ -27,8 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 需要开始更新 _hsrefer 的oids列表
 - (NSArray<NSString *> *)needStartHsreferOids;
 
-/// 需要打 _multiRefers 参数的事件，默认 "_pv, _ec"
-/// 示例："_pv, _ec, _ai"
+/// 需要打 _multiRefers 参数的事件，半角逗号隔开，前后不要有空格，默认 "_pv,_ec"
+/// 示例："_pv,_ec,_ai"
 - (NSString *)multiReferAppliedEventList;
 
 /// multiRefers 的最大数量限制，默认 5
@@ -166,7 +166,8 @@ NEEventTracingContextOutputParamsFilterBuilder
 /// @discussion default: `NEETViewControllerDidNotLoadViewExceptionTipNone`
 @property(nonatomic, assign) NEETViewControllerDidNotLoadViewExceptionTip viewControllerDidNotLoadViewExceptionTip;
 
-/// 参与 multirefer 链路追踪的事件类型，默认 @"_pv,_ec"
+/// 参与 _multiRefers 链路追踪的事件类型，半角逗号隔开，前后不要有空格，默认 "_pv,_ec"
+/// 示例："_pv,_ec,_ai"
 @property(nonatomic, copy, readonly) NSString * multiReferAppliedEventList;
 
 /// multirefer 最大数量，默认 5

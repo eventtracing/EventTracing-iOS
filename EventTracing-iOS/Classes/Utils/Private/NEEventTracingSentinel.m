@@ -6,10 +6,10 @@
 //
 
 #import "NEEventTracingSentinel.h"
-#import <libkern/OSAtomic.h>
+#import <stdatomic.h>
 
 @implementation NEEventTracingSentinel {
-    int32_t _value;
+    atomic_int _value;
 }
 
 + (instancetype)sentinel {
@@ -23,9 +23,9 @@
 }
 
 - (int32_t)value {
-    return _value;
+    return atomic_load_explicit(&_value, memory_order_acquire);
 }
 - (int32_t)increase {
-    return OSAtomicIncrement32(&_value);
+    return atomic_fetch_add_explicit(&_value, 1, memory_order_acq_rel);
 }
 @end

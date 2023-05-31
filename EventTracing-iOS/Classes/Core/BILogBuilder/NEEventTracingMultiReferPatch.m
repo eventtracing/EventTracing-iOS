@@ -9,6 +9,7 @@
 #import "NEEventTracingReferObserver.h"
 #import "NEEventTracingOutputFormatter.h"
 #import "NEEventTracingEngine+Private.h"
+#import "NEEventTracingVTreeNode+Private.h"
 
 @interface NEEventTracingMultiReferPatch()<NEEventTracingReferObserver, NEEventTracingOutputParamsFilter>
 @property(nonatomic, strong) NSMutableArray<NSString *> *multiRefersStack;
@@ -52,7 +53,7 @@
         return;
     }
     
-    NEEventTracingVTreeNode *rootPageNode = [VTree rootPageNode];
+    NEEventTracingVTreeNode *rootPageNode = [node findToppestNode:YES];
     BOOL isRootPagePV = rootPageNode == node;
     if (!isRootPagePV) {
         // 非根节点曝光，不参与 multirefers

@@ -13,7 +13,7 @@
     static NSRegularExpression *reg = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        reg = [NSRegularExpression regularExpressionWithPattern:@"[:|\\[\\],\\./\\\\|{}`<>@?&: ]" options:0 error:nil];
+        reg = [NSRegularExpression regularExpressionWithPattern:@"[:|\\[\\],.\\/\\\\{}`<>@?&\\s'\"]" options:0 error:nil];
     });
     NSInteger matchCount = [reg numberOfMatchesInString:self
                                                 options:NSMatchingReportProgress
@@ -30,7 +30,7 @@
     static NSCharacterSet *charSet = nil;
     dispatch_once(&onceToken, ^{
         NSMutableCharacterSet *set = [NSCharacterSet URLQueryAllowedCharacterSet].invertedSet.mutableCopy;
-        [set formUnionWithCharacterSet:[NSCharacterSet characterSetWithCharactersInString:@"!*'\"();:@&=+$,/?%#[]%,./\\|{}`<>@?&: "]];
+        [set formUnionWithCharacterSet:[NSCharacterSet characterSetWithCharactersInString:@"!*'\"();:@&=+$,/?%#[]%,.\\|{}`<>\x20\t\n\r"]];
         charSet = [set invertedSet];
     });
     return [self stringByAddingPercentEncodingWithAllowedCharacters:charSet];

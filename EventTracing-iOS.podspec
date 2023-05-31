@@ -49,6 +49,6 @@ Pod::Spec.new do |s|
     'EventTracing-iOS/Classes/Utils/NSArray+ETEnumerator.h'
   ]
 
-  s.dependency 'JRSwizzle', '~> 1.1.1'
+  s.dependency 'JRSwizzle', '~> 1.0'
   s.dependency 'BlocksKit', '~> 2.2.5'
 end
