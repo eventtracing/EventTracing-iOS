@@ -1,16 +1,16 @@
 Pod::Spec.new do |s|
   s.name             = 'EventTracing-iOS'
-  s.version          = '1.1.1'
+  s.version          = '1.1.3'
   s.summary          = 'EventTracing-iOS'
 
   s.description      = <<-DESC
     EventTracing-iOS
                        DESC
 
-  s.homepage         = 'https://github.com/EventTracing/EventTracing-iOS'
+  s.homepage         = 'https://g.hz.netease.com/cloudmusic-ios-pubtech/EventTracing-iOS'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'eventtracing' => 'eventtracing@service.netease.com' }
-  s.source           = { :git => 'https://github.com/EventTracing/EventTracing-iOS.git', :tag => s.version.to_s }
+  s.source           = { :git => 'ssh://git@g.hz.netease.com:22222/cloudmusic-ios-pubtech/EventTracing-iOS.git', :tag => s.version.to_s }
 
   s.ios.deployment_target = '11.0'
   s.module_name = 'EventTracing'  
