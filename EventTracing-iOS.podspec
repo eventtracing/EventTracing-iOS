@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'EventTracing-iOS'
-  s.version          = '1.1.3'
+  s.version          = (require 'Martin'; Martin::smart_version)  
   s.summary          = 'EventTracing-iOS'
 
   s.description      = <<-DESC
@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.author           = { 'eventtracing' => 'eventtracing@service.netease.com' }
   s.source           = { :git => 'ssh://git@g.hz.netease.com:22222/cloudmusic-ios-pubtech/EventTracing-iOS.git', :tag => s.version.to_s }
 
-  s.ios.deployment_target = '11.0'
+  s.ios.deployment_target = '10.0'
   s.module_name = 'EventTracing'  
   s.library = 'c++'
   s.pod_target_xcconfig = { 
