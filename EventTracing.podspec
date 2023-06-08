@@ -30,7 +30,6 @@ Pod::Spec.new do |s|
   ]
 
   s.private_header_files = [
-    'EventTracing-iOS/Classes/AOP/**/*.h',
     'EventTracing-iOS/Classes/Categorys/*.h',
     'EventTracing-iOS/Classes/Core/*.h',
     'EventTracing-iOS/Classes/Log/*.h',
