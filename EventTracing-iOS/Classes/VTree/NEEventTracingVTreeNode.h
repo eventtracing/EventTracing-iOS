@@ -94,6 +94,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 // 便捷方法: 向上遍历祖先节点(从当前节点开始算起)
 - (void)enumerateAncestorNodeWithBlock:(void(NS_NOESCAPE ^ _Nonnull)(NEEventTracingVTreeNode *ancestorNode, BOOL * _Nonnull stop))block;
+
+/// 从当前 VTree 找 `最顶层` && `最右侧` 的页面节点
+/// 等同于查找当前 `rootPage` 
+- (NEEventTracingVTreeNode * _Nullable)findToppestNode:(BOOL)onlyPageNode;
 @end
 
 // MARK: Geometry
