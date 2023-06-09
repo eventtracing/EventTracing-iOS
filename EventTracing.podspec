@@ -1,19 +1,25 @@
 Pod::Spec.new do |s|
-  s.name             = 'EventTracing-iOS'
-  s.version          = '1.1.0'
-  s.summary          = 'EventTracing-iOS'
+  s.name             = 'EventTracing'
+  s.version          = (require 'Martin'; Martin::smart_version)  
+  s.summary          = 'EventTracing'
 
   s.description      = <<-DESC
     EventTracing-iOS
                        DESC
 
-  s.homepage         = 'https://github.com/EventTracing/EventTracing-iOS'
+  s.homepage         = 'https://g.hz.netease.com/cloudmusic-ios-pubtech/EventTracing-iOS'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'eventtracing' => 'eventtracing@service.netease.com' }
-  s.source           = { :git => 'https://github.com/EventTracing/EventTracing-iOS.git', :tag => s.version.to_s }
+  s.source           = { :git => 'ssh://git@g.hz.netease.com:22222/cloudmusic-ios-pubtech/EventTracing-iOS.git', :tag => s.version.to_s }
+  
+  #======= 补充的组件信息, 字段释义见文档: https://docs.popo.netease.com/lingxi/7134ae564a764260b1e2425bb41d2cf6 ========= 
+  s.attributes_hash['ne_owners'] = ["xiongxunquan@corp.netease.com", "dingli@corp.netease.com"] 
+  s.attributes_hash['ne_biz_tags'] = ["公技", "日志"] 
+  s.attributes_hash['ne_level'] = '0' 
+  #============================  
 
-  s.ios.deployment_target = '11.0'
-  s.module_name = 'EventTracing'  
+  s.ios.deployment_target = '10.0'
+  # s.module_name = 'EventTracing'  
   s.library = 'c++'
   s.pod_target_xcconfig = { 
     'GCC_PRECOMPILE_PREFIX_HEADER' => true
@@ -24,7 +30,6 @@ Pod::Spec.new do |s|
   ]
 
   s.private_header_files = [
-    'EventTracing-iOS/Classes/AOP/**/*.h',
     'EventTracing-iOS/Classes/Categorys/*.h',
     'EventTracing-iOS/Classes/Core/*.h',
     'EventTracing-iOS/Classes/Log/*.h',
@@ -49,6 +54,6 @@ Pod::Spec.new do |s|
     'EventTracing-iOS/Classes/Utils/NSArray+ETEnumerator.h'
   ]
 
-  s.dependency 'JRSwizzle', '~> 1.0'
+  s.dependency 'JRSwizzle', '~> 1.1.1'
   s.dependency 'BlocksKit', '~> 2.2.5'
 end
