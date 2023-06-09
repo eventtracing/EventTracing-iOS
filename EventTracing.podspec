@@ -55,5 +55,5 @@ Pod::Spec.new do |s|
   ]
 
   s.dependency 'JRSwizzle', '~> 1.1.1'
-  s.dependency 'BlocksKit', '~> 2.2.5'
+  s.dependency 'BlocksKit', '~> 2.2.11'
 end
