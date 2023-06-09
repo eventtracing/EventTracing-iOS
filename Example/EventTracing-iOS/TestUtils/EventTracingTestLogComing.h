@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <EventTracing/EventTracing.h>
+#import <EventTracing/NEEventTracing.h>
 #import "ETWebView.h"
 
 NS_ASSUME_NONNULL_BEGIN

@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NEEventTracingEngine : NSObject
+@interface NEEventTracingEngine : NSObject <NEEventTracingAppLifecycleProcotol>
 
 /// 是否启动
 @property(nonatomic, assign, readonly) BOOL started;
@@ -171,7 +171,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 // Engine Add/Remove VTreeObserver
-@interface NEEventTracingEngine (VTreeObserver) <NEEventTracingAppLifecycleProcotol>
+@interface NEEventTracingEngine (VTreeObserver)
 - (void)addVTreeObserver:(id<NEEventTracingVTreeObserver>)observer;
 - (void)removeVTreeObserver:(id<NEEventTracingVTreeObserver>)observer;
 @end

@@ -188,7 +188,7 @@ typedef NSDictionary * _Nonnull (^NE_ET_AddParamsCarryEventCallback)(NSString *e
                          nodeIdentifier:(id)nodeIdentifier
                                position:(NSUInteger)position
          buildinEventLogDisableStrategy:(NEETNodeBuildinEventLogDisableStrategy)buildinEventLogDisableStrategy
-                                 params:(NSDictionary<NSString *, NSString *> * _Nullable)params DEPRECATED_MSG_ATTRIBUTE("废弃, 请使用 `-[UIView et_setVirtualParentOid:isPage:nodeIdentifier:position:buildinEventLogDisableStrategy:params:]");
+                                 params:(NSDictionary<NSString *, NSString *> * _Nullable)params DEPRECATED_MSG_ATTRIBUTE("废弃, 请使用 `-[UIView ne_et_setVirtualParentOid:isPage:nodeIdentifier:position:buildinEventLogDisableStrategy:params:]");
 
 @end
 

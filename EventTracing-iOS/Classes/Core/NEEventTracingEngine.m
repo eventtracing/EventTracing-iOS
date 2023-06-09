@@ -12,7 +12,7 @@
 #import "UIView+EventTracingPrivate.h"
 
 #import "NEEventTracingAOPManager.h"
-#import "EventTracingAppLicycleAOP.h"
+#import "NEEventTracingAppLicycleAOP.h"
 #import "NEEventTracingUIControlAOP.h"
 #import "NEEventTracingUIScrollViewAOP.h"
 #import "NEEventTracingUITabbarAOP.h"
@@ -428,7 +428,7 @@
 - (void)_doAOP {
     // AOP
     [@[
-        EventTracingAppLicycleAOP.class,
+        NEEventTracingAppLicycleAOP.class,
         NEEventTracingUIControlAOP.class,
         NEEventTracingUIScrollViewAOP.class,
         NEEventTracingUITabbarAOP.class,
