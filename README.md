@@ -3,6 +3,7 @@
 隶属于 https://github.com/eventtracing/dawn 项目
 
 ## Example
+
 参见 [Demo 文档](https://eventtracing.github.io/docs/Demo/iOS)
 
 ## Use
@@ -15,5 +16,5 @@ EventTracing-iOS is available through [CocoaPods](https://cocoapods.org). To ins
 it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'EventTracing-iOS'
+pod 'EventTracing'
 ```

@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
-  s.name             = 'EventTracing-iOS'
-  s.version          = '1.1.0'
-  s.summary          = 'EventTracing-iOS'
+  s.name             = 'EventTracing'
+  s.version          = '2.0.0'
+  s.summary          = 'EventTracing'
 
   s.description      = <<-DESC
     EventTracing-iOS
@@ -12,8 +12,7 @@ Pod::Spec.new do |s|
   s.author           = { 'eventtracing' => 'eventtracing@service.netease.com' }
   s.source           = { :git => 'https://github.com/EventTracing/EventTracing-iOS.git', :tag => s.version.to_s }
 
-  s.ios.deployment_target = '11.0'
-  s.module_name = 'EventTracing'  
+  s.ios.deployment_target = '10.0'
   s.library = 'c++'
   s.pod_target_xcconfig = { 
     'GCC_PRECOMPILE_PREFIX_HEADER' => true
@@ -24,7 +23,6 @@ Pod::Spec.new do |s|
   ]
 
   s.private_header_files = [
-    'EventTracing-iOS/Classes/AOP/**/*.h',
     'EventTracing-iOS/Classes/Categorys/*.h',
     'EventTracing-iOS/Classes/Core/*.h',
     'EventTracing-iOS/Classes/Log/*.h',

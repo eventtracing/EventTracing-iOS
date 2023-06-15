@@ -51,7 +51,7 @@ FOUNDATION_EXPORT __attribute__((overloadable)) UIView *NE_ET_FindSubNodeViewAt(
 
 @property(nonatomic, assign, readonly, direct) BOOL ne_et_hasSubNodes;
 @property(nonatomic, strong, direct, setter=ne_et_setSubLogicalViews:) NSHashTable<NEEventTracingWeakObjectContainer<UIView *> *> *ne_et_subLogicalViews;
-@property(nonatomic, strong, readonly, nullable/*, direct*/) UIViewController *ne_et_currentViewController;
+@property(nonatomic, strong, readonly, nullable) UIViewController *ne_et_currentViewController;
 
 // refresh self and subviews node dynamicParams
 // 当一个UIView需要被从屏幕中移除之前，做掉这个参数同步
