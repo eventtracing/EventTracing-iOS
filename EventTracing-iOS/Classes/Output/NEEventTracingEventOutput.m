@@ -18,14 +18,14 @@
 #include <pthread/pthread.h>
 
 
-#define NEET_WR_LOCK(...) \
+#define WR_LOCK(code) \
 pthread_rwlock_wrlock(&self->_lock); \
-__VA_ARGS__; \
+code \
 pthread_rwlock_unlock(&self->_lock);
 
-#define NEET_RD_LOCK(...) \
+#define RD_LOCK(code) \
 pthread_rwlock_rdlock(&self->_lock); \
-__VA_ARGS__; \
+code \
 pthread_rwlock_unlock(&self->_lock);
 
 
@@ -219,21 +219,21 @@ pthread_rwlock_unlock(&self->_lock);
 }
 
 - (void)addOutputChannel:(id<NEEventTracingEventOutputChannel>)outputChannel {
-    NEET_WR_LOCK(
-    [self.outputChannels addObject:outputChannel];
-    )
+    WR_LOCK({
+        [self.outputChannels addObject:outputChannel];
+    })
 }
 
 - (void)removeOutputChannel:(id<NEEventTracingEventOutputChannel>)outputChannel {
-    NEET_WR_LOCK(
-    [self.outputChannels removeObject:outputChannel];
-    )
+    WR_LOCK({
+        [self.outputChannels removeObject:outputChannel];
+    })
 }
 
 - (void)removeAllOutputChannels {
-    NEET_WR_LOCK(
-    [self.outputChannels removeAllObjects];
-    )
+    WR_LOCK({
+        [self.outputChannels removeAllObjects];
+    })
 }
 
 
@@ -253,7 +253,9 @@ pthread_rwlock_unlock(&self->_lock);
 #pragma mark - getters
 - (NSArray<id<NEEventTracingEventOutputChannel>> *)allOutputChannels {
     NSArray<id<NEEventTracingEventOutputChannel>> * allChannels;
-    NEET_RD_LOCK( allChannels = self.outputChannels.allObjects; )
+    RD_LOCK({
+        allChannels = self.outputChannels.allObjects;
+    })
     return allChannels;
 }
 
