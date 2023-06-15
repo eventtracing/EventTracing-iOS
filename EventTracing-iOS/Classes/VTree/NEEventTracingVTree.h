@@ -88,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)containsNode:(NEEventTracingVTreeNode *)node;
 
-- (void)removeNode:(NEEventTracingVTreeNode *)node;
+- (void)removeNode:(NEEventTracingVTreeNode *)node DEPRECATED_MSG_ATTRIBUTE("废弃，请勿使用");
 
 // 从 node 开始向上查找 root page 节点
 - (NEEventTracingVTreeNode * _Nullable)findRootPageNodeFromNode:(NEEventTracingVTreeNode *)node;

@@ -176,4 +176,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeVTreeObserver:(id<NEEventTracingVTreeObserver>)observer;
 @end
 
+// Engine Add/Remove Output
+@interface NEEventTracingEngine (Output)
+/// MARK: channel
+// => ！！！强持有
+- (void)addOutputChannel:(id<NEEventTracingEventOutputChannel>)outputChannel;
+- (void)removeOutputChannel:(id<NEEventTracingEventOutputChannel>)outputChannel;
+@end
+
+
 NS_ASSUME_NONNULL_END

@@ -15,14 +15,35 @@
 #import "NEEventTracingVTreeNode+Private.h"
 #import "NEEventTracingFormattedReferBuilder.h"
 #import "NEEventTracingEventReferQueue.h"
+#include <pthread/pthread.h>
 
-@implementation NEEventTracingEventOutput
+
+#define WR_LOCK(code) \
+pthread_rwlock_wrlock(&self->_lock); \
+code \
+pthread_rwlock_unlock(&self->_lock);
+
+#define RD_LOCK(code) \
+pthread_rwlock_rdlock(&self->_lock); \
+code \
+pthread_rwlock_unlock(&self->_lock);
+
+
+@implementation NEEventTracingEventOutput {
+    pthread_rwlock_t _lock;
+}
 @synthesize formatter = _formatter;
 @synthesize publicDynamicParamsProvider = _publicDynamicParamsProvider;
 
+- (void)dealloc
+{
+    pthread_rwlock_destroy(&self->_lock);
+}
+        
 - (instancetype)init {
     self = [super init];
     if (self) {
+        _lock = (pthread_rwlock_t)PTHREAD_RWLOCK_INITIALIZER;
         _outputChannels = [NSHashTable hashTableWithOptions:NSPointerFunctionsStrongMemory];
         _outputParamsFilters = [NSHashTable hashTableWithOptions:NSPointerFunctionsStrongMemory];
         _innerStaticPublicParams = [@{} mutableCopy];
@@ -198,15 +219,21 @@
 }
 
 - (void)addOutputChannel:(id<NEEventTracingEventOutputChannel>)outputChannel {
-    [self.outputChannels addObject:outputChannel];
+    WR_LOCK({
+        [self.outputChannels addObject:outputChannel];
+    })
 }
 
 - (void)removeOutputChannel:(id<NEEventTracingEventOutputChannel>)outputChannel {
-    [self.outputChannels removeObject:outputChannel];
+    WR_LOCK({
+        [self.outputChannels removeObject:outputChannel];
+    })
 }
 
 - (void)removeAllOutputChannels {
-    [self.outputChannels removeAllObjects];
+    WR_LOCK({
+        [self.outputChannels removeAllObjects];
+    })
 }
 
 
@@ -225,7 +252,11 @@
 
 #pragma mark - getters
 - (NSArray<id<NEEventTracingEventOutputChannel>> *)allOutputChannels {
-    return self.outputChannels.allObjects;
+    NSArray<id<NEEventTracingEventOutputChannel>> * allChannels;
+    RD_LOCK({
+        allChannels = self.outputChannels.allObjects;
+    })
+    return allChannels;
 }
 
 - (NSArray<id<NEEventTracingOutputParamsFilter>> *)allParmasFilters {
