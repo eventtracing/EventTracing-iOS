@@ -1,5 +1,5 @@
 //
-//  EventTracingAppLicycleAOP.h
+//  NEEventTracingAppLicycleAOP.h
 //  NEEventTracing
 //
 //  Created by dl on 2021/2/25.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingAppLicycleAOP : NSObject<NEEventTracingAOPProtocol>
+@interface NEEventTracingAppLicycleAOP : NSObject<NEEventTracingAOPProtocol>
 
 @end
 

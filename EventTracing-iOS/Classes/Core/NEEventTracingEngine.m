@@ -12,7 +12,7 @@
 #import "UIView+EventTracingPrivate.h"
 
 #import "NEEventTracingAOPManager.h"
-#import "EventTracingAppLicycleAOP.h"
+#import "NEEventTracingAppLicycleAOP.h"
 #import "NEEventTracingUIControlAOP.h"
 #import "NEEventTracingUIScrollViewAOP.h"
 #import "NEEventTracingUITabbarAOP.h"
@@ -194,7 +194,7 @@
 
 #pragma mark - NEEventTracingTraversalRunnerDelegate
 - (void)traversalRunner:(NEEventTracingTraversalRunner *)runner runWithRunModeMatched:(BOOL)runModeMatched {
-    if (![self _couldRunTraverse]) {
+    if (!_ctx.started) {
         return;
     }
     
@@ -209,13 +209,6 @@
 }
 
 #pragma mark - traversal
-- (BOOL)_couldRunTraverse {
-    if (!_ctx.started) {
-        return NO;
-    }
-    
-    return !_ctx.isAppInActive || _ctx.isAppInActive;
-}
 
 - (void)_doTraverseForCommonRunloopModes {
     if (!self.incrementalVTreeWhenScrollEnable) {
@@ -428,7 +421,7 @@
 - (void)_doAOP {
     // AOP
     [@[
-        EventTracingAppLicycleAOP.class,
+        NEEventTracingAppLicycleAOP.class,
         NEEventTracingUIControlAOP.class,
         NEEventTracingUIScrollViewAOP.class,
         NEEventTracingUITabbarAOP.class,
@@ -460,5 +453,16 @@
 
 - (void)removeVTreeObserver:(id<NEEventTracingVTreeObserver>)observer {
     [self.ctx removeVTreeObserver:observer];
+}
+@end
+
+
+@implementation NEEventTracingEngine (Output)
+- (void)addOutputChannel:(id<NEEventTracingEventOutputChannel>)outputChannel {
+    [self.ctx addOutputChannel:outputChannel];
+}
+
+- (void)removeOutputChannel:(id<NEEventTracingEventOutputChannel>)outputChannel {
+    [self.ctx removeOutputChannel:outputChannel];
 }
 @end
