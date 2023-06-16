@@ -50,24 +50,24 @@ NSString * EventTracingDescForEvent(NSString * event)
     
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        eventToDesc = @{ET_EVENT_ID_APP_ACTIVE:@"冷启动",
-                        ET_EVENT_ID_APP_IN:@"进入前台",
-                        ET_EVENT_ID_APP_OUT:@"进入后台",
-                        ET_EVENT_ID_P_VIEW:@"页面曝光",
-                        ET_EVENT_ID_P_VIEW_END:@"页面结束曝光",
-                        ET_EVENT_ID_E_VIEW:@"元素曝光",
-                        ET_EVENT_ID_E_VIEW_END:@"元素结束曝光",
-                        ET_EVENT_ID_E_CLCK:@"元素点击",
-                        ET_EVENT_ID_E_LONG_CLCK:@"元素长按",
-                        ET_EVENT_ID_E_SLIDE:@"列表滚动",
-                        ET_EVENT_ID_P_REFRESH:@"页面刷新"};
+        eventToDesc = @{NE_ET_EVENT_ID_APP_ACTIVE:@"冷启动",
+                        NE_ET_EVENT_ID_APP_IN:@"进入前台",
+                        NE_ET_EVENT_ID_APP_OUT:@"进入后台",
+                        NE_ET_EVENT_ID_P_VIEW:@"页面曝光",
+                        NE_ET_EVENT_ID_P_VIEW_END:@"页面结束曝光",
+                        NE_ET_EVENT_ID_E_VIEW:@"元素曝光",
+                        NE_ET_EVENT_ID_E_VIEW_END:@"元素结束曝光",
+                        NE_ET_EVENT_ID_E_CLCK:@"元素点击",
+                        NE_ET_EVENT_ID_E_LONG_CLCK:@"元素长按",
+                        NE_ET_EVENT_ID_E_SLIDE:@"列表滚动",
+                        NE_ET_EVENT_ID_P_REFRESH:@"页面刷新"};
     });
     return eventToDesc[event] ?: event;
 }
 
 @interface EventTracingTestLogComing ()
 @property(nonatomic, strong) NSMutableArray<NSDictionary *> *allJsonLogs;
-@property(nonatomic, strong) NSMutableArray<EventTracingVTree *> *allVTrees;
+@property(nonatomic, strong) NSMutableArray<NEEventTracingVTree *> *allVTrees;
 @property(nonatomic, copy, readwrite) NSString *key;
 @property(nonatomic, copy) NSMutableDictionary<NSString *, NSNumber *> *innerAlertActionClickCountMap;
 @property(nonatomic, weak, readwrite) ETWebView *currentShowingWebView;
@@ -108,7 +108,7 @@ NSString * EventTracingDescForEvent(NSString * event)
     [self.allJsonLogs addObject:logJson];
 }
 
-- (void)addVTree:(EventTracingVTree *)VTree {
+- (void)addVTree:(NEEventTracingVTree *)VTree {
     [self.allVTrees addObject:VTree];
 }
 
@@ -131,17 +131,17 @@ NSString * EventTracingDescForEvent(NSString * event)
 
 - (NSArray<NSDictionary *> *)fetchJsonLogsForEvent:(NSString *)event spm:(NSString *)spm {
     return [self.logJsons bk_select:^BOOL(NSDictionary *logJson) {
-        return [logJson[ET_CONST_KEY_EVENT_CODE] isEqualToString:event] && [logJson[ET_REFER_KEY_SPM] isEqualToString:spm];
+        return [logJson[NE_ET_CONST_KEY_EVENT_CODE] isEqualToString:event] && [logJson[NE_ET_REFER_KEY_SPM] isEqualToString:spm];
     }];
 }
 
 - (NSArray<NSDictionary *> *)fetchJsonLogsForEvent:(NSString *)event spm:(NSString *)spm hasParaKey:(NSString *)paraKey isPage:(BOOL)isPage {
     return [self.logJsons bk_select:^BOOL(NSDictionary *logJson) {
-        BOOL ret = [logJson[ET_CONST_KEY_EVENT_CODE] isEqualToString:event] && [logJson[ET_REFER_KEY_SPM] isEqualToString:spm];
+        BOOL ret = [logJson[NE_ET_CONST_KEY_EVENT_CODE] isEqualToString:event] && [logJson[NE_ET_REFER_KEY_SPM] isEqualToString:spm];
         if (ret == NO) {
             return NO;
         }
-        NSString * list_key = isPage ? ET_CONST_KEY_PLIST : ET_CONST_KEY_ELIST;
+        NSString * list_key = isPage ? NE_ET_CONST_KEY_PLIST : NE_ET_CONST_KEY_ELIST;
         NSArray<NSDictionary *> * list = logJson[list_key];
         __block BOOL hasPara = NO;
         [list enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -157,24 +157,24 @@ NSString * EventTracingDescForEvent(NSString * event)
 - (NSDictionary *)fetchLastJsonLogForEvent:(NSString *)event {
     return
     [self.logJsons.reverseObjectEnumerator.allObjects bk_match:^BOOL(NSDictionary *logJson) {
-        return [logJson[ET_CONST_KEY_EVENT_CODE] isEqualToString:event];
+        return [logJson[NE_ET_CONST_KEY_EVENT_CODE] isEqualToString:event];
     }];
 }
 
 - (NSDictionary *)fetchLastJsonLogForEvent:(NSString *)event spm:(NSString *)spm {
     return
     [self.logJsons.reverseObjectEnumerator.allObjects bk_match:^BOOL(NSDictionary *logJson) {
-        return [logJson[ET_CONST_KEY_EVENT_CODE] isEqualToString:event] && [logJson[ET_REFER_KEY_SPM] isEqualToString:spm];
+        return [logJson[NE_ET_CONST_KEY_EVENT_CODE] isEqualToString:event] && [logJson[NE_ET_REFER_KEY_SPM] isEqualToString:spm];
     }];
 }
 
 - (NSDictionary *)fetchLastJsonLogForEvent:(NSString *)event oid:(NSString *)oid {
     return
     [self.logJsons.reverseObjectEnumerator.allObjects bk_match:^BOOL(NSDictionary *logJson) {
-        if (![logJson[ET_CONST_KEY_EVENT_CODE] isEqualToString:event]) {
+        if (![logJson[NE_ET_CONST_KEY_EVENT_CODE] isEqualToString:event]) {
             return NO;
         }
-        NSString * c_oid = [[logJson[ET_REFER_KEY_SPM] componentsSeparatedByString:@"|"] firstObject];
+        NSString * c_oid = [[logJson[NE_ET_REFER_KEY_SPM] componentsSeparatedByString:@"|"] firstObject];
         return [c_oid isEqualToString:oid];
     }];
 }
@@ -191,10 +191,10 @@ NSString * EventTracingDescForEvent(NSString * event)
 
 - (NSDictionary *)fetchPageInfoForEvent:(NSString *)event spm:(NSString *)spm oid:(NSString *)oid {
     NSDictionary * jsonLog = [self fetchLastJsonLogForEvent:event spm:spm];
-    NSArray<NSDictionary *> * plist = jsonLog[ET_CONST_KEY_PLIST];
+    NSArray<NSDictionary *> * plist = jsonLog[NE_ET_CONST_KEY_PLIST];
     __block NSDictionary * pageInfo;
     [plist.reverseObjectEnumerator.allObjects enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ([obj[ET_CONST_KEY_OID] isEqualToString:oid]) {
+        if ([obj[NE_ET_CONST_KEY_OID] isEqualToString:oid]) {
             pageInfo = obj;
             *stop = YES;
         }
@@ -207,7 +207,7 @@ NSString * EventTracingDescForEvent(NSString * event)
     return pageInfo[key];
 }
 
-- (EventTracingVTree *)lastVTree {
+- (NEEventTracingVTree *)lastVTree {
     return self.allVTrees.lastObject;
 }
 
@@ -215,7 +215,7 @@ NSString * EventTracingDescForEvent(NSString * event)
     return self.allJsonLogs.copy;
 }
 
-- (NSArray<EventTracingVTree *> *)VTrees {
+- (NSArray<NEEventTracingVTree *> *)VTrees {
     return self.allVTrees.copy;
 }
 
@@ -230,7 +230,7 @@ NSString * EventTracingDescForEvent(NSString * event)
 @end
 
 
-@implementation EventTracingVTree (UITest_LogComing)
+@implementation NEEventTracingVTree (UITest_LogComing)
 
 - (void)setHasChangesToLastVTree:(BOOL)hasChangesToLastVTree {
     objc_setAssociatedObject(self, @selector(hasChangesToLastVTree), @(hasChangesToLastVTree), OBJC_ASSOCIATION_COPY_NONATOMIC);

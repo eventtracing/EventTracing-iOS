@@ -8,7 +8,8 @@
 
 #import "ETMountViewController.h"
 #import "UIColor+ET.h"
-#import <EventTracing/EventTracing.h>
+#import <EventTracing/NEEventTracing.h>
+#import <EventTracing/NEEventTracingBuilder.h>
 
 #define VIEW_TOP 90
 #define VIEW_WIDTH 50
@@ -52,58 +53,58 @@
     
     // MARK: 默认根节点
     // MARK: spm = mount_root_1
-    [EventTracingBuilder view:self.view pageId:@"mount_root_1"];
+    [NEEventTracingBuilder view:self.view pageId:@"mount_root_1"];
     
     // MARK: 逻辑根节点
     // MARK: spm = mount_root_logic
-    [[EventTracingBuilder viewController:self.logicParentVC pageId:@"mount_root_logic"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [[NEEventTracingBuilder viewController:self.logicParentVC pageId:@"mount_root_logic"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         //builder.logicalParentViewController(self.parentViewController);
         builder.logicalParentView(self.view.superview);//.autoMountOnCurrentRootPage(YES);
     }];
-    //[self.logicParentVC.view et_setRootPage:YES];
+    //[self.logicParentVC.view ne_et_setRootPage:YES];
     
     // MARK: 默认挂载在 mount_root_1
     // MARK: spm = mount_view_page_1|mount_root_1
-    [[EventTracingBuilder view:self.view1 pageId:@"mount_view_page_1"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [[NEEventTracingBuilder view:self.view1 pageId:@"mount_view_page_1"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         //builder.logicalParentViewController(self.logicParentVC);
     }];
     // MARK: 手动逻辑挂载到 mount_root_logic
     // MARK: spm = mount_view_page_2|mount_root_logic
-    [[EventTracingBuilder view:self.view2 pageId:@"mount_view_page_2"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [[NEEventTracingBuilder view:self.view2 pageId:@"mount_view_page_2"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder
             .logicalParentViewController(self.logicParentVC)
-            .visibleRectCalculateStrategy(ETNodeVisibleRectCalculateStrategyPassthrough);
+            .visibleRectCalculateStrategy(NEETNodeVisibleRectCalculateStrategyPassthrough);
     }];
     // MARK: 默认挂载到 mount_view_page_1
     // MARK: spm = mount_subview_1|mount_root_logic
-    [[EventTracingBuilder view:self.view2Sub1 elementId:@"mount_subview_1"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [[NEEventTracingBuilder view:self.view2Sub1 elementId:@"mount_subview_1"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder
             // .logicalParentView(self.view1)
             .logicalParentSPM(@"mount_root_logic")
-            .visibleRectCalculateStrategy(ETNodeVisibleRectCalculateStrategyPassthrough)
-            .buildinEventLogDisableStrategy(ETNodeBuildinEventLogDisableStrategyNone);
+            .visibleRectCalculateStrategy(NEETNodeVisibleRectCalculateStrategyPassthrough)
+            .buildinEventLogDisableStrategy(NEETNodeBuildinEventLogDisableStrategyNone);
     }];
     // MARK: 手动逻辑挂载到 mount_view_page_1（默认挂载 mount_view_page_2）
     // MARK: spm = mount_subview_2|mount_view_page_1|mount_root_1
-    [[EventTracingBuilder view:self.view2Sub2 elementId:@"mount_subview_2"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [[NEEventTracingBuilder view:self.view2Sub2 elementId:@"mount_subview_2"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder
             .logicalParentView(self.view1)
-            .visibleRectCalculateStrategy(ETNodeVisibleRectCalculateStrategyPassthrough)
-            .buildinEventLogDisableStrategy(ETNodeBuildinEventLogDisableStrategyNone);
+            .visibleRectCalculateStrategy(NEETNodeVisibleRectCalculateStrategyPassthrough)
+            .buildinEventLogDisableStrategy(NEETNodeBuildinEventLogDisableStrategyNone);
     }];
     // MARK: 手动逻辑挂载到 mount_view_page_1（默认挂载 mount_view_page_2），同时设置虚拟父节点 virtual_parent_oid
     // MARK: 因此 spm 会是 mount_subview_3|virtual_parent_oid|mount_view_page_1|mount_root_1
-    [[EventTracingBuilder view:self.view2Sub3 elementId:@"mount_subview_3"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [[NEEventTracingBuilder view:self.view2Sub3 elementId:@"mount_subview_3"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder
             .logicalParentView(self.view1)
-            .visibleRectCalculateStrategy(ETNodeVisibleRectCalculateStrategyPassthrough)
-            .virtualParent(@"virtual_parent_oid", self, ^(id<EventTracingLogVirtualParentNodeBuilder>  _Nonnull virtualBuilder) {
+            .visibleRectCalculateStrategy(NEETNodeVisibleRectCalculateStrategyPassthrough)
+            .virtualParent(@"virtual_parent_oid", self, ^(id<NEEventTracingLogVirtualParentNodeBuilder>  _Nonnull virtualBuilder) {
                 virtualBuilder.params.set(@"virtual_para_key", @"virtual_para_val123");
             });
     }];
     
     // MARK: 可见区域穿透
-    [EventTracingBuilder view:self.showFloatBtn elementId:@"float_btn"];
+    [NEEventTracingBuilder view:self.showFloatBtn elementId:@"float_btn"];
 }
 
 - (void)setupLogicVC
@@ -222,7 +223,7 @@
         [_floatView addSubview:label];
         
         // MARK: 可见区域穿透
-        [[EventTracingBuilder view:_floatView elementId:@"float_alert"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+        [[NEEventTracingBuilder view:_floatView elementId:@"float_alert"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
             builder
                 .logicalParentSPM(@"float_btn|mount_root_1")
                 .visiblePassthrough(YES)
@@ -285,7 +286,7 @@
         UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showCover:)];
         [_coverView addGestureRecognizer:tap];
         // MARK: 可见区域穿透
-        [[EventTracingBuilder view:_coverView pageId:@"cover_alert_page"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+        [[NEEventTracingBuilder view:_coverView pageId:@"cover_alert_page"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
             builder.logicalParentView(self.navigationController.view);
         }];
     }

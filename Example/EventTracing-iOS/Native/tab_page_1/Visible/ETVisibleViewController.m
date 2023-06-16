@@ -9,6 +9,7 @@
 #import "ETVisibleViewController.h"
 #import "UIColor+ET.h"
 #import <BlocksKit/UIView+BlocksKit.h>
+#import <EventTracing/NEEventTracingBuilder.h>
 
 @interface ETVisibleViewController ()
 @property(nonatomic, strong) UILabel *l1;
@@ -27,7 +28,7 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
     
-    [[EventTracingBuilder viewController:self pageId:@"page_visible"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [[NEEventTracingBuilder viewController:self pageId:@"page_visible"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder
             .visibleEdgeInsetsTop(200)
             .visibleEdgeInsetsLeft(20)
@@ -68,7 +69,7 @@
     UIView *floatView = [[UIView alloc] init];
     floatView.backgroundColor = [UIColor whiteColor];
     [[UIApplication sharedApplication].keyWindow addSubview:floatView];
-    [[EventTracingBuilder view:floatView pageId:@"page_float_example_0"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [[NEEventTracingBuilder view:floatView pageId:@"page_float_example_0"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder.autoMountOnCurrentRootPage(YES);
     }];
     [floatView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -90,7 +91,7 @@
     [closeBtn setTitle:@"Close" forState:UIControlStateNormal];
     [closeBtn setBackgroundColor:[UIColor greenColor]];
     [floatView addSubview:closeBtn];
-    [EventTracingBuilder view:closeBtn elementId:@"btn_close"];
+    [NEEventTracingBuilder view:closeBtn elementId:@"btn_close"];
     [closeBtn bk_addEventHandler:^(id sender) {
         closeBlock();
     } forControlEvents:UIControlEventTouchUpInside];
@@ -141,7 +142,7 @@
         make.size.mas_equalTo(CGSizeMake(150, 50));
     }];
     /// MARK: 开启 _ed 埋点
-    [self.l3 et_build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [self.l3 ne_etb_build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder.buildinEventLogDisableImpressend(NO);
     }];
     
@@ -167,7 +168,7 @@
     [logicalVisibleBtn bk_addEventHandler:^(UIButton *sender) {
         sender.selected = !sender.selected;
         @strongify(self)
-        [self.l3 et_build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+        [self.l3 ne_etb_build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
             builder.logicalVisible(sender.selected);
         }];
     } forControlEvents:UIControlEventTouchUpInside];
@@ -185,7 +186,7 @@
     [setNeedsImpressBtn setTitle:@"SetNeedImpress" forState:UIControlStateNormal];
     [setNeedsImpressBtn bk_addEventHandler:^(id sender) {
         @strongify(self)
-        [self.l3 et_setNeedsImpress];
+        [self.l3 ne_et_setNeedsImpress];
     } forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:setNeedsImpressBtn];
     [setNeedsImpressBtn mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -235,7 +236,7 @@
     v.backgroundColor = [UIColor et_randomColor];
     v.textAlignment = NSTextAlignmentCenter;
     v.font = [UIFont systemFontOfSize:12];
-    [[EventTracingBuilder view:v elementId:[NSString stringWithFormat:@"label_%ld", index]] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [[NEEventTracingBuilder view:v elementId:[NSString stringWithFormat:@"label_%ld", index]] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder.buildinEventLogDisableImpressend(NO);
     }];
     [self.view addSubview:v];

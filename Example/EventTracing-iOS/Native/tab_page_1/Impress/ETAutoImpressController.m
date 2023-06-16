@@ -9,6 +9,7 @@
 #import "ETAutoImpressController.h"
 #import "UITableView+ETDemo.h"
 #import <Masonry/Masonry.h>
+#import <EventTracing/NEEventTracingBuilder.h>
 
 @interface ETAutoImpressController () <UITableViewDelegate, UITableViewDataSource>
 @property (nonatomic, strong) UITableView * tableView;
@@ -29,13 +30,13 @@
         make.size.mas_equalTo(CGSizeMake(120, 40));
     }];
     
-    [EventTracingBuilder viewController:self pageId:@"auto_impress_page"];
-    [[EventTracingBuilder view:self.tableView elementId:@"auto_impress_test_list"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [NEEventTracingBuilder viewController:self pageId:@"auto_impress_page"];
+    [[NEEventTracingBuilder view:self.tableView elementId:@"auto_impress_test_list"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder
-            .buildinEventLogDisableStrategy(ETNodeBuildinEventLogDisableStrategyNone)
+            .buildinEventLogDisableStrategy(NEETNodeBuildinEventLogDisableStrategyNone)
             .params.set(@"auto_key", @"auto_val_123");
     }];
-    self.tableView.et_esEventEnable = YES;
+    self.tableView.ne_et_esEventEnable = YES;
 }
 
 - (void)exit:(id)sender {
@@ -68,10 +69,10 @@
         [_exitButton setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
         [_exitButton setTitle:@"退出" forState:UIControlStateNormal];
         [_exitButton addTarget:self action:@selector(exit:) forControlEvents:UIControlEventTouchUpInside];
-        [[EventTracingBuilder view:_exitButton elementId:@"exit_btn"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+        [[NEEventTracingBuilder view:_exitButton elementId:@"exit_btn"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
             builder
-                //.buildinEventLogDisableStrategy(ETNodeBuildinEventLogDisableStrategyNone)
-                .addClickParamsCallback(^(id<EventTracingLogNodeParamsBuilder>  _Nonnull params) {
+                //.buildinEventLogDisableStrategy(NEETNodeBuildinEventLogDisableStrategyNone)
+                .addClickParamsCallback(^(id<NEEventTracingLogNodeParamsBuilder>  _Nonnull params) {
                     params.set(@"custom_para_time", @(NSDate.date.timeIntervalSince1970).stringValue);
                 });
         }];
@@ -96,8 +97,8 @@
     UITableViewCell * cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"Cell"];
-        [[EventTracingBuilder view:cell elementId:@"auto_impress_cell"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
-            builder.buildinEventLogDisableStrategy(ETNodeBuildinEventLogDisableStrategyNone);
+        [[NEEventTracingBuilder view:cell elementId:@"auto_impress_cell"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
+            builder.buildinEventLogDisableStrategy(NEETNodeBuildinEventLogDisableStrategyNone);
         }];
     }
     NSInteger position = indexPath.section * 5 + indexPath.row + 1; // position 要从 1开始
@@ -109,7 +110,7 @@
     cell.detailTextLabel.text = [NSString stringWithFormat:@"indexPath: %@ - %@",  @(indexPath.section), @(indexPath.row)];
     cell.textLabel.textColor = [UIColor colorWithWhite:1 alpha:1];
     cell.detailTextLabel.textColor = [UIColor colorWithWhite:1 alpha:1];
-    [cell et_build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [cell ne_etb_build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder.bindDataForReuse(indexPath)
             .params
             .position(position)

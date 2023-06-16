@@ -10,6 +10,7 @@
 #import "UIColor+ET.h"
 #import "ETReferViewController.h"
 #import <BlocksKit/UIView+BlocksKit.h>
+#import <EventTracing/NEEventTracingBuilder.h>
 
 #define BUTTON_WIDTH 300
 
@@ -30,7 +31,7 @@
     [self addLabels];
     [self.view addSubview:self.button];
     
-    [EventTracingBuilder viewController:self pageId:@"event_test_page"];
+    [NEEventTracingBuilder viewController:self pageId:@"event_test_page"];
 }
 
 - (void)clickButton:(id)sender {
@@ -45,29 +46,29 @@
     UIView * view = [(UITapGestureRecognizer *)sender view];
     if (view == self.l2) {
         // 自定义事件，需要有节点，与 VTree 有关，参与链路追踪
-        [EventTracingBuilder logWithView:view event:^(id<EventTracingLogNodeEventActionBuilder>  _Nonnull builder) {
+        [NEEventTracingBuilder logWithView:view event:^(id<NEEventTracingLogNodeEventActionBuilder>  _Nonnull builder) {
             builder.ec();
         }];
     } else if (view == self.l3) {
         // 手动事件，无节点 无血缘，与 VTree 无关，也不存在链路追踪
-        [EventTracingBuilder logManuallyWithBuilder:^(id<EventTracingLogManuallyEventActionBuilder>  _Nonnull builder) {
+        [NEEventTracingBuilder logManuallyWithBuilder:^(id<NEEventTracingLogManuallyEventActionBuilder>  _Nonnull builder) {
             builder
                 .event(@"manual_ec")
                 // 不参与链路追踪也就无 spm 的必要，这里仅用于测试
                 // 手动事件默认不携带内置参数(包括 _eventcode、_spm 等)，如果有必要的话，需要手动添加
-                .addParams(@{ET_CONST_KEY_EVENT_CODE:@"manual_ec",
-                             ET_REFER_KEY_SPM:@"manual_label"});
+                .addParams(@{NE_ET_CONST_KEY_EVENT_CODE:@"manual_ec",
+                             NE_ET_REFER_KEY_SPM:@"manual_label"});
         }];
     } else if (view == self.l4) {
         // 手动事件，无节点 无血缘，与 VTree 无关，但是参与链路追踪
-        [EventTracingBuilder logManuallyUseForReferWithBuilder:^(id<EventTracingLogManuallyUseForReferEventActionBuilder>  _Nonnull builder) {
+        [NEEventTracingBuilder logManuallyUseForReferWithBuilder:^(id<NEEventTracingLogManuallyUseForReferEventActionBuilder>  _Nonnull builder) {
             builder
                 .event(@"manual_ec_2")
                 .referSPM(@"custom_label|event_test_page")
                 .referType(@"custom_refer_type")
                 // 手动事件默认不携带内置参数(包括 _eventcode、_spm 等)，如果有必要的话，需要手动添加
-                .addParams(@{ET_CONST_KEY_EVENT_CODE:@"manual_ec_2",
-                             ET_REFER_KEY_SPM:@"custom_label|event_test_page"});
+                .addParams(@{NE_ET_CONST_KEY_EVENT_CODE:@"manual_ec_2",
+                             NE_ET_REFER_KEY_SPM:@"custom_label|event_test_page"});
         }];
         // 跳转到下一个页面，测试refer链路追踪
         [self.navigationController pushViewController:ETReferViewController.new animated:YES];
@@ -83,7 +84,7 @@
         _button.layer.cornerRadius = 4;
         _button.layer.masksToBounds = YES;
         [_button setBackgroundColor:[UIColor et_bgColorWithHue:0.7]];
-        [[EventTracingBuilder view:_button elementId:@"button"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+        [[NEEventTracingBuilder view:_button elementId:@"button"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
             //builder.buildinEventLogDisableImpressend(NO);
         }];
     }
@@ -98,7 +99,7 @@
     
     // l1 通过手势点击，也会自动产生ec埋点
     self.l1.text = @"手势点击，自动ec";
-    [self.l1 et_setBuildinEventLogDisableStrategy:ETNodeBuildinEventLogDisableStrategyNone];
+    [self.l1 ne_et_setBuildinEventLogDisableStrategy:NEETNodeBuildinEventLogDisableStrategyNone];
     [self.l1 mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(170);
         make.left.equalTo(self.view).offset(20.f);
@@ -142,7 +143,7 @@
     v.userInteractionEnabled = YES;
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapLabel:)];
     [v addGestureRecognizer:tap];
-    [[EventTracingBuilder view:v elementId:[NSString stringWithFormat:@"label_%ld", index]] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [[NEEventTracingBuilder view:v elementId:[NSString stringWithFormat:@"label_%ld", index]] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder.buildinEventLogDisableClick();
     }];
     [self.view addSubview:v];

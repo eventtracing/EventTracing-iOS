@@ -11,6 +11,7 @@
 #import "UIColor+ET.h"
 #import "EventTracingTestLogComing.h"
 #import <Masonry/Masonry.h>
+#import <EventTracing/NEEventTracingBuilder.h>
 
 #define BUTTON_WIDTH 300
 
@@ -47,8 +48,8 @@ static EventTracingTestLogComing * s_logComing;
         make.right.equalTo(self.view).offset(-20);
         make.size.mas_equalTo(CGSizeMake(120, 40));
     }];
-    [EventTracingBuilder viewController:self pageId:@"log_out_page"];
-    self.tableView.et_esEventEnable = YES;
+    [NEEventTracingBuilder viewController:self pageId:@"log_out_page"];
+    self.tableView.ne_et_esEventEnable = YES;
     [self refresh:nil];
 }
 
@@ -94,10 +95,10 @@ static EventTracingTestLogComing * s_logComing;
         [_refreshButton setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
         [_refreshButton setTitle:@"点击刷新" forState:UIControlStateNormal];
         [_refreshButton addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventTouchUpInside];
-        [[EventTracingBuilder view:_refreshButton elementId:@"refresh_btn"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+        [[NEEventTracingBuilder view:_refreshButton elementId:@"refresh_btn"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
             builder
-                //.buildinEventLogDisableStrategy(ETNodeBuildinEventLogDisableStrategyNone)
-                .addClickParamsCallback(^(id<EventTracingLogNodeParamsBuilder>  _Nonnull params) {
+                //.buildinEventLogDisableStrategy(NEETNodeBuildinEventLogDisableStrategyNone)
+                .addClickParamsCallback(^(id<NEEventTracingLogNodeParamsBuilder>  _Nonnull params) {
                     params.set(@"custom_para_time", @(NSDate.date.timeIntervalSince1970).stringValue);
                 });
         }];
@@ -115,10 +116,10 @@ static EventTracingTestLogComing * s_logComing;
         [_gotoBottomButton setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
         [_gotoBottomButton setTitle:@"滚到底部" forState:UIControlStateNormal];
         [_gotoBottomButton addTarget:self action:@selector(scrollToBottom:) forControlEvents:UIControlEventTouchUpInside];
-        [[EventTracingBuilder view:_refreshButton elementId:@"go_bottom_btn"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+        [[NEEventTracingBuilder view:_refreshButton elementId:@"go_bottom_btn"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
             builder
-                //.buildinEventLogDisableStrategy(ETNodeBuildinEventLogDisableStrategyNone)
-                .addClickParamsCallback(^(id<EventTracingLogNodeParamsBuilder>  _Nonnull params) {
+                //.buildinEventLogDisableStrategy(NEETNodeBuildinEventLogDisableStrategyNone)
+                .addClickParamsCallback(^(id<NEEventTracingLogNodeParamsBuilder>  _Nonnull params) {
                     params.set(@"custom_para_time", @(NSDate.date.timeIntervalSince1970).stringValue);
                 });
         }];
@@ -156,7 +157,7 @@ static EventTracingTestLogComing * s_logComing;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self options:NSJSONWritingPrettyPrinted error:nil];
     
     NSString * content = [NSString stringWithFormat:@"【%@】%@"
-                          , EventTracingDescForEvent(json[ET_CONST_KEY_EVENT_CODE])
+                          , EventTracingDescForEvent(json[NE_ET_CONST_KEY_EVENT_CODE])
                           , [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
     if (content.length > 200) {
         content = [content substringToIndex:200];
@@ -172,9 +173,9 @@ static EventTracingTestLogComing * s_logComing;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self options:NSJSONWritingPrettyPrinted error:nil];
     NSString * content = [NSString stringWithFormat:@"%@", [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding]];
     NSString * title = [NSString stringWithFormat:@"%@\n%@\n%@"
-                        , EventTracingDescForEvent(json[ET_CONST_KEY_EVENT_CODE])
-                        , json[ET_REFER_KEY_SPM]
-                        , json[ET_REFER_KEY_SCM]];
+                        , EventTracingDescForEvent(json[NE_ET_CONST_KEY_EVENT_CODE])
+                        , json[NE_ET_REFER_KEY_SPM]
+                        , json[NE_ET_REFER_KEY_SCM]];
     UIAlertController * alertVC = [UIAlertController alertControllerWithTitle:title message:content preferredStyle:UIAlertControllerStyleAlert];
     [alertVC addAction:[UIAlertAction actionWithTitle:@"复制到剪切板" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         UIPasteboard.generalPasteboard.string = content;

@@ -21,6 +21,7 @@
 #import "ETLogoutViewController.h"
 #import "ETH5ViewController.h"
 #import "ETQRCodeScanViewController.h"
+#import <EventTracing/NEEventTracingBuilder.h>
 
 typedef NS_ENUM(NSInteger, ETTest) {
     ETTestAutoImpress,     // 自动曝光
@@ -86,11 +87,11 @@ typedef NS_ENUM(NSInteger, ETTest) {
     self.tableView.dataSource = self;
     self.tableView.contentInset = UIEdgeInsetsMake(10, 0, 50, 0);
 
-    [EventTracingBuilder viewController:self pageId:@"mod_list_page"];
+    [NEEventTracingBuilder viewController:self pageId:@"mod_list_page"];
     
-    [[EventTracingBuilder view:self.tableView elementId:@"mod_list_table"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [[NEEventTracingBuilder view:self.tableView elementId:@"mod_list_table"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
 #if 1
-        builder.virtualParent(@"mod_virtual_parent_of_table", self, ^(id<EventTracingLogVirtualParentNodeBuilder>  _Nonnull virtualBuilder) {
+        builder.virtualParent(@"mod_virtual_parent_of_table", self, ^(id<NEEventTracingLogVirtualParentNodeBuilder>  _Nonnull virtualBuilder) {
             virtualBuilder.params.set(@"virtual_key", @"virtual_val");
         });
 #else
@@ -126,9 +127,9 @@ typedef NS_ENUM(NSInteger, ETTest) {
 #if 0
     NSString *virtualParentOid = (indexPath.row % 2 == 0) ? @"mode_virtual_parent_even" : @"mode_virtual_parent_odd";
     NSString *virtualParentIdentifier = [NSString stringWithFormat:@"%@-%ld", virtualParentOid, indexPath.row / 2];
-    [cell et_build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [cell ne_etb_build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder
-            .virtualParent(virtualParentOid, virtualParentIdentifier, ^(id<EventTracingLogVirtualParentNodeBuilder>  _Nonnull virtualBuilder) {
+            .virtualParent(virtualParentOid, virtualParentIdentifier, ^(id<NEEventTracingLogVirtualParentNodeBuilder>  _Nonnull virtualBuilder) {
                 virtualBuilder
                     .params
                     .addParams(@{@"param_virtual_parent_key": @"param_virtual_parent_value"});
@@ -138,7 +139,7 @@ typedef NS_ENUM(NSInteger, ETTest) {
             .position(position);
     }];
 #else
-    [cell et_build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [cell ne_etb_build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder.bindDataForReuse(item)
             .params
             .position(position);

@@ -10,6 +10,7 @@
 #import "ETWebView.h"
 #import "EventTracingTestLogComing.h"
 #import "ETCommonDefines.h"
+#import <EventTracing/NEEventTracingBuilder.h>
 
 @interface ETH5ViewController ()
 @property (nonatomic, strong) ETWebView *webView;
@@ -34,7 +35,7 @@
     [self loadExamplePage:self.webView];
 #endif
     
-    [EventTracingBuilder viewController:self pageId:@"page_h5_biz"];
+    [NEEventTracingBuilder viewController:self pageId:@"page_h5_biz"];
     
 //    [self testBridgeFunc];
 }

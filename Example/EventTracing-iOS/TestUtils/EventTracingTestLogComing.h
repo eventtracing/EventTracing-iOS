@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EventTracingVTree (UITest_LogComing)
+@interface NEEventTracingVTree (UITest_LogComing)
 @property(nonatomic, assign) BOOL hasChangesToLastVTree;
 @end
 
@@ -30,15 +30,15 @@ FOUNDATION_EXTERN NSString * EventTracingDescForEvent(NSString * event);
 @optional
 - (void)logComing:(EventTracingTestLogComing *)logComing
 didOutputLogJsons:(NSArray<NSDictionary *> *)logJsons
-atVTreeGenerateLevel:(EventTracingVTree *)VTree;
+atVTreeGenerateLevel:(NEEventTracingVTree *)VTree;
 @end
 
 @interface EventTracingTestLogComing : NSObject
 
 @property(nonatomic, copy, readonly) NSString *key;
 @property(nonatomic, strong, readonly) NSArray<NSDictionary *> *logJsons;
-@property(nonatomic, strong, readonly) NSArray<EventTracingVTree *> *VTrees;
-@property(nonatomic, strong, readonly) EventTracingVTree *lastVTree;
+@property(nonatomic, strong, readonly) NSArray<NEEventTracingVTree *> *VTrees;
+@property(nonatomic, strong, readonly) NEEventTracingVTree *lastVTree;
 
 @property(nonatomic, weak) id<EventTracingTestLogComingDelegate> delegate;
 
@@ -55,7 +55,7 @@ atVTreeGenerateLevel:(EventTracingVTree *)VTree;
 + (instancetype)logComingWithRandomKey;
 
 - (void)addLogJson:(NSDictionary *)logJson;
-- (void)addVTree:(EventTracingVTree *)VTree;
+- (void)addVTree:(NEEventTracingVTree *)VTree;
 
 - (void)alertController:(NSString *)pageId didClickActionWithElementId:(NSString *)elementId position:(NSUInteger)position;
 - (void)webViewDidShow:(ETWebView *)webView;

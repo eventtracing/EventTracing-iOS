@@ -28,10 +28,10 @@
 
 - (void)testPublicParamsCall {
     [tester tapViewWithAccessibilityLabel:@"List"];
-    [tester et_asyncTapViewWithAccessibilityLabel:@"Home"];
+    [tester ne_et_asyncTapViewWithAccessibilityLabel:@"Home"];
     EventTracingTestLogComing *logComing = [EventTracingTestLogComing logComingWithRandomKey];
-    ET_Test_WaitForTimeAtVTreeGenerateWithCondition(3, logComing, ^BOOL(EventTracingTestLogComing * _Nonnull logComing) {
-        return [tester et_tryQuickFindingViewWithAccessibilityLabel:@"自动曝光"];
+    NE_ET_Test_WaitForTimeAtVTreeGenerateWithCondition(3, logComing, ^BOOL(EventTracingTestLogComing * _Nonnull logComing) {
+        return [tester ne_et_tryQuickFindingViewWithAccessibilityLabel:@"自动曝光"];
     });
     
     // 每条日志的产生，都会调用 动态公参 方法
@@ -49,26 +49,26 @@
 }
 
 - (void)testStaticParams {
-    [tester et_asyncTapViewWithAccessibilityLabel:@"参数"];
+    [tester ne_et_asyncTapViewWithAccessibilityLabel:@"参数"];
     EventTracingTestLogComing *logComing = [EventTracingTestLogComing logComingWithRandomKey];
     NSString *btnSPM = @"btn_common_item|page_params";
-    ET_Test_WaitForTimeAtVTreeGenerateWithCondition(1, logComing, ^BOOL(EventTracingTestLogComing * _Nonnull logComing) {
+    NE_ET_Test_WaitForTimeAtVTreeGenerateWithCondition(1, logComing, ^BOOL(EventTracingTestLogComing * _Nonnull logComing) {
         return [logComing.logJsons bk_any:^BOOL(NSDictionary *logJson) {
             // _ev && _spm值判断
-            return [logJson[ET_CONST_KEY_EVENT_CODE] isEqualToString:ET_EVENT_ID_E_VIEW]
-                    && [logJson[ET_REFER_KEY_SPM] isEqualToString:btnSPM];
+            return [logJson[NE_ET_CONST_KEY_EVENT_CODE] isEqualToString:NE_ET_EVENT_ID_E_VIEW]
+                    && [logJson[NE_ET_REFER_KEY_SPM] isEqualToString:btnSPM];
         }];
     });
     
     NSDictionary *btnImpressLogJson = [logComing.logJsons bk_match:^BOOL(NSDictionary *logJson) {
-        return [logJson[ET_REFER_KEY_SPM] isEqualToString:btnSPM];
+        return [logJson[NE_ET_REFER_KEY_SPM] isEqualToString:btnSPM];
     }];
     // _elist count == 1
-    XCTAssertTrue([btnImpressLogJson[ET_CONST_KEY_ELIST] isKindOfClass:NSArray.class] && [btnImpressLogJson[ET_CONST_KEY_ELIST] count] == 1);
+    XCTAssertTrue([btnImpressLogJson[NE_ET_CONST_KEY_ELIST] isKindOfClass:NSArray.class] && [btnImpressLogJson[NE_ET_CONST_KEY_ELIST] count] == 1);
     // _plist count == 1
-    XCTAssertTrue([btnImpressLogJson[ET_CONST_KEY_PLIST] isKindOfClass:NSArray.class] && [btnImpressLogJson[ET_CONST_KEY_PLIST] count] == 1);
+    XCTAssertTrue([btnImpressLogJson[NE_ET_CONST_KEY_PLIST] isKindOfClass:NSArray.class] && [btnImpressLogJson[NE_ET_CONST_KEY_PLIST] count] == 1);
     
-    NSDictionary *btnObjJson = [btnImpressLogJson[ET_CONST_KEY_ELIST] firstObject];
+    NSDictionary *btnObjJson = [btnImpressLogJson[NE_ET_CONST_KEY_ELIST] firstObject];
     
     // 对象静态私参
     XCTAssertTrue([btnObjJson[@"s_ctype"] isEqualToString:@"btn"]);
@@ -100,21 +100,21 @@
     XCTAssertTrue([btnObjJson[@"s_cid_song"] isEqualToString:@"song_id_0"]);
     
     /// MARK: 点击
-    [tester et_asyncTapViewWithAccessibilityLabel:@"通用Btn组件"];
+    [tester ne_et_asyncTapViewWithAccessibilityLabel:@"通用Btn组件"];
     logComing = [EventTracingTestLogComing logComingWithRandomKey];
-    ET_Test_WaitForTimeAtVTreeGenerateWithCondition(1, logComing, ^BOOL(EventTracingTestLogComing * _Nonnull logComing) {
-        return [logComing fetchJsonLogsForEvent:ET_EVENT_ID_E_CLCK spm:btnSPM].count > 0;
+    NE_ET_Test_WaitForTimeAtVTreeGenerateWithCondition(1, logComing, ^BOOL(EventTracingTestLogComing * _Nonnull logComing) {
+        return [logComing fetchJsonLogsForEvent:NE_ET_EVENT_ID_E_CLCK spm:btnSPM].count > 0;
     });
     
     NSDictionary *btnClcksLogJson = [logComing.logJsons bk_match:^BOOL(NSDictionary *logJson) {
-        return [logJson[ET_REFER_KEY_SPM] isEqualToString:btnSPM];
+        return [logJson[NE_ET_REFER_KEY_SPM] isEqualToString:btnSPM];
     }];
     // _elist count == 1
-    XCTAssertTrue([btnClcksLogJson[ET_CONST_KEY_ELIST] isKindOfClass:NSArray.class] && [btnImpressLogJson[ET_CONST_KEY_ELIST] count] == 1);
+    XCTAssertTrue([btnClcksLogJson[NE_ET_CONST_KEY_ELIST] isKindOfClass:NSArray.class] && [btnImpressLogJson[NE_ET_CONST_KEY_ELIST] count] == 1);
     // _plist count == 1
-    XCTAssertTrue([btnClcksLogJson[ET_CONST_KEY_PLIST] isKindOfClass:NSArray.class] && [btnImpressLogJson[ET_CONST_KEY_PLIST] count] == 1);
+    XCTAssertTrue([btnClcksLogJson[NE_ET_CONST_KEY_PLIST] isKindOfClass:NSArray.class] && [btnImpressLogJson[NE_ET_CONST_KEY_PLIST] count] == 1);
     
-    btnObjJson = [btnClcksLogJson[ET_CONST_KEY_ELIST] firstObject];
+    btnObjJson = [btnClcksLogJson[NE_ET_CONST_KEY_ELIST] firstObject];
     
     // 对象点击事件特有参数
     XCTAssertTrue([btnObjJson[@"btn_callback_ec_key"] isEqualToString:@"btn_callback_ec_value"]);
@@ -128,7 +128,7 @@
     // 点击之后，在 click handler 中增加的参数，可以在 _ec 埋点中体现
     XCTAssertTrue([btnObjJson[@"state_string"] isEqualToString:@"clicked"]);
     
-    ET_Test_WaitForTime(1);
+    NE_ET_Test_WaitForTime(1);
     [tester tapViewWithAccessibilityLabel:@"Back"];
 }
 

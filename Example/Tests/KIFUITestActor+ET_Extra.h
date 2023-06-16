@@ -1,5 +1,5 @@
 //
-//  KIFUITestActor+ET_Extra.h
+//  KIFUITestActor+NE_ET_Extra.h
 //  EventTracing-iOS_Example
 //
 //  Created by dl on 2022/12/14.
@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface KIFUITestActor (ET_Extra)
+@interface KIFUITestActor (NE_ET_Extra)
 
 - (BOOL)et_tryQuickFindingViewWithAccessibilityLabel:(NSString *)label;
 - (BOOL)et_tryFindingViewWithAccessibilityLabel:(NSString *)label timeout:(NSTimeInterval)timeout;

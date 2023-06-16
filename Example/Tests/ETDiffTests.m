@@ -20,7 +20,7 @@
     obj.name = name;
     return obj;
 }
-- (id<NSObject>)et_diffIdentifier {
+- (id<NSObject>)ne_et_diffIdentifier {
     return self.name;
 }
 - (BOOL)et_isEqualToDiffableObject:(id<EventTracingDiffable>)object {
@@ -28,8 +28,8 @@
         return YES;
     }
     
-    NSString *objectIdentifier = (NSString *)[(ETDiffTestObj *)object et_diffIdentifier];
-    if ([object isKindOfClass:self.class] && [objectIdentifier isEqualToString:(NSString *)[self et_diffIdentifier]]) {
+    NSString *objectIdentifier = (NSString *)[(ETDiffTestObj *)object ne_et_diffIdentifier];
+    if ([object isKindOfClass:self.class] && [objectIdentifier isEqualToString:(NSString *)[self ne_et_diffIdentifier]]) {
         return YES;
     }
     return NO;
@@ -84,14 +84,14 @@ void _arr_add(NSMutableArray *arr, ...) {
     Arr_add(self.arr2, "1", "2", "3", "4", "5", nil)
     
     EventTracingDiffResults *
-    result = ET_DiffBetweenArray(self.arr1, self.arr2);
+    result = NE_ET_DiffBetweenArray(self.arr1, self.arr2);
     XCTAssertTrue(!result.hasDiffs);
     XCTAssertTrue(result.inserts.count == 0);
     XCTAssertTrue(result.deletes.count == 0);
     
     // arr2 随机排序
     Arr_Random_sort(self.arr2)
-    result = ET_DiffBetweenArray(self.arr1, self.arr2);
+    result = NE_ET_DiffBetweenArray(self.arr1, self.arr2);
     XCTAssertTrue(!result.hasDiffs);
     XCTAssertTrue(result.inserts.count == 0);
     XCTAssertTrue(result.deletes.count == 0);
@@ -102,14 +102,14 @@ void _arr_add(NSMutableArray *arr, ...) {
     Arr_add(self.arr2, "1", "2", nil)
     
     EventTracingDiffResults *
-    result = ET_DiffBetweenArray(self.arr2, self.arr1);
+    result = NE_ET_DiffBetweenArray(self.arr2, self.arr1);
     XCTAssertTrue(result.hasDiffs);
     XCTAssertTrue(result.inserts.count == 0);
     XCTAssertTrue(result.deletes.count == 2);
     
     // arr2 随机排序
     Arr_Random_sort(self.arr2)
-    result = ET_DiffBetweenArray(self.arr2, self.arr1);
+    result = NE_ET_DiffBetweenArray(self.arr2, self.arr1);
     XCTAssertTrue(result.hasDiffs);
     XCTAssertTrue(result.inserts.count == 0);
     XCTAssertTrue(result.deletes.count == 2);
@@ -120,14 +120,14 @@ void _arr_add(NSMutableArray *arr, ...) {
     Arr_add(self.arr2, "1", "#1", "2", "#3", "4", nil)
     
     EventTracingDiffResults *
-    result = ET_DiffBetweenArray(self.arr2, self.arr1);
+    result = NE_ET_DiffBetweenArray(self.arr2, self.arr1);
     XCTAssertTrue(result.hasDiffs);
     XCTAssertTrue(result.inserts.count == 2);
     XCTAssertTrue(result.deletes.count == 0);
     
     // arr2 随机排序
     Arr_Random_sort(self.arr2)
-    result = ET_DiffBetweenArray(self.arr2, self.arr1);
+    result = NE_ET_DiffBetweenArray(self.arr2, self.arr1);
     XCTAssertTrue(result.hasDiffs);
     XCTAssertTrue(result.inserts.count == 2);
     XCTAssertTrue(result.deletes.count == 0);
@@ -138,14 +138,14 @@ void _arr_add(NSMutableArray *arr, ...) {
     Arr_add(self.arr2, "1", "2", "#3", "4", "#4", "#5", nil)
     
     EventTracingDiffResults *
-    result = ET_DiffBetweenArray(self.arr2, self.arr1);
+    result = NE_ET_DiffBetweenArray(self.arr2, self.arr1);
     XCTAssertTrue(result.hasDiffs);
     XCTAssertTrue(result.inserts.count == 3);
     XCTAssertTrue(result.deletes.count == 2);
     
     // arr2 随机排序
     Arr_Random_sort(self.arr2)
-    result = ET_DiffBetweenArray(self.arr2, self.arr1);
+    result = NE_ET_DiffBetweenArray(self.arr2, self.arr1);
     XCTAssertTrue(result.hasDiffs);
     XCTAssertTrue(result.inserts.count == 3);
     XCTAssertTrue(result.deletes.count == 2);

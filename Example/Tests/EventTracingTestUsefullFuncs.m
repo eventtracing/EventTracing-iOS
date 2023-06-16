@@ -11,7 +11,7 @@
 #import <KIF/KIF.h>
 #import <BlocksKit/NSObject+A2DynamicDelegate.h>
 
-void ET_Test_WaitForTimeExecBlock(NSTimeInterval timeout, ET_Test_Wait_ExecBlock execBlock) {
+void NE_ET_Test_WaitForTimeExecBlock(NSTimeInterval timeout, NE_ET_Test_Wait_ExecBlock execBlock) {
     XCTestExpectation *expectation = [[XCTestExpectation alloc] init];
     expectation.inverted = YES;
     !execBlock ?: execBlock(expectation);
@@ -19,7 +19,7 @@ void ET_Test_WaitForTimeExecBlock(NSTimeInterval timeout, ET_Test_Wait_ExecBlock
     XCTAssertTrue(result == XCTWaiterResultInvertedFulfillment);
 }
 
-void ET_Test_WaitForTime(NSTimeInterval timeout) {
+void NE_ET_Test_WaitForTime(NSTimeInterval timeout) {
     XCTestExpectation *expectation = [[XCTestExpectation alloc] init];
     expectation.inverted = YES;
     XCTWaiterResult result = [[[XCTWaiter alloc] init] waitForExpectations:@[expectation] timeout:timeout];
@@ -27,18 +27,18 @@ void ET_Test_WaitForTime(NSTimeInterval timeout) {
 }
 
 __attribute__((overloadable))
-void ET_Test_WaitForTimeAtVTreeGenerateWithCondition(NSTimeInterval timeout, ET_Test_Wait_AtVTreeGenerateConditionBlock condition) {
+void NE_ET_Test_WaitForTimeAtVTreeGenerateWithCondition(NSTimeInterval timeout, NE_ET_Test_Wait_AtVTreeGenerateConditionBlock condition) {
     EventTracingTestLogComing *logComing = [EventTracingTestLogComing logComingWithRandomKey];
-    ET_Test_WaitForTimeAtVTreeGenerateWithCondition(timeout, logComing, condition);
+    NE_ET_Test_WaitForTimeAtVTreeGenerateWithCondition(timeout, logComing, condition);
 }
 
-void ET_Test_WaitForTimeAtVTreeGenerateWithCondition(NSTimeInterval timeout,
+void NE_ET_Test_WaitForTimeAtVTreeGenerateWithCondition(NSTimeInterval timeout,
                                                      EventTracingTestLogComing *logComing,
-                                                     ET_Test_Wait_AtVTreeGenerateConditionBlock condition) {
-    ET_Test_WaitForTimeExecBlock(timeout, ^(XCTestExpectation * _Nonnull expectation) {
+                                                     NE_ET_Test_Wait_AtVTreeGenerateConditionBlock condition) {
+    NE_ET_Test_WaitForTimeExecBlock(timeout, ^(XCTestExpectation * _Nonnull expectation) {
         [[logComing bk_dynamicDelegateForProtocol:@protocol(EventTracingTestLogComingDelegate)]
          implementMethod:@selector(logComing:didOutputLogJsons:atVTreeGenerateLevel:)
-         withBlock:^(EventTracingTestLogComing *logComing, NSArray<NSDictionary *> *logJsons, EventTracingVTree *VTree) {
+         withBlock:^(EventTracingTestLogComing *logComing, NSArray<NSDictionary *> *logJsons, NEEventTracingVTree *VTree) {
             if (condition && condition(logComing)) {
                 [expectation fulfill];
             }

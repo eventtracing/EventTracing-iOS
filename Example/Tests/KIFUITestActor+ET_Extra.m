@@ -1,21 +1,21 @@
 //
-//  KIFUITestActor+ET_Extra.m
+//  KIFUITestActor+NE_ET_Extra.m
 //  EventTracing-iOS_Example
 //
 //  Created by dl on 2022/12/14.
 //  Copyright © 2022 9446796. All rights reserved.
 //
 
-#import "KIFUITestActor+ET_Extra.h"
+#import "KIFUITestActor+NE_ET_Extra.h"
 
-@implementation KIFUITestActor (ET_Extra)
+@implementation KIFUITestActor (NE_ET_Extra)
 
 - (BOOL)et_tryQuickFindingViewWithAccessibilityLabel:(NSString *)label {
-    return [self et_tryFindingViewWithAccessibilityLabel:label timeout:0.05];
+    return [self ne_et_tryFindingViewWithAccessibilityLabel:label timeout:0.05];
 }
 
 - (BOOL)et_tryFindingViewWithAccessibilityLabel:(NSString *)label timeout:(NSTimeInterval)timeout {
-    return [self et_tryFindingViewWithAccessibilityLabel:label timeout:timeout tappable:NO];
+    return [self ne_et_tryFindingViewWithAccessibilityLabel:label timeout:timeout tappable:NO];
 }
 
 - (BOOL)et_tryFindingViewWithAccessibilityLabel:(NSString *)label timeout:(NSTimeInterval)timeout tappable:(BOOL)tappable {
