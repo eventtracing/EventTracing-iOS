@@ -14,7 +14,7 @@
     @import UIKit;
     @import Foundation;
 
-#import <EventTracing/EventTracing.h>
+#import <EventTracing/NEEventTracing.h>
 #import <EventTracingDebug/EventTracingInspectEngine.h>
 #import <EventTracingLogViewer/EventTracingLogRealtimeViewer.h>
 #import <BlocksKit/BlocksKit.h>

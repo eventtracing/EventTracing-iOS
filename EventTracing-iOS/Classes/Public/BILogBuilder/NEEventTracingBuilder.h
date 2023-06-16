@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
  @code
  [btn ne_etb_build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
      builder.visibleEdgeInsets(UIEdgeInsetsMake(10, 10, 10, 10))
-     .buildinEventLogDisableStrategy(ETNodeBuildinEventLogDisableStrategyClick)
+     .buildinEventLogDisableStrategy(NEETNodeBuildinEventLogDisableStrategyClick)
      .params
      .set(@"xxx", @"xxx");
  }];
@@ -40,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
  @code
  [[NEEventTracingBuilder viewController:self pageId:@"_oid_Main"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
      builder.visibleEdgeInsets(UIEdgeInsetsMake(10, 10, 10, 10))
-     .buildinEventLogDisableStrategy(ETNodeBuildinEventLogDisableStrategyClick);
+     .buildinEventLogDisableStrategy(NEETNodeBuildinEventLogDisableStrategyClick);
      .params
      .set(@"key", @"value");
  }];
@@ -171,11 +171,11 @@ typedef void(^NE_ETB_ParamsCarryEventsBlock)(id<NEEventTracingLogNodeParamsBuild
 @property(nonatomic, readonly) id<NEEventTracingLogNodeBuilder> (^visibleEdgeInsetsLeft)(CGFloat insetsLeft);
 @property(nonatomic, readonly) id<NEEventTracingLogNodeBuilder> (^visibleEdgeInsetsBottom)(CGFloat insetsBottom);
 @property(nonatomic, readonly) id<NEEventTracingLogNodeBuilder> (^visibleEdgeInsetsRight)(CGFloat insetsRight);
-@property(nonatomic, readonly) id<NEEventTracingLogNodeBuilder> (^visibleRectCalculateStrategy)(NEETNodeVisibleRectCalculateStrategy strategy);   // default: ETNodeVisibleRectCalculateStrategyOnParentNode
+@property(nonatomic, readonly) id<NEEventTracingLogNodeBuilder> (^visibleRectCalculateStrategy)(NEETNodeVisibleRectCalculateStrategy strategy);   // default: NEETNodeVisibleRectCalculateStrategyOnParentNode
 
 /// MARK: 是否穿透父节点的可见区域，常跟`logicalParentSPM`一起用，用在需要将一个比较大的浮层，挂载到一个比较小的按钮上的场景
 /// MARK: 相当于调用 visibleRectCalculateStrategy
-/// MARK: YES => ETNodeVisibleRectCalculateStrategyPassthrough, NO => ETNodeVisibleRectCalculateStrategyOnParentNode
+/// MARK: YES => NEETNodeVisibleRectCalculateStrategyPassthrough, NO => NEETNodeVisibleRectCalculateStrategyOnParentNode
 @property(nonatomic, readonly) id<NEEventTracingLogNodeBuilder> (^visiblePassthrough)(BOOL passthrough);
 
 // 内建埋点策略: clck | impress
@@ -207,7 +207,7 @@ typedef void(^NE_ETB_ParamsCarryEventsBlock)(id<NEEventTracingLogNodeParamsBuild
 
 // reuse
 /// MARK: 建议使用 model 对象作为参数（则内部使用 data 的内存地址参与生成 identifier）
-/// MARK: 如果是使用 model 对象，则尝试通过 `-[NSObject ET_passData]` 获取 id<NENetworkingEventTracingPassData>, 并且取出 traceId 作为 `s_ctraceid` 塞入到对象参数中
+/// MARK: 如果是使用 model 对象，则尝试通过 `-[NSObject NE_ET_passData]` 获取 id<NENetworkingEventTracingPassData>, 并且取出 traceId 作为 `s_ctraceid` 塞入到对象参数中
 /// MARK: 如果业务侧已经先行设置了 `s_ctraceid` 值，则不覆盖
 @property(nonatomic, readonly) id<NEEventTracingLogNodeBuilder> (^bindDataForReuse)(id data);
 @property(nonatomic, readonly) id<NEEventTracingLogNodeBuilder> (^bindDataForReuseWithAutoClassifyIdAppend)(NSString *identifier);
@@ -250,17 +250,17 @@ typedef void(^NE_ETB_ParamsCarryEventsBlock)(id<NEEventTracingLogNodeParamsBuild
 
 @protocol NEEventTracingLogManuallyEventActionBuilder <NSObject>
 
-@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^pv)(void);                // ET_EVENT_ID_P_VIEW: _pv
-@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^pd)(void);                // ET_EVENT_ID_P_VIEW_END: _pvd
-@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^ev)(void);                // ET_EVENT_ID_E_VIEW: _ev
-@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^ed)(void);                // ET_EVENT_ID_E_VIEW_END: _evd
+@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^pv)(void);                // NE_ET_EVENT_ID_P_VIEW: _pv
+@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^pd)(void);                // NE_ET_EVENT_ID_P_VIEW_END: _pvd
+@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^ev)(void);                // NE_ET_EVENT_ID_E_VIEW: _ev
+@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^ed)(void);                // NE_ET_EVENT_ID_E_VIEW_END: _evd
 
-@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^ec)(void);                // ET_EVENT_ID_E_CLCK: _ec
-@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^elc)(void);               // ET_EVENT_ID_E_LONG_CLCK: _lec
-@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^es)(void);                // ET_EVENT_ID_E_SLIDE: _es
-@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^pgf)(void);               // ET_EVENT_ID_P_REFRESH: _pgf
-@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^plv)(void);               // ET_EVENT_ID_PLV: _plv
-@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^pld)(void);               // ET_EVENT_ID_PLD: _pld
+@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^ec)(void);                // NE_ET_EVENT_ID_E_CLCK: _ec
+@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^elc)(void);               // NE_ET_EVENT_ID_E_LONG_CLCK: _lec
+@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^es)(void);                // NE_ET_EVENT_ID_E_SLIDE: _es
+@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^pgf)(void);               // NE_ET_EVENT_ID_P_REFRESH: _pgf
+@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^plv)(void);               // NE_ET_EVENT_ID_PLV: _plv
+@property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^pld)(void);               // NE_ET_EVENT_ID_PLD: _pld
 
 @property(nonatomic, readonly) id<NEEventTracingLogNodeParamsBuilder> (^event)(NSString *event);
 

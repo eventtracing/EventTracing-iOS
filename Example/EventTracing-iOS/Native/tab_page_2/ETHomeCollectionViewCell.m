@@ -7,6 +7,7 @@
 //
 
 #import "ETHomeCollectionViewCell.h"
+#import <EventTracing/NEEventTracingBuilder.h>
 
 @interface ETHomeCollectionViewCell ()
 @property(nonatomic, strong) NSDictionary *data;
@@ -25,7 +26,7 @@
             make.edges.equalTo(self.contentView);
         }];
         
-        [[EventTracingBuilder view:self elementId:@"CollectionCell"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+        [[NEEventTracingBuilder view:self elementId:@"CollectionCell"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
             builder.params.set(@"cell_key", @"cell_val_123");
         }];
     }
@@ -38,14 +39,14 @@
     self.contentView.backgroundColor = [data objectForKey:@"color"];
     self.titleLabel.text = [data objectForKey:@"idx"];
     
-    [self et_build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [self ne_etb_build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder.bindDataForReuse(data)
         .params
         .set(@"idx", [data objectForKey:@"idx"]);
     }];
 }
 
-- (void)et_makeDynamicParams:(id<EventTracingLogNodeParamsBuilder>)builder {
+- (void)ne_etb_makeDynamicParams:(id<NEEventTracingLogNodeParamsBuilder>)builder {
     builder.set(@"d_idx", [self.data objectForKey:@"idx"]);
 }
 

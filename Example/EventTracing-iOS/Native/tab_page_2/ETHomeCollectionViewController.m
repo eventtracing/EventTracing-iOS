@@ -9,6 +9,7 @@
 #import "ETHomeCollectionViewController.h"
 #import "ETHomeCollectionViewCell.h"
 #import "UIColor+ET.h"
+#import <EventTracing/NEEventTracingBuilder.h>
 
 @interface ETHomeCollectionViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 @property(nonatomic, strong) NSMutableArray *dataSource;
@@ -47,35 +48,35 @@
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(et_appDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
     
-    [[EventTracingBuilder viewController:self pageId:@"page_tab_vc_2"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [[NEEventTracingBuilder viewController:self pageId:@"page_tab_vc_2"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder.visibleEdgeInsets(UIEdgeInsetsMake(0.f, 0.f, CGRectGetHeight(self.tabBarController.tabBar.bounds), 0.f))
         .params
         .set(@"drand48", @(drand48()).stringValue)
         .set(@"my_key1", @"my_valu1");
     }];
 
-    [[EventTracingBuilder view:self.collectionView elementId:@"List"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [[NEEventTracingBuilder view:self.collectionView elementId:@"List"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder.visibleEdgeInsetsTop(
                                      CGRectGetHeight(self.navigationController.navigationBar.bounds) +
                                      CGRectGetHeight([UIApplication sharedApplication].statusBarFrame))
         .params
-        .pushContentWithBlock(^(id<EventTracingLogNodeParamContentIdBuilder>  _Nonnull content) {
+        .pushContentWithBlock(^(id<NEEventTracingLogNodeParamContentIdBuilder>  _Nonnull content) {
             content.user(@"user1").ctrp(@"ctrp1");
         });
     }];
     
-    [EventTracingBuilder batchBuildParams:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [NEEventTracingBuilder batchBuildParams:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder
         .params
-        .pushContentWithBlock(^(id<EventTracingLogNodeParamContentIdBuilder>  _Nonnull content) {
+        .pushContentWithBlock(^(id<NEEventTracingLogNodeParamContentIdBuilder>  _Nonnull content) {
             content.cidtype(@"test_xxx", @"customtype").ctrp(@"testalg_xxx");
         })
         .set(@"param1", @"param1Value");
     } variableViews:self.view, self.collectionView, nil];
     
     [self.view addSubview:self.collectionView];
-    self.collectionView.et_esEventEnable = YES;
-//    [self.collectionView et_pipEventToAncestorNodeView:NE_ET_EVENT_ID_E_SLIDE];
+    self.collectionView.ne_et_esEventEnable = YES;
+//    [self.collectionView ne_et_pipEventToAncestorNodeView:NE_ET_EVENT_ID_E_SLIDE];
     
     NSMutableArray *data = [@[] mutableCopy];
     for (int i=0; i<20; i++) {
@@ -91,9 +92,9 @@
     }
     self.dataSource = data;
     
-    [[EventTracingEngine sharedInstance] logWithEvent:@"_homecustom_event" view:self.collectionView params:@{
+    [[NEEventTracingEngine sharedInstance] logWithEvent:@"_homecustom_event" view:self.collectionView params:@{
         @"customEventParamsKey": @"CustomEventParamsValue"
-    } eventAction:^(EventTracingEventActionConfig * _Nonnull config) {
+    } eventAction:^(NEEventTracingEventActionConfig * _Nonnull config) {
         config.increaseActseq = YES;
     }];
 }
@@ -114,7 +115,7 @@
     NSDictionary *sectionData = [self.dataSource objectAtIndex:indexPath.section];
     NSArray *items = [sectionData objectForKey:@"items"];
     [cell refreshWithData:[items objectAtIndex:indexPath.item]];
-    [cell et_buildParams:^(id<EventTracingLogNodeParamsBuilder>  _Nonnull params) {
+    [cell ne_etb_buildParams:^(id<NEEventTracingLogNodeParamsBuilder>  _Nonnull params) {
         params.position(indexPath.section * 100 + indexPath.item);
     }];
     return cell;
@@ -126,14 +127,14 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     UICollectionViewCell *cell = [collectionView cellForItemAtIndexPath:indexPath];
-    NSLog(@"[find ancestor]%@, %@", ET_FindAncestorNodeViewAt(cell), ET_FindAncestorNodeViewAt(cell, @"CollectionTab"));
-    NSLog(@"Clicked at section: %@, item: %@, eventRefer: %@", @(indexPath.section).stringValue, @(indexPath.item).stringValue, ET_eventReferForView(cell));
+    NSLog(@"[find ancestor]%@, %@", NE_ET_FindAncestorNodeViewAt(cell), NE_ET_FindAncestorNodeViewAt(cell, @"CollectionTab"));
+    NSLog(@"Clicked at section: %@, item: %@, eventRefer: %@", @(indexPath.section).stringValue, @(indexPath.item).stringValue, NE_ET_eventReferForView(cell));
 }
 
 - (void)et_appDidEnterBackground:(NSNotification *)noti {
-    [[EventTracingEngine sharedInstance] logWithEvent:@"NE_ET_CollectionCustomEvent_APPInBackGround" view:self.collectionView params:@{
+    [[NEEventTracingEngine sharedInstance] logWithEvent:@"NE_ET_CollectionCustomEvent_APPInBackGround" view:self.collectionView params:@{
         @"appState": @(UIApplication.sharedApplication.applicationState).stringValue
-    } eventAction:^(EventTracingEventActionConfig * _Nonnull config) {
+    } eventAction:^(NEEventTracingEventActionConfig * _Nonnull config) {
         config.useForRefer = YES;
         config.increaseActseq = YES;
     }];

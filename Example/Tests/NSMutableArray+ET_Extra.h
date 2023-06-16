@@ -1,5 +1,5 @@
 //
-//  NSMutableArray+ET_Extra.h
+//  NSMutableArray+NE_ET_Extra.h
 //  EventTracing-iOS_Example
 //
 //  Created by 熊勋泉 on 2022/12/16.
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface NSMutableArray (ET_Extra)
+@interface NSMutableArray (NE_ET_Extra)
 
 - (void)et_pushObject:(id)anObject;
 - (void)et_popObject;

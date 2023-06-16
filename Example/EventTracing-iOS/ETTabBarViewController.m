@@ -7,8 +7,9 @@
 //
 
 #import "ETTabBarViewController.h"
+#import <EventTracing/NEEventTracingBuilder.h>
 
-@interface ETTabBarViewController () <EventTracingVTreeNodeExtraConfigProtocol>
+@interface ETTabBarViewController () <NEEventTracingVTreeNodeExtraConfigProtocol>
 @property(nonatomic, strong) UIButton *floatBtn;
 @end
 
@@ -17,14 +18,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [[EventTracingBuilder viewController:self pageId:@"page_main"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [[NEEventTracingBuilder viewController:self pageId:@"page_main"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder
             .logicalParentView(self.view.window)
             .params.set(@"abc", @"root.val.abc");
     }];
 }
 
-#pragma mark - EventTracingVTreeNodeExtraConfigProtocol
+#pragma mark - NEEventTracingVTreeNodeExtraConfigProtocol
 - (NSArray<NSString *> *)et_validForContainingSubNodeOids {
     return @[@"page_tab_vc_1", @"page_tab_vc_2"];
 }

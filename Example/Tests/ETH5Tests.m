@@ -30,16 +30,16 @@
     EventTracingTestLogComing *logComing = [EventTracingTestLogComing logComingWithRandomKey];
     [tester tapViewWithAccessibilityLabel:@"H5 页"];
     
-    ET_Test_WaitForTime(0.5);
+    NE_ET_Test_WaitForTime(0.5);
 //    NSString *script = [NSString stringWithFormat:@"document.querySelector('#btn_check_avaiable').dispatchEvent(new MouseEvent('mousedown', {}))"];
     NSString *script = [NSString stringWithFormat:@"simulate_click('btn_check_avaiable')"];
     [[logComing currentShowingWebView] evaluateJavaScript:script];
     
-    ET_Test_WaitForTime(0.5);
+    NE_ET_Test_WaitForTime(0.5);
     script = [NSString stringWithFormat:@"simulate_click('btn_et_test')"];
     [[logComing currentShowingWebView] evaluateJavaScript:script];
     
-    ET_Test_WaitForTime(0.5);
+    NE_ET_Test_WaitForTime(0.5);
 }
 
 @end

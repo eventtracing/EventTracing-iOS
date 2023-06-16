@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// @brief SCM的格式化配置
 /// @discussion 所有的 _xxrefer 的格式中都包含 _scm, 而且是自底向上递归节点的 _nodeSCM 通过 `|` 拼接得来
-/// @discussion 默认实现使用 EventTracingReferNodeSCMDefaultFormatter，格式 => s_cid:s_ctype:s_ctraceid:s_ctrp
+/// @discussion 默认实现使用 NEEventTracingReferNodeSCMDefaultFormatter，格式 => s_cid:s_ctype:s_ctraceid:s_ctrp
 @protocol NEEventTracingReferNodeSCMFormatter <NSObject>
 
 /// scm 格式构造方法

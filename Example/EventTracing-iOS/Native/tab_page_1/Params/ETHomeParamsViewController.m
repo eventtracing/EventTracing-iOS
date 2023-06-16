@@ -8,6 +8,7 @@
 
 #import "ETHomeParamsViewController.h"
 #import "UIColor+ET.h"
+#import <EventTracing/NEEventTracingBuilder.h>
 
 // 通用UI组件，埋点代码内聚
 // 外部建议通过 callback 形式对埋点额外修改
@@ -22,7 +23,7 @@
         self.backgroundColor = [UIColor et_randomColor];
         self.stateString = @"init";
         
-        [[EventTracingBuilder view:self elementId:@"btn_common_item"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+        [[NEEventTracingBuilder view:self elementId:@"btn_common_item"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
             builder
             .params
             // 【推荐】便捷方法 添加，这种方式参数 `key` 不容易出错，统一封装的
@@ -35,7 +36,7 @@
             
             // 添加组件内部的其他资源
             .pushContent().user(@"user_id_0").ctraceid(@"user_traceid_0").ctrp(@"user_trp_0").pop()
-            .pushContentWithBlock(^(id<EventTracingLogNodeParamContentIdBuilder>  _Nonnull content) {
+            .pushContentWithBlock(^(id<NEEventTracingLogNodeParamContentIdBuilder>  _Nonnull content) {
                 content.song(@"song_id_0");
             })
             // 批量添加
@@ -55,7 +56,7 @@
 
 // 【推荐！！】代码内聚，而且可以支持动态参数
 // 优先级高于先前`静态参数`，可覆盖前者
-- (void)et_makeDynamicParams:(id<EventTracingLogNodeParamsBuilder>)builder {
+- (void)ne_etb_makeDynamicParams:(id<NEEventTracingLogNodeParamsBuilder>)builder {
     builder
         .set(@"state_string", self.stateString)
         .set(@"btn_dynamic_set_key", @"btn_dynamic_set_value")
@@ -78,7 +79,7 @@
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor whiteColor];
     
-    [[EventTracingBuilder viewController:self pageId:@"page_params"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [[NEEventTracingBuilder viewController:self pageId:@"page_params"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder
         .params
         // 一些便捷方法，来添加静态参数
@@ -100,25 +101,25 @@
         make.centerX.equalTo(self.view);
     }];
     
-    [self.reuseBtn et_build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [self.reuseBtn ne_etb_build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         // 【callback】添加 对象&事件 维度的参数，并且在callback中可以拿到 `event` 参数
-        builder.addParamsCarryEventCallbackForEvents(@[ET_EVENT_ID_E_CLCK], ^(id<EventTracingLogNodeParamsBuilder>  _Nonnull params, NSString * _Nonnull event) {
+        builder.addParamsCarryEventCallbackForEvents(@[NE_ET_EVENT_ID_E_CLCK], ^(id<NEEventTracingLogNodeParamsBuilder>  _Nonnull params, NSString * _Nonnull event) {
             params.set(@"btn_callback_carry_event_key", [NSString stringWithFormat:@"btn_callback_carry_event_value_%@", event]);
         })
         // 【callback】多事件 添加 对象&事件 维度的参数
-        .addParamsCallbackForEvents(@[ET_EVENT_ID_E_CLCK], ^(id<EventTracingLogNodeParamsBuilder>  _Nonnull params) {
+        .addParamsCallbackForEvents(@[NE_ET_EVENT_ID_E_CLCK], ^(id<NEEventTracingLogNodeParamsBuilder>  _Nonnull params) {
             params.set(@"btn_callback_batch_event_ec_key", @"btn_callback_batch_event_ec_value");
         })
         // 【callback】【点击事件】添加 对象&事件 维度的参数
-        .addClickParamsCallback(^(id<EventTracingLogNodeParamsBuilder>  _Nonnull params) {
+        .addClickParamsCallback(^(id<NEEventTracingLogNodeParamsBuilder>  _Nonnull params) {
             params.set(@"btn_callback_ec_key", @"btn_callback_ec_value");
         })
         // 【callback】【指定事件】添加 对象&事件 维度的参数
-        .addParamsCallbackForEvent(ET_EVENT_ID_E_CLCK, ^(id<EventTracingLogNodeParamsBuilder>  _Nonnull params) {
+        .addParamsCallbackForEvent(NE_ET_EVENT_ID_E_CLCK, ^(id<NEEventTracingLogNodeParamsBuilder>  _Nonnull params) {
             params.set(@"btn_callback_event_ec_key", @"btn_callback_event_ec_value");
         })
         // 【callback】添加 对象 维度的参数
-        .addParamsCallback(^(id<EventTracingLogNodeParamsBuilder>  _Nonnull params) {
+        .addParamsCallback(^(id<NEEventTracingLogNodeParamsBuilder>  _Nonnull params) {
             params.set(@"btn_callback_key", @"btn_callback_value");
         })
         .params

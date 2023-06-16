@@ -22,9 +22,9 @@ static NSString * const ETWebViewBrigeCheckoutIfHasJsFunc = @"__et_has_js_method
 - (instancetype)initWithFrame:(CGRect)frame configuration:(WKWebViewConfiguration *)configuration {
     self = [super initWithFrame:frame configuration:configuration];
     if (self) {
-        //Add et_js_is_wk 便于前端区分
+        //Add ne_et_js_is_wk 便于前端区分
         {
-            WKUserScript *script = [[WKUserScript alloc] initWithSource:@"var et_js_is_wk = true;" injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];
+            WKUserScript *script = [[WKUserScript alloc] initWithSource:@"var ne_et_js_is_wk = true;" injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly:NO];
             [self.configuration.userContentController addUserScript:script];
         }
         

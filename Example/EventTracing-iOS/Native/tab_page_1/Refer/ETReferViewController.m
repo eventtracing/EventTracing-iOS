@@ -9,7 +9,8 @@
 #import "ETReferViewController.h"
 #import "UIColor+ET.h"
 #import "ETBridgeViewController.h"
-#import <EventTracing/EventTracing.h>
+#import <EventTracing/NEEventTracing.h>
+#import <EventTracing/NEEventTracingBuilder.h>
 
 #define VIEW_LEFT 20
 #define VIEW_TOP 100
@@ -35,11 +36,11 @@
     [self.view addSubview:self.exitBtn];
     [self.view addSubview:self.pushBridgeVCBtn];
     
-    [EventTracingBuilder viewController:self pageId:[@"refer_page" stringByAppendingFormat:@"_%@", @(self.depth)]];
-    [EventTracingBuilder view:self.pushVCBtn elementId:@"push_btn"];
-    [EventTracingBuilder view:self.presentVCBtn elementId:@"present_btn"];
-    [EventTracingBuilder view:self.exitBtn elementId:@"exit_btn"];
-    [EventTracingBuilder view:self.pushBridgeVCBtn elementId:@"push_bridge_btn"];
+    [NEEventTracingBuilder viewController:self pageId:[@"refer_page" stringByAppendingFormat:@"_%@", @(self.depth)]];
+    [NEEventTracingBuilder view:self.pushVCBtn elementId:@"push_btn"];
+    [NEEventTracingBuilder view:self.presentVCBtn elementId:@"present_btn"];
+    [NEEventTracingBuilder view:self.exitBtn elementId:@"exit_btn"];
+    [NEEventTracingBuilder view:self.pushBridgeVCBtn elementId:@"push_bridge_btn"];
 }
 
 - (instancetype)initWithDepth:(NSInteger)depth {

@@ -272,15 +272,15 @@ NEEventTracingContextOutputParamsFilterBuilder
 
 /// - 如果为 YES 则表示使用外部的APP生命周期事件，此时需要外部在适当的时机调用下面的方法
 /// ```
-///  [[EventTracingEngine sharedInstance] appDidBecomeActive];
-///  [[EventTracingEngine sharedInstance] appWillEnterForeground];
-///  [[EventTracingEngine sharedInstance] appDidEnterBackground];
+///  [[NEEventTracingEngine sharedInstance] appDidBecomeActive];
+///  [[NEEventTracingEngine sharedInstance] appWillEnterForeground];
+///  [[NEEventTracingEngine sharedInstance] appDidEnterBackground];
 /// ```
 /// - 默认：NO，使用 UIApplicationDidBecomeActiveNotification,UIApplicationWillEnterForegroundNotification,UIApplicationDidEnterBackgroundNotification
 /// ```
-///  UIApplicationDidBecomeActiveNotification      => [[EventTracingEngine sharedInstance] appDidBecomeActive];
-///  UIApplicationWillEnterForegroundNotification  => [[EventTracingEngine sharedInstance] appWillEnterForeground];
-///  UIApplicationDidEnterBackgroundNotification   => [[EventTracingEngine sharedInstance] appDidEnterBackground];
+///  UIApplicationDidBecomeActiveNotification      => [[NEEventTracingEngine sharedInstance] appDidBecomeActive];
+///  UIApplicationWillEnterForegroundNotification  => [[NEEventTracingEngine sharedInstance] appWillEnterForeground];
+///  UIApplicationDidEnterBackgroundNotification   => [[NEEventTracingEngine sharedInstance] appDidEnterBackground];
 /// ```
 @property(nonatomic, assign, getter=isUseCustomAppLifeCycle) BOOL useCustomAppLifeCycle;
 

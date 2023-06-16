@@ -7,13 +7,13 @@
 //
 
 #import "ETWebViewBridgeManager.h"
-#import <EventTracing/EventTracing.h>
+#import <EventTracing/NEEventTracing.h>
 #import <BlocksKit/BlocksKit.h>
-#import <EventTracing/EventTracingMultiReferPatch.h>
+#import <EventTracing/NEEventTracingMultiReferPatch.h>
 
-@interface ETJSBEventTracing : ETWebViewBridgeModule <EventTracingVTreeObserver>
-@property(nonatomic, strong) EventTracingVTree *containerVTreeCopy;
-@property(nonatomic, strong) EventTracingVTreeNode *containerVTreeNodeCopy;
+@interface ETJSBEventTracing : ETWebViewBridgeModule <NEEventTracingVTreeObserver>
+@property(nonatomic, strong) NEEventTracingVTree *containerVTreeCopy;
+@property(nonatomic, strong) NEEventTracingVTreeNode *containerVTreeNodeCopy;
 @end
 
 @implementation ETJSBEventTracing
@@ -23,9 +23,9 @@ ETWEBKIT_BRIDGE_MODULE_EXPORT(eventTracing)
 - (instancetype)init {
     self = [super init];
     if (self) {
-        [[EventTracingEngine sharedInstance] addVTreeObserver:self];
+        [[NEEventTracingEngine sharedInstance] addVTreeObserver:self];
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self _didGenerageVTree:[EventTracingEngine sharedInstance].context.currentVTree];
+            [self _didGenerageVTree:[NEEventTracingEngine sharedInstance].context.currentVTree];
         });
     }
     return self;
@@ -39,7 +39,7 @@ ETWEBKIT_BRIDGE_MODULE_METHDO_EXPORT(test) {
 }
 
 ETWEBKIT_BRIDGE_MODULE_METHDO_EXPORT(report) {
-    EventTracingVTreeNode *VTreeNode = [self _doFetchNodeAndCheckBeforeReportForContext:context callback:callback];
+    NEEventTracingVTreeNode *VTreeNode = [self _doFetchNodeAndCheckBeforeReportForContext:context callback:callback];
     if (!VTreeNode) {
         return;
     }
@@ -56,13 +56,13 @@ ETWEBKIT_BRIDGE_MODULE_METHDO_EXPORT(report) {
         return;
     }
     
-    [[EventTracingEngine sharedInstance] logWithEvent:event
+    [[NEEventTracingEngine sharedInstance] logWithEvent:event
                                                baseNode:VTreeNode
                                                   elist:elist
                                                   plist:plist
                                             positionKey:@"s_position"
                                                  params:params.copy
-                                            eventAction:^(EventTracingEventActionConfig * _Nonnull config) {
+                                            eventAction:^(NEEventTracingEventActionConfig * _Nonnull config) {
         config.useForRefer = useForRefer;
         config.fromH5 = YES;
     }];
@@ -71,7 +71,7 @@ ETWEBKIT_BRIDGE_MODULE_METHDO_EXPORT(report) {
 }
 
 ETWEBKIT_BRIDGE_MODULE_METHDO_EXPORT(reportBatch) {
-    EventTracingVTreeNode *VTreeNode = [self _doFetchNodeAndCheckBeforeReportForContext:context callback:callback];
+    NEEventTracingVTreeNode *VTreeNode = [self _doFetchNodeAndCheckBeforeReportForContext:context callback:callback];
     if (!VTreeNode) {
         return;
     }
@@ -92,13 +92,13 @@ ETWEBKIT_BRIDGE_MODULE_METHDO_EXPORT(reportBatch) {
         NSMutableDictionary *params = ((NSDictionary *)[obj objectForKey:@"params"] ?: @{}).mutableCopy;
         [params setObject:@"h5" forKey:@"_rpc_source"];
         
-        [[EventTracingEngine sharedInstance] logWithEvent:event
+        [[NEEventTracingEngine sharedInstance] logWithEvent:event
                                                    baseNode:VTreeNode
                                                       elist:elist
                                                       plist:plist
                                                 positionKey:@"s_position"
                                                      params:params.copy
-                                                eventAction:^(EventTracingEventActionConfig * _Nonnull config) {
+                                                eventAction:^(NEEventTracingEventActionConfig * _Nonnull config) {
             config.useForRefer = useForRefer;
             config.fromH5 = YES;
         }];
@@ -115,7 +115,7 @@ ETWEBKIT_BRIDGE_MODULE_METHDO_EXPORT(reportBatch) {
 }
 
 ETWEBKIT_BRIDGE_MODULE_METHDO_EXPORT(refers) {
-    if (![EventTracingEngine sharedInstance].context.started) {
+    if (![NEEventTracingEngine sharedInstance].context.started) {
         callback(@{@"code": @(ETWebViewBridgeCodeNotFound)}, [NSError et_webkit_errorWithMessage:@"EventTracing not started." code:ETWebViewBridgeCodeNotFound]);
         return;
     }
@@ -145,18 +145,18 @@ ETWEBKIT_BRIDGE_MODULE_METHDO_EXPORT(refers) {
     NSMutableDictionary<NSString *, NSString *> *refers = @{}.mutableCopy;
     // 1. sessid
     if ([keys containsObject:k_sessid]) {
-        [refers setObject:[EventTracingEngine sharedInstance].context.sessid forKey:k_sessid];
+        [refers setObject:[NEEventTracingEngine sharedInstance].context.sessid forKey:k_sessid];
     }
     
     // 2. sidrefer
     if ([keys containsObject:k_sidrefer]) {
-        [refers setObject:[EventTracingEngine sharedInstance].context.sidrefer forKey:k_sidrefer];
+        [refers setObject:[NEEventTracingEngine sharedInstance].context.sidrefer forKey:k_sidrefer];
     }
     
     // 3. eventrefer
     if ([keys containsObject:k_eventrefer]) {
-        id<EventTracingEventRefer> lastestAutoEventRefer = ET_lastestAutoEventRefer();
-        id<EventTracingEventRefer> lastestAOPAutoEventSPMRefer = ET_lastestUndefinedXpathRefer();
+        id<NEEventTracingEventRefer> lastestAutoEventRefer = NE_ET_lastestAutoEventRefer();
+        id<NEEventTracingEventRefer> lastestAOPAutoEventSPMRefer = NE_ET_lastestUndefinedXpathRefer();
         
         [refers setObject:lastestAutoEventRefer.refer forKey:k_eventrefer];
         
@@ -167,12 +167,12 @@ ETWEBKIT_BRIDGE_MODULE_METHDO_EXPORT(refers) {
     
     // 4. multirefers
     if ([keys containsObject:k_multirefers]) {
-        [refers setObject:[EventTracingMultiReferPatch sharedPatch].multiRefersJsonString forKey:k_multirefers];
+        [refers setObject:[NEEventTracingMultiReferPatch sharedPatch].multiRefersJsonString forKey:k_multirefers];
     }
     
     // 5. hsrefer
     if ([keys containsObject:k_hsrefer]) {
-        [refers setObject:([EventTracingEngine sharedInstance].context.hsrefer ?: @"") forKey:k_hsrefer];
+        [refers setObject:([NEEventTracingEngine sharedInstance].context.hsrefer ?: @"") forKey:k_hsrefer];
     }
     
     callback(@{@"code": @(ETWebViewBridgeCodeSuccess), @"refers": refers.copy}, nil);
@@ -180,15 +180,15 @@ ETWEBKIT_BRIDGE_MODULE_METHDO_EXPORT(refers) {
 
 #pragma mark -
 #pragma mark - Observer
-- (void)didGenerateVTree:(EventTracingVTree *)VTree lastVTree:(EventTracingVTree * _Nullable)lastVTree hasChanges:(BOOL)hasChanges {
+- (void)didGenerateVTree:(NEEventTracingVTree *)VTree lastVTree:(NEEventTracingVTree * _Nullable)lastVTree hasChanges:(BOOL)hasChanges {
     [self _didGenerageVTree:VTree];
 }
 
 #pragma mark -
 #pragma mark - Private methods
-- (void)_didGenerageVTree:(EventTracingVTree *)VTree {
+- (void)_didGenerageVTree:(NEEventTracingVTree *)VTree {
     UIView *rootView = self.bridge.context.webView;
-    EventTracingVTreeNode *VTreeNode = [self _fetchContainerNodeFromRootView:rootView];
+    NEEventTracingVTreeNode *VTreeNode = [self _fetchContainerNodeFromRootView:rootView];
     if (!VTreeNode) {
         return;
     }
@@ -197,16 +197,16 @@ ETWEBKIT_BRIDGE_MODULE_METHDO_EXPORT(refers) {
     self.containerVTreeNodeCopy = [self.containerVTreeCopy nodeForSpm:VTreeNode.spm];
 }
 
-- (EventTracingVTreeNode *)_doFetchNodeAndCheckBeforeReportForContext:(id<ETWebViewBridgeCallContextProtocol>)context
+- (NEEventTracingVTreeNode *)_doFetchNodeAndCheckBeforeReportForContext:(id<ETWebViewBridgeCallContextProtocol>)context
                                                     callback:(void (^)(NSDictionary * _Nullable, NSDictionary * _Nullable))callback {
-    if (![EventTracingEngine sharedInstance].context.started) {
+    if (![NEEventTracingEngine sharedInstance].context.started) {
         callback(@{@"code": @(ETWebViewBridgeCodeNotFound)}, [NSError et_webkit_errorWithMessage:@"EventTracing not started." code:ETWebViewBridgeCodeNotFound]);
         return nil;
     }
     
     UIView *rootView = context.bridge.context.webView;
-    EventTracingVTreeNode *foundedVTreeNode = [self _fetchContainerNodeFromRootView:rootView];
-    EventTracingVTreeNode *VTreeNode = foundedVTreeNode ?: self.containerVTreeNodeCopy;
+    NEEventTracingVTreeNode *foundedVTreeNode = [self _fetchContainerNodeFromRootView:rootView];
+    NEEventTracingVTreeNode *VTreeNode = foundedVTreeNode ?: self.containerVTreeNodeCopy;
     if (!VTreeNode) {
         callback(@{@"code": @(ETWebViewBridgeCodeInvalidParams)}, [NSError et_webkit_errorParamsWithMessage:@"当前上下文向上找不到一个page节点"]);
         return nil;
@@ -219,13 +219,13 @@ ETWEBKIT_BRIDGE_MODULE_METHDO_EXPORT(refers) {
 // 1. H5容器内的所有埋点，必须可以挂载到一个原生的native节点名下
 // 2. 该原生的native节点，比如是一个page节点（在向上找的过程中，如果遇到元素节点，则直接忽略）
 // 3. 否则，该埋点打不出来
-- (EventTracingVTreeNode *)_fetchContainerNodeFromRootView:(UIView *)rootView {
-    EventTracingVTreeNode *node = [ET_FindAncestorNodeViewAt(rootView) et_currentVTreeNode];
+- (NEEventTracingVTreeNode *)_fetchContainerNodeFromRootView:(UIView *)rootView {
+    NEEventTracingVTreeNode *node = [NE_ET_FindAncestorNodeViewAt(rootView) ne_et_currentVTreeNode];
     if (!node) {
         return nil;
     }
     
-    EventTracingVTreeNode *nextNode = node;
+    NEEventTracingVTreeNode *nextNode = node;
     while (nextNode != nil && !nextNode.isRoot && !nextNode.isPageNode) {
         nextNode = nextNode.parentNode;
     }

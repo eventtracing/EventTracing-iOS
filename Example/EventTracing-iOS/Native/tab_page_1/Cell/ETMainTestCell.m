@@ -7,6 +7,7 @@
 //
 
 #import "ETMainTestCell.h"
+#import <EventTracing/NEEventTracingBuilder.h>
 
 @implementation ETMainTestCell
 
@@ -21,7 +22,7 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         _contentLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 5, self.bounds.size.width - 20, self.bounds.size.height - 10)];
-        _contentLabel.backgroundColor = [UIColor et_colorWithHexStr:@"0x4895ef"];
+        _contentLabel.backgroundColor = [UIColor et_colorWithHexStr:@"#4895ef"];
         _contentLabel.font = [UIFont systemFontOfSize:20];
         _contentLabel.textColor = [UIColor whiteColor];
         _contentLabel.textAlignment = NSTextAlignmentCenter;
@@ -34,7 +35,7 @@
             make.top.equalTo(self.contentView).offset(6);
         }];
         
-        [[EventTracingBuilder view:self elementId:@"TableCell"] build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+        [[NEEventTracingBuilder view:self elementId:@"TableCell"] build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
             builder.params.set(@"cell_key", @"cell_val_456");
         }];
     }
@@ -45,16 +46,16 @@
     self.item = item;
     _contentLabel.text = item.title;
     
-    [self et_build:^(id<EventTracingLogNodeBuilder>  _Nonnull builder) {
+    [self ne_etb_build:^(id<NEEventTracingLogNodeBuilder>  _Nonnull builder) {
         builder.bindDataForReuse(item)
             .params
             .set(@"title", item.title ?: @"");
     }];
 }
 
-- (void)et_makeDynamicParams:(id<EventTracingLogNodeParamsBuilder>)builder {
+- (void)ne_etb_makeDynamicParams:(id<NEEventTracingLogNodeParamsBuilder>)builder {
     NSString *title1 = self.item.title;
-    NSString *title2 = [self.et_currentVTreeNode.nodeParams objectForKey:@"title"];
+    NSString *title2 = [self.ne_et_currentVTreeNode.nodeParams objectForKey:@"title"];
     if (title1 && title2 && ![title1 isEqualToString:title2]) {
         NSLog(@"title not equal");
     }

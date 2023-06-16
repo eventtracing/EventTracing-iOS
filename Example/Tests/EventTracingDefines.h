@@ -12,9 +12,9 @@
 #import <KIF/KIF.h>
 #import <KIF/NSError-KIFAdditions.h>
 #import <KIF/UIAccessibilityElement-KIFAdditions.h>
-#import "KIFUITestActor+ET_Extra.h"
+#import "KIFUITestActor+NE_ET_Extra.h"
 
-#import <EventTracing/EventTracing.h>
+#import <EventTracing/NEEventTracing.h>
 #import <EventTracing/NSArray+ETEnumerator.h>
 
 #import <BlocksKit/BlocksKit.h>
@@ -22,6 +22,6 @@
 
 #import "EventTracingTestUsefullFuncs.h"
 #import "EventTracingTestLogComing.h"
-#import "NSMutableArray+ET_Extra.h"
+#import "NSMutableArray+NE_ET_Extra.h"
 
 #endif /* EventTracingDefines_h */

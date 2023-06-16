@@ -7,20 +7,21 @@
 //
 
 #import "NEAppDelegate.h"
-#import <EventTracing/EventTracingMultiReferPatch.h>
-#import <EventTracing/EventTracingReferNodeSCMDefaultFormatter.h>
+#import <EventTracing/NEEventTracingMultiReferPatch.h>
+#import <EventTracing/NEEventTracingReferNodeSCMDefaultFormatter.h>
+#import <EventTracing/NEEventTracingBuilder.h>
 #import "EventTracingTestLogComing.h"
 
 @interface NEAppDelegate ()
 <
-EventTracingVTreeObserver,
-EventTracingOutputPublicDynamicParamsProvider,
-EventTracingEventOutputChannel,
-EventTracingOutputParamsFilter,
-EventTracingContextVTreePerformanceObserver,
-EventTracingExtraConfigurationProvider,
-EventTracingInternalLogOutputInterface,
-EventTracingExceptionDelegate
+NEEventTracingVTreeObserver,
+NEEventTracingOutputPublicDynamicParamsProvider,
+NEEventTracingEventOutputChannel,
+NEEventTracingOutputParamsFilter,
+NEEventTracingContextVTreePerformanceObserver,
+NEEventTracingExtraConfigurationProvider,
+NEEventTracingInternalLogOutputInterface,
+NEEventTracingExceptionDelegate
 >
 
 @property(nonatomic, strong) EventTracingTestLogComing *globalLogComing;
@@ -31,7 +32,7 @@ EventTracingExceptionDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    [[EventTracingEngine sharedInstance] startWithContextBuilder:^(id<EventTracingContextBuilder>  _Nonnull builder) {
+    [[NEEventTracingEngine sharedInstance] startWithContextBuilder:^(id<NEEventTracingContextBuilder>  _Nonnull builder) {
 
         // 1. 静态公参
         [builder configStaticPublicParams:@{
@@ -41,10 +42,10 @@ EventTracingExceptionDelegate
         // 2. 动态公参
         [builder registePublicDynamicParamsProvider:self];
         
-        // 3. 注册日志输出格式; 默认SDK内部就是注册了 `EventTracingOutputFlattenFormatter`
-        [builder registeFormatter:[[EventTracingOutputFlattenFormatter alloc] init]];
-        // 3.1 默认SDK内部就是注册了 `EventTracingReferNodeSCMDefaultFormatter`
-        [builder setupReferNodeSCMFormatter:[[EventTracingReferNodeSCMDefaultFormatter alloc] init]];
+        // 3. 注册日志输出格式; 默认SDK内部就是注册了 `NEEventTracingOutputFlattenFormatter`
+        [builder registeFormatter:[[NEEventTracingOutputFlattenFormatter alloc] init]];
+        // 3.1 默认SDK内部就是注册了 `NEEventTracingReferNodeSCMDefaultFormatter`
+        [builder setupReferNodeSCMFormatter:[[NEEventTracingReferNodeSCMDefaultFormatter alloc] init]];
         
         // 4. output 输出
         [builder addOutputChannel:self];
@@ -53,10 +54,10 @@ EventTracingExceptionDelegate
         [builder addParamsFilter:self];
         
         // 6. multi refer history
-        [[EventTracingMultiReferPatch sharedPatch] patchOnContextBuilder:builder];
+        [[NEEventTracingMultiReferPatch sharedPatch] patchOnContextBuilder:builder];
         
         // 7. 允许滚动中增量构建 VTree
-        [[EventTracingEngine sharedInstance] enableIncrementalVTreeWhenScroll];
+        [[NEEventTracingEngine sharedInstance] enableIncrementalVTreeWhenScroll];
         
         // 7.1 滚动限流: 滚动模式下，增量构建VTree，配置 最小滑动间隔时长 && 最小滑动间隔距离
         // default: 0.05s && {5.f, 5.f}
@@ -87,7 +88,7 @@ EventTracingExceptionDelegate
             builder.paramGuardEnable = YES;
             
             // 6. ViewController did load view
-            builder.viewControllerDidNotLoadViewExceptionTip = ETViewControllerDidNotLoadViewExceptionTipCostom;
+            builder.viewControllerDidNotLoadViewExceptionTip = NEETViewControllerDidNotLoadViewExceptionTipCostom;
             // For Assert Scene
 //            builder.viewControllerDidNotLoadViewExceptionTip = ETViewControllerDidNotLoadViewExceptionTipAssert;
             
@@ -98,7 +99,7 @@ EventTracingExceptionDelegate
             [builder addOutputChannel:[EventTracingInspectEngine sharedInstance]];
             
             // 9. 添加参数key黑名单，以下参数key不可以出现
-            [EventTracingBuilder addBlackListParamKey:@"blacklist_param_key" errorString:@"该参数是黑名单，不应该出现在埋点中"];
+            [NEEventTracingBuilder addBlackListParamKey:@"blacklist_param_key" errorString:@"该参数是黑名单，不应该出现在埋点中"];
         }
 #endif
     }];
@@ -124,21 +125,21 @@ EventTracingExceptionDelegate
     });
 }
 
-#pragma mark - EventTracingExtraConfigurationProvider
+#pragma mark - NEEventTracingExtraConfigurationProvider
 - (NSArray<NSString *> *)needIncreaseActseqLogEvents {
-    return @[ET_EVENT_ID_E_CLCK];
+    return @[NE_ET_EVENT_ID_E_CLCK];
 }
 
 - (NSArray<NSString *> *)needStartHsreferOids {
     return @[@"page_tab_vc_1", @"page_tab_vc_2"];
 }
 
-#pragma mark - EventTracingOutputParamsFilter
+#pragma mark - NEEventTracingOutputParamsFilter
 - (NSDictionary *)filteredJsonWithEvent:(NSString *)event
                            originalJson:(NSDictionary *)originalJson
-                                   node:(EventTracingVTreeNode *)node
-                                inVTree:(EventTracingVTree *)VTree {
-    if ([event isEqualToString:ET_EVENT_ID_E_CLCK]) {
+                                   node:(NEEventTracingVTreeNode *)node
+                                inVTree:(NEEventTracingVTree *)VTree {
+    if ([event isEqualToString:NE_ET_EVENT_ID_E_CLCK]) {
         NSMutableDictionary *json = [originalJson mutableCopy];
         [json setObject:@"value_from_filter" forKey:@"key_from_filter"];
         return json.copy;
@@ -146,8 +147,8 @@ EventTracingExceptionDelegate
     return originalJson;
 }
 
-#pragma mark - EventTracingOutputPublicDynamicParamsProvider
-- (NSDictionary *)outputPublicDynamicParamsForEvent:(NSString *)event node:(EventTracingVTreeNode *)node inVTree:(EventTracingVTree *)VTree {
+#pragma mark - NEEventTracingOutputPublicDynamicParamsProvider
+- (NSDictionary *)outputPublicDynamicParamsForEvent:(NSString *)event node:(NEEventTracingVTreeNode *)node inVTree:(NEEventTracingVTree *)VTree {
     EventTracingEnumateAllLogComings(^(EventTracingTestLogComing * _Nonnull logComing, NSUInteger idx, BOOL * _Nonnull stop) {
         logComing.publicDynamicParamsCallCount ++;
     });
@@ -156,8 +157,8 @@ EventTracingExceptionDelegate
     };
 }
 
-#pragma mark - EventTracingVTreeObserver
-- (void)didGenerateVTree:(EventTracingVTree *)VTree lastVTree:(EventTracingVTree * _Nullable)lastVTree hasChanges:(BOOL)hasChanges {
+#pragma mark - NEEventTracingVTreeObserver
+- (void)didGenerateVTree:(NEEventTracingVTree *)VTree lastVTree:(NEEventTracingVTree * _Nullable)lastVTree hasChanges:(BOOL)hasChanges {
     /// MARK: For UI Tests
     EventTracingEnumateAllLogComings(^(EventTracingTestLogComing * _Nonnull logComing, NSUInteger idx, BOOL * _Nonnull stop) {
         VTree.hasChangesToLastVTree = hasChanges;
@@ -175,7 +176,7 @@ EventTracingExceptionDelegate
         
 //        NSLog(@"## ET ##, did Generate VTree StringFormat: %@", jsonFormateString);
         
-        [self _doOutputToLogRealtimeViewer:@"ET_VTree" json:debugJson];
+        [self _doOutputToLogRealtimeViewer:@"NE_ET_VTree" json:debugJson];
     });
 }
 
@@ -184,12 +185,12 @@ EventTracingExceptionDelegate
     
 }
 
-#pragma mark - EventTracingEventOutputChannel
-- (void)eventOutput:(EventTracingEventOutput *)eventOutput didOutputEvent:(NSString *)event json:(NSDictionary *)json {
+#pragma mark - NEEventTracingEventOutputChannel
+- (void)eventOutput:(NEEventTracingEventOutput *)eventOutput didOutputEvent:(NSString *)event json:(NSDictionary *)json {
     // 把 event 塞到日志里
-    if ([json objectForKey:ET_CONST_KEY_EVENT_CODE] == nil && event) {
+    if ([json objectForKey:NE_ET_CONST_KEY_EVENT_CODE] == nil && event) {
         NSMutableDictionary * mutable_json = [json mutableCopy];
-        [mutable_json addEntriesFromDictionary:@{ET_CONST_KEY_EVENT_CODE:event}];
+        [mutable_json addEntriesFromDictionary:@{NE_ET_CONST_KEY_EVENT_CODE:event}];
         json = [mutable_json copy];
     }
     
@@ -215,8 +216,8 @@ EventTracingExceptionDelegate
     });
 }
 
-#pragma mark - EventTracingContextVTreePerformanceObserver
-- (void)didGenerateVTree:(EventTracingVTree *)VTree
+#pragma mark - NEEventTracingContextVTreePerformanceObserver
+- (void)didGenerateVTree:(NEEventTracingVTree *)VTree
                      tag:(NSString *)tag
                      idx:(NSUInteger)idx
                     cost:(NSTimeInterval)cost
@@ -225,7 +226,7 @@ EventTracingExceptionDelegate
                      max:(NSTimeInterval)max {
     NSLog(@"## ET ## Times: %@, tag: %@, cost: %.4f, ave: %.4f, max: %.4f, min: %.4f", tag, @(idx).stringValue, cost, ave, max, min);
     
-    [self _doOutputToLogRealtimeViewer:@"ET_performance" json:@{
+    [self _doOutputToLogRealtimeViewer:@"NE_ET_performance" json:@{
         @"idx": @(idx).stringValue,
         @"cost": [NSString stringWithFormat:@"cost: %.4f", cost],
         @"ave": [NSString stringWithFormat:@"cost: %.4f", ave],
@@ -234,7 +235,7 @@ EventTracingExceptionDelegate
     }];
 }
 
-#pragma mark - EventTracingExceptionDelegate
+#pragma mark - NEEventTracingExceptionDelegate
 - (void)paramGuardExceptionKey:(NSString *)key code:(NSInteger)code paramKey:(NSString *)paramKey regex:(NSString *)regex error:(NSError *)error {
     NSLog(@"# EventTracing # exception[ParamsGuard Error]: paramKey: %@, error: %@", paramKey, error);
     
@@ -246,21 +247,21 @@ EventTracingExceptionDelegate
 - (void)internalExceptionKey:(NSString *)key
                         code:(NSInteger)code
                      message:(NSString *)message
-                        node:(EventTracingVTreeNode *)node
-       shouldNotEqualToOther:(EventTracingVTreeNode *)otherNode {
+                        node:(NEEventTracingVTreeNode *)node
+       shouldNotEqualToOther:(NEEventTracingVTreeNode *)otherNode {
     NSLog(@"# EventTracing # exception[NodeEqual Error]: code: %@, message: %@", @(code).stringValue, message);
     
     [self _doOutputExceptionToLogRealtimeViewerWithKey:key code:code content:@{
         @"isPage": @(node.isPageNode),
         @"spm": node.spm ?: @"",
-        @"identifier": [node et_diffIdentifier]
+        @"identifier": [node ne_et_diffIdentifier]
     }];
 }
 - (void)internalExceptionKey:(NSString *)key
                         code:(NSInteger)code
                      message:(NSString *)message
-                        node:(EventTracingVTreeNode *)node
-    spmShouldNotEqualToOther:(EventTracingVTreeNode *)otherNode {
+                        node:(NEEventTracingVTreeNode *)node
+    spmShouldNotEqualToOther:(NEEventTracingVTreeNode *)otherNode {
     [self _doOutputExceptionToLogRealtimeViewerWithKey:key code:code content:@{
         @"isPage": @(node.isPageNode),
         @"spm": node.spm ?: @""
@@ -274,11 +275,11 @@ EventTracingExceptionDelegate
     NSLog(@"# EventTracing # exception[LogicalMount Error]: code: %@, message: %@", @(code).stringValue, message);
     
     [self _doOutputExceptionToLogRealtimeViewerWithKey:key code:code content:@{
-        @"autoMount": @(view.et_isAutoMountOnCurrentRootPageEnable).stringValue,
-        @"isPage": @(view.et_isPage),
-        @"oid": (view.et_isPage ? view.et_pageId : view.et_elementId) ?: @"",
-        @"targetSpm": (viewToMount.et_currentVTreeNode.spm ?: @""),
-        @"targetOid": ((viewToMount.et_pageId ? : viewToMount.et_elementId) ?: @"")
+        @"autoMount": @(view.ne_et_isAutoMountOnCurrentRootPageEnable).stringValue,
+        @"isPage": @(view.ne_et_isPage),
+        @"oid": (view.ne_et_isPage ? view.ne_et_pageId : view.ne_et_elementId) ?: @"",
+        @"targetSpm": (viewToMount.ne_et_currentVTreeNode.spm ?: @""),
+        @"targetOid": ((viewToMount.ne_et_pageId ? : viewToMount.ne_et_elementId) ?: @"")
     }];
 }
 

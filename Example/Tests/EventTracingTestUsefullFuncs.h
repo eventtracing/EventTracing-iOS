@@ -11,19 +11,19 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @class XCTestExpectation;
-typedef void(^ET_Test_Wait_ExecBlock)(XCTestExpectation *expectation);
-typedef BOOL(^ET_Test_Wait_AtVTreeGenerateConditionBlock)(EventTracingTestLogComing *logComing);
+typedef void(^NE_ET_Test_Wait_ExecBlock)(XCTestExpectation *expectation);
+typedef BOOL(^NE_ET_Test_Wait_AtVTreeGenerateConditionBlock)(EventTracingTestLogComing *logComing);
 
-FOUNDATION_EXTERN void ET_Test_WaitForTimeExecBlock(NSTimeInterval timeout, ET_Test_Wait_ExecBlock execBlock);
-FOUNDATION_EXTERN void ET_Test_WaitForTime(NSTimeInterval timeout);
+FOUNDATION_EXTERN void NE_ET_Test_WaitForTimeExecBlock(NSTimeInterval timeout, NE_ET_Test_Wait_ExecBlock execBlock);
+FOUNDATION_EXTERN void NE_ET_Test_WaitForTime(NSTimeInterval timeout);
 
 /// MARK: 以下都是基于上述俩进行的扩展
 __attribute__((overloadable))
-FOUNDATION_EXTERN void ET_Test_WaitForTimeAtVTreeGenerateWithCondition(NSTimeInterval timeout,
-                                                                       ET_Test_Wait_AtVTreeGenerateConditionBlock condition);
+FOUNDATION_EXTERN void NE_ET_Test_WaitForTimeAtVTreeGenerateWithCondition(NSTimeInterval timeout,
+                                                                       NE_ET_Test_Wait_AtVTreeGenerateConditionBlock condition);
 
-FOUNDATION_EXTERN void ET_Test_WaitForTimeAtVTreeGenerateWithCondition(NSTimeInterval timeout,
+FOUNDATION_EXTERN void NE_ET_Test_WaitForTimeAtVTreeGenerateWithCondition(NSTimeInterval timeout,
                                                                        EventTracingTestLogComing *logComing,
-                                                                       ET_Test_Wait_AtVTreeGenerateConditionBlock condition);
+                                                                       NE_ET_Test_Wait_AtVTreeGenerateConditionBlock condition);
 
 NS_ASSUME_NONNULL_END

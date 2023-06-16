@@ -1,15 +1,15 @@
 //
-//  NSMutableArray+ET_Extra.m
+//  NSMutableArray+NE_ET_Extra.m
 //  EventTracing-iOS_Example
 //
 //  Created by 熊勋泉 on 2022/12/16.
 //  Copyright © 2022 9446796. All rights reserved.
 //
 
-#import "NSMutableArray+ET_Extra.h"
+#import "NSMutableArray+NE_ET_Extra.h"
 #import <KIF/KIF.h>
 
-@implementation NSMutableArray (ET_Extra)
+@implementation NSMutableArray (NE_ET_Extra)
 
 - (void)et_pushObject:(id)anObject {
     if (!anObject)
